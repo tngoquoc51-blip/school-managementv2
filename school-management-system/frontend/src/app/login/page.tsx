@@ -1,18 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import api from '@/services/api';
+import { useRouter } from 'next/navigation';
 import './login.css';
 
 export default function LoginPage() {
     const router = useRouter();
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState('admin@thpt.edu.vn');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [remember, setRemember] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -20,51 +19,35 @@ export default function LoginPage() {
         setError('');
 
         try {
-            const res = await api.post('/auth/login', { email, password });
-            const { token, user, roles } = res.data;
+            await new Promise((r) => setTimeout(r, 600));
 
-            localStorage.setItem('token', token);
-            localStorage.setItem('user', JSON.stringify(user));
-            localStorage.setItem('roles', JSON.stringify(roles));
-
-            if (roles.length === 1) {
-                redirectByRole(roles[0]);
+            if (email === 'admin@thpt.edu.vn' && password === '123456') {
+                localStorage.setItem('token', 'demo-token');
+                localStorage.setItem('user', JSON.stringify({ name: 'Quản trị viên', email }));
+                localStorage.setItem('roles', JSON.stringify(['super_admin']));
+                router.push('/admin/dashboard');
             } else {
-                router.push('/select-role');
+                setError('Email hoặc mật khẩu không chính xác');
             }
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Đăng nhập thất bại');
+        } catch {
+            setError('Có lỗi xảy ra, vui lòng thử lại');
         } finally {
             setLoading(false);
         }
     };
 
-    const redirectByRole = (role: string) => {
-        const map: Record<string, string> = {
-            super_admin: '/admin/dashboard',
-            principal: '/bgh/dashboard',
-            vice_principal: '/bgh/dashboard',
-            teacher: '/teacher/dashboard',
-            homeroom_teacher: '/homeroom/dashboard',
-            academic: '/academic/dashboard',
-            student: '/student/dashboard',
-            parent: '/parent/dashboard',
-        };
-        router.push(map[role] || '/');
-    };
-
     return (
         <div className="login-page">
-            {/* Bên trái - Branding */}
+            {/* LEFT */}
             <div className="login-left">
-                <div className="login-brand">
+                <div className="login-left-content">
                     <div className="login-logo">TH</div>
-                    <h1 className="login-left-title">
-                        Hệ thống Quản lý<br />Trường THPT
-                    </h1>
-                    <p className="login-left-desc">
-                        Quản lý toàn diện hoạt động dạy và học – Kết nối nhà trường, giáo viên, học sinh và phụ huynh
+                    <h1>Hệ thống Quản lý<br />Trường THPT</h1>
+                    <p className="login-desc">
+                        Quản lý toàn diện hoạt động dạy và học.<br />
+                        Kết nối nhà trường – giáo viên – học sinh – phụ huynh.
                     </p>
+
                     <ul className="login-features">
                         <li><span>✓</span> Điểm danh & Sổ đầu bài điện tử</li>
                         <li><span>✓</span> Nhập điểm theo Thông tư 22</li>
@@ -74,67 +57,57 @@ export default function LoginPage() {
                 </div>
             </div>
 
-            {/* Bên phải - Form */}
+            {/* RIGHT */}
             <div className="login-right">
-                <div className="login-form-wrapper">
-                    <div className="login-form-header">
-                        <h2 className="login-form-title">Đăng nhập</h2>
-                        <p className="login-form-subtitle">Vui lòng đăng nhập để tiếp tục</p>
-                    </div>
+                <div className="login-box">
+                    <h2>Đăng nhập</h2>
+                    <p className="login-subtitle">Vui lòng đăng nhập để tiếp tục sử dụng hệ thống</p>
 
-                    <form onSubmit={handleLogin} className="login-form">
+                    <form onSubmit={handleLogin}>
                         {error && <div className="login-error">{error}</div>}
 
-                        <div className="login-field">
-                            <label className="login-label">Email hoặc Mã định danh</label>
+                        <div className="form-group">
+                            <label>Email hoặc Mã định danh</label>
                             <input
                                 type="text"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="login-input"
-                                placeholder="Nhập email hoặc mã GV/HS"
+                                placeholder="admin@thpt.edu.vn"
                                 required
                             />
                         </div>
 
-                        <div className="login-field">
-                            <label className="login-label">Mật khẩu</label>
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="login-input"
-                                placeholder="Nhập mật khẩu"
-                                required
-                            />
-                        </div>
-
-                        <div className="login-options">
-                            <label className="login-remember">
+                        <div className="form-group">
+                            <label>Mật khẩu</label>
+                            <div className="password-wrap">
                                 <input
-                                    type="checkbox"
-                                    checked={remember}
-                                    onChange={(e) => setRemember(e.target.checked)}
+                                    type={showPassword ? 'text' : 'password'}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="Nhập mật khẩu"
+                                    required
                                 />
-                                Ghi nhớ đăng nhập
-                            </label>
-                            <Link href="/forgot-password" className="login-forgot">
-                                Quên mật khẩu?
-                            </Link>
+                                <button type="button" onClick={() => setShowPassword(!showPassword)}>
+                                    {showPassword ? 'Ẩn' : 'Hiện'}
+                                </button>
+                            </div>
                         </div>
 
-                        <button type="submit" disabled={loading} className="login-submit">
+                        <div className="form-options">
+                            <label>
+                                <input type="checkbox" /> Ghi nhớ đăng nhập
+                            </label>
+                            <Link href="/forgot-password">Quên mật khẩu?</Link>
+                        </div>
+
+                        <button type="submit" className="btn-login" disabled={loading}>
                             {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
                         </button>
                     </form>
 
-                    <p className="login-footer">
-                        Hệ thống quản lý trường Trung học Phổ thông
-                    </p>
-
-                    <Link href="/" className="login-back">
-                        ← Quay lại trang chủ
-                    </Link>
+                    <div className="login-footer">
+                        <Link href="/">← Quay lại trang chủ</Link>
+                    </div>
                 </div>
             </div>
         </div>
