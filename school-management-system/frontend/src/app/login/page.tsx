@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import api from '@/services/api';
+import './login.css';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -10,6 +12,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [remember, setRemember] = useState(false);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -24,11 +27,9 @@ export default function LoginPage() {
             localStorage.setItem('user', JSON.stringify(user));
             localStorage.setItem('roles', JSON.stringify(roles));
 
-            // Nếu chỉ có 1 vai trò → vào thẳng
             if (roles.length === 1) {
                 redirectByRole(roles[0]);
             } else {
-                // Có nhiều vai trò → cho chọn
                 router.push('/select-role');
             }
         } catch (err: any) {
@@ -53,78 +54,87 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex">
-            {/* Bên trái - Hình ảnh / Branding */}
-            <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-blue-800 to-indigo-900 text-white flex-col justify-center items-center p-12">
-                <div className="max-w-md text-center">
-                    <h1 className="text-4xl font-bold mb-4">Hệ thống Quản lý Trường THPT</h1>
-                    <p className="text-lg opacity-90">
+        <div className="login-page">
+            {/* Bên trái - Branding */}
+            <div className="login-left">
+                <div className="login-brand">
+                    <div className="login-logo">TH</div>
+                    <h1 className="login-left-title">
+                        Hệ thống Quản lý<br />Trường THPT
+                    </h1>
+                    <p className="login-left-desc">
                         Quản lý toàn diện hoạt động dạy và học – Kết nối nhà trường, giáo viên, học sinh và phụ huynh
                     </p>
+                    <ul className="login-features">
+                        <li><span>✓</span> Điểm danh & Sổ đầu bài điện tử</li>
+                        <li><span>✓</span> Nhập điểm theo Thông tư 22</li>
+                        <li><span>✓</span> Sổ liên lạc 2 chiều với phụ huynh</li>
+                        <li><span>✓</span> Phân quyền theo phạm vi rõ ràng</li>
+                    </ul>
                 </div>
             </div>
 
-            {/* Bên phải - Form đăng nhập */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
-                <div className="w-full max-w-md">
-                    <div className="text-center mb-8">
-                        <h2 className="text-3xl font-bold text-gray-800">Đăng nhập</h2>
-                        <p className="text-gray-500 mt-2">Vui lòng đăng nhập để tiếp tục</p>
+            {/* Bên phải - Form */}
+            <div className="login-right">
+                <div className="login-form-wrapper">
+                    <div className="login-form-header">
+                        <h2 className="login-form-title">Đăng nhập</h2>
+                        <p className="login-form-subtitle">Vui lòng đăng nhập để tiếp tục</p>
                     </div>
 
-                    <form onSubmit={handleLogin} className="bg-white p-8 rounded-2xl shadow-lg space-y-6">
-                        {error && (
-                            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
-                                {error}
-                            </div>
-                        )}
+                    <form onSubmit={handleLogin} className="login-form">
+                        {error && <div className="login-error">{error}</div>}
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Email hoặc Mã định danh</label>
+                        <div className="login-field">
+                            <label className="login-label">Email hoặc Mã định danh</label>
                             <input
                                 type="text"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                                className="login-input"
                                 placeholder="Nhập email hoặc mã GV/HS"
                                 required
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+                        <div className="login-field">
+                            <label className="login-label">Mật khẩu</label>
                             <input
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                                className="login-input"
                                 placeholder="Nhập mật khẩu"
                                 required
                             />
                         </div>
 
-                        <div className="flex items-center justify-between text-sm">
-                            <label className="flex items-center gap-2">
-                                <input type="checkbox" className="rounded" />
-                                <span>Ghi nhớ đăng nhập</span>
+                        <div className="login-options">
+                            <label className="login-remember">
+                                <input
+                                    type="checkbox"
+                                    checked={remember}
+                                    onChange={(e) => setRemember(e.target.checked)}
+                                />
+                                Ghi nhớ đăng nhập
                             </label>
-                            <a href="/forgot-password" className="text-blue-600 hover:underline">
+                            <Link href="/forgot-password" className="login-forgot">
                                 Quên mật khẩu?
-                            </a>
+                            </Link>
                         </div>
 
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-60"
-                        >
+                        <button type="submit" disabled={loading} className="login-submit">
                             {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
                         </button>
                     </form>
 
-                    <p className="text-center text-sm text-gray-500 mt-6">
+                    <p className="login-footer">
                         Hệ thống quản lý trường Trung học Phổ thông
                     </p>
+
+                    <Link href="/" className="login-back">
+                        ← Quay lại trang chủ
+                    </Link>
                 </div>
             </div>
         </div>
