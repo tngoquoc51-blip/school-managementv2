@@ -3,25 +3,52 @@ import './home.css';
 
 const roles = [
     {
-        href: '/admin',
-        name: 'Ban giám hiệu & Quản trị',
-        note: 'Điều hành toàn trường',
+        href: '/login/admin',
+        name: 'Quản trị hệ thống',
+        note: 'Quản lý tài khoản, phân quyền, cấu hình hệ thống',
         tasks: ['Phân quyền', 'Năm học, học kỳ', 'Báo cáo', 'Sao lưu dữ liệu'],
         icon: (
             <path d="M12 3 4 6v5c0 4.5 3.2 8.4 8 10 4.8-1.6 8-5.5 8-10V6l-8-3Zm-1 12-3-3 1.4-1.4L11 12.2l3.6-3.6L16 10l-5 5Z" />
         ),
     },
     {
-        href: '/teacher',
+        href: '/login/bgh',
+        name: 'Ban Giám hiệu',
+        note: 'Hiệu trưởng & Phó Hiệu trưởng',
+        tasks: ['Bảng điều khiển', 'Phê duyệt', 'Báo cáo toàn trường', 'Thi đua'],
+        icon: (
+            <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 10h.01M15 10h.01M9 14h.01M15 14h.01" />
+        ),
+    },
+    {
+        href: '/login/teacher',
         name: 'Giáo viên',
-        note: 'Giảng dạy và chủ nhiệm',
+        note: 'Giảng dạy, chủ nhiệm và tổ trưởng',
         tasks: ['Điểm danh', 'Sổ đầu bài', 'Nhập điểm', 'Sổ chủ nhiệm'],
         icon: (
             <path d="M4 5a2 2 0 0 1 2-2h13v15H6a1 1 0 0 0 0 2h13v1H6a3 3 0 0 1-3-3V5h1Zm4 2v2h8V7H8Z" />
         ),
     },
     {
-        href: '/student',
+        href: '/login/academic',
+        name: 'Giáo vụ',
+        note: 'Quản lý học sinh, lớp, thời khóa biểu',
+        tasks: ['Hồ sơ học sinh', 'Xếp lớp', 'Thời khóa biểu', 'Tổng kết'],
+        icon: (
+            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 3h6v4H9V3zM9 12h6M9 16h4" />
+        ),
+    },
+    {
+        href: '/login/accountant',
+        name: 'Kế toán',
+        note: 'Quản lý học phí và thu chi',
+        tasks: ['Học phí', 'Công nợ', 'Báo cáo tài chính'],
+        icon: (
+            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 4v12m3-9.5c0-1.5-1.3-2.5-3-2.5s-3 1-3 2.5 1.3 2.5 3 2.5 3 1 3 2.5-1.3 2.5-3 2.5" />
+        ),
+    },
+    {
+        href: '/login/student',
         name: 'Học sinh',
         note: 'Theo dõi việc học của mình',
         tasks: ['Xem điểm', 'Thời khóa biểu', 'Nhận xét', 'Thông báo'],
@@ -30,12 +57,12 @@ const roles = [
         ),
     },
     {
-        href: '/parent',
+        href: '/login/parent',
         name: 'Phụ huynh',
         note: 'Đồng hành cùng con',
         tasks: ['Kết quả học tập', 'Sổ liên lạc điện tử', 'Thông báo từ trường'],
         icon: (
-            <path d="M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm8 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM2 19c0-2.8 2.7-5 6-5s6 2.2 6 5v1H2v-1Zm13 1v-1c0-1.5-.5-2.800-1.400-3.900.7-.2 1.400-.1 2.400-.1 3 0 6 1.700 6 4.500V20h-7Z" />
+            <path d="M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm8 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM2 19c0-2.8 2.7-5 6-5s6 2.2 6 5v1H2v-1Zm13 1v-1c0-1.5-.5-2.8-1.4-3.9.7-.2 1.4-.1 2.4-.1 3 0 6 1.7 6 4.5V20h-7Z" />
         ),
     },
 ];
@@ -78,7 +105,7 @@ export default function Home() {
                         <a href="#chuc-nang">Chức năng</a>
                     </nav>
 
-                    <Link href="/login" className="home-btn home-btn-primary">
+                    <Link href="/login/admin" className="home-btn home-btn-primary">
                         Đăng nhập
                     </Link>
                 </div>
@@ -96,7 +123,7 @@ export default function Home() {
                                 một nguồn dữ liệu: điểm, điểm danh, sổ đầu bài và thời khóa biểu.
                             </p>
                             <div className="home-hero-actions">
-                                <Link href="/login" className="home-btn home-btn-primary">
+                                <Link href="/login/admin" className="home-btn home-btn-primary">
                                     Đăng nhập hệ thống
                                 </Link>
                                 <a href="#vai-tro" className="home-btn home-btn-outline">
@@ -234,7 +261,7 @@ export default function Home() {
                             <div>Quản lý điểm, điểm danh, sổ đầu bài và thời khóa biểu</div>
                         </div>
                         <nav className="home-footer-links" aria-label="Liên kết nhanh">
-                            <Link href="/login">Đăng nhập</Link>
+                            <Link href="/login/admin">Đăng nhập</Link>
                             <a href="#vai-tro">Cổng truy cập</a>
                             <a href="#chuc-nang">Chức năng</a>
                         </nav>

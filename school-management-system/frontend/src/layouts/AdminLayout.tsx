@@ -2,6 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { ReactNode, useEffect, useState } from 'react';
+import Link from 'next/link';
+import './admin-layout.css';
 
 interface Props {
     children: ReactNode;
@@ -13,8 +15,11 @@ export default function AdminLayout({ children }: Props) {
 
     useEffect(() => {
         const stored = localStorage.getItem('user');
-        if (stored) setUser(JSON.parse(stored));
-        else router.push('/login');
+        if (stored) {
+            setUser(JSON.parse(stored));
+        } else {
+            router.push('/login');
+        }
     }, []);
 
     const handleLogout = () => {
@@ -23,37 +28,61 @@ export default function AdminLayout({ children }: Props) {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex">
-            <aside className="w-64 bg-gray-900 text-white flex flex-col">
-                <div className="p-5 border-b border-gray-700">
-                    <h1 className="text-lg font-bold">Quản trị hệ thống</h1>
-                    <p className="text-sm text-gray-300 mt-1">{user?.name}</p>
+        <div className="admin-layout">
+            {/* Sidebar */}
+            <aside className="admin-sidebar">
+                <div className="sidebar-header">
+                    <div className="sidebar-logo">TH</div>
+                    <div>
+                        <div className="sidebar-title">Quản trị hệ thống</div>
+                        <div className="sidebar-user">{user?.name || 'Admin'}</div>
+                    </div>
                 </div>
 
-                <nav className="flex-1 p-4 space-y-1 text-sm">
-                    <a href="/admin/dashboard" className="block px-4 py-2.5 rounded-lg hover:bg-gray-800">Dashboard</a>
-                    <a href="/admin/users" className="block px-4 py-2.5 rounded-lg hover:bg-gray-800">Quản lý tài khoản</a>
-                    <a href="/admin/roles" className="block px-4 py-2.5 rounded-lg hover:bg-gray-800">Vai trò & Phân quyền</a>
-                    <a href="/admin/school-year" className="block px-4 py-2.5 rounded-lg hover:bg-gray-800">Năm học - Học kỳ</a>
-                    <a href="/admin/categories" className="block px-4 py-2.5 rounded-lg hover:bg-gray-800">Danh mục hệ thống</a>
-                    <a href="/admin/logs" className="block px-4 py-2.5 rounded-lg hover:bg-gray-800">Nhật ký hệ thống</a>
-                    <a href="/admin/backup" className="block px-4 py-2.5 rounded-lg hover:bg-gray-800">Sao lưu & Phục hồi</a>
+                <nav className="sidebar-nav">
+                    <Link href="/admin/dashboard" className="nav-item active">
+                        <span>📊</span> Dashboard
+                    </Link>
+                    <Link href="/admin/users" className="nav-item">
+                        <span>👥</span> Quản lý tài khoản
+                    </Link>
+                    <Link href="/admin/roles" className="nav-item">
+                        <span>🔐</span> Vai trò & Phân quyền
+                    </Link>
+                    <Link href="/admin/school-year" className="nav-item">
+                        <span>📅</span> Năm học - Học kỳ
+                    </Link>
+                    <Link href="/admin/categories" className="nav-item">
+                        <span>📂</span> Danh mục hệ thống
+                    </Link>
+                    <Link href="/admin/logs" className="nav-item">
+                        <span>📝</span> Nhật ký hệ thống
+                    </Link>
+                    <Link href="/admin/backup" className="nav-item">
+                        <span>💾</span> Sao lưu & Phục hồi
+                    </Link>
                 </nav>
 
-                <div className="p-4 border-t border-gray-700">
-                    <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-800 rounded-lg">
+                <div className="sidebar-footer">
+                    <button onClick={handleLogout} className="btn-logout">
                         Đăng xuất
                     </button>
                 </div>
             </aside>
 
-            <main className="flex-1">
-                <header className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
-                    <h2 className="font-semibold text-gray-800">Quản trị hệ thống</h2>
-                    <span className="text-sm text-gray-500">Super Admin</span>
+            {/* Main content */}
+            <div className="admin-main">
+                <header className="admin-header">
+                    <h1>Quản trị hệ thống</h1>
+                    <div className="header-right">
+                        <span className="badge">Super Admin</span>
+                    </div>
                 </header>
-                <div className="p-6">{children}</div>
-            </main>
+
+                <main className="admin-content">
+                    {children}
+                </main>
+            </div>
         </div>
     );
 }

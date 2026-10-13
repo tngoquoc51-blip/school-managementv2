@@ -1,246 +1,706 @@
-* {
-    margin: 0;
-    padding: 0;
+/* =========================================================
+   Đăng nhập – Hệ thống quản lý Trường THPT  (v2)
+   Họa tiết: hoa phượng + sao nắng hè, nét vẽ toán học trên
+   nền vở, thước kẻ trên đầu thẻ đăng nhập.
+   ========================================================= */
+
+.login-page {
+    --ink: #0e2257;
+    --ink-2: #1b3a8c;
+    --blue: #2349c5;
+    --phuong: #e63946;
+    --sun: #ffc62b;
+    --paper: #f3f6ff;
+    --line: #d9e1f2;
+    --text: #0d1a3a;
+    --muted: #56637f;
+
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    min-height: 100dvh;
+    overflow: auto;
+    background: var(--paper);
+    color: var(--text);
+    font-family: var(--font-be-vietnam), 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+.login-page *,
+.login-page *::before,
+.login-page *::after {
     box-sizing: border-box;
 }
 
-.login-page {
-    min-height: 100vh;
-    width: 100%;
-    display: flex;
-    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-}
-
-/* LEFT */
+/* ===================== LEFT ===================== */
 .login-left {
-    width: 46%;
-    background: linear-gradient(160deg, #1e3a8a 0%, #1d4ed8 50%, #4338ca 100%);
-    color: white;
+    position: relative;
+    flex: 0 0 52%;
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 60px 50px;
-    position: relative;
+    padding: 56px 64px;
+    overflow: hidden;
+    color: #fff;
+    background: linear-gradient(155deg, #0b1d4d 0%, #12307a 55%, #1b3a8c 100%);
 }
 
-.login-left::before {
-    content: '';
+.doodle-layer {
     position: absolute;
-    width: 480px;
-    height: 480px;
+    inset: 0;
+    background-size: 320px 320px;
+    pointer-events: none;
+}
+
+/* mặt trời mùa hè phía sau cành phượng */
+.sun {
+    position: absolute;
+    top: -150px;
+    right: -130px;
+    width: 460px;
+    height: 460px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.06);
-    top: -160px;
-    right: -140px;
+    background: radial-gradient(circle at 40% 40%, rgba(255, 198, 43, 0.55), rgba(255, 198, 43, 0.12) 65%, transparent 70%);
+    box-shadow: 0 0 0 36px rgba(255, 198, 43, 0.05), 0 0 0 80px rgba(255, 198, 43, 0.03);
+    pointer-events: none;
+}
+
+.branch {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: min(620px, 78%);
+    height: auto;
+    transform-origin: 100% 0;
+    animation: sway 8s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes sway {
+    from { transform: rotate(-1.4deg); }
+    to   { transform: rotate(1.2deg); }
+}
+
+.loose-petal {
+    position: absolute;
+    width: 34px;
+    height: 34px;
+    pointer-events: none;
+}
+
+.hill {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 180px;
+    pointer-events: none;
 }
 
 .login-left-content {
     position: relative;
     z-index: 2;
-    max-width: 420px;
+    width: 100%;
+    max-width: 500px;
+    margin-top: 90px;
+}
+
+.login-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 30px;
 }
 
 .login-logo {
-    width: 60px;
-    height: 60px;
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.25);
+    display: grid;
+    place-items: center;
+    width: 54px;
+    height: 54px;
     border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
+    background: #fff;
+    color: var(--ink);
+    font-size: 20px;
     font-weight: 800;
-    margin-bottom: 32px;
+    box-shadow: 4px 4px 0 var(--sun);
+}
+
+.login-brand-name {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.login-brand-name small {
+    display: block;
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.72);
 }
 
 .login-left h1 {
-    font-size: 34px;
+    margin: 0 0 14px;
+    font-size: clamp(32px, 2.9vw, 46px);
     font-weight: 800;
-    line-height: 1.25;
-    margin-bottom: 18px;
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+}
+
+/* gạch chân nét bút dạ cho cả cụm, không nhấn một từ */
+.login-left h1 span {
+    background: linear-gradient(transparent 82%, rgba(255, 198, 43, 0.55) 82%, rgba(255, 198, 43, 0.55) 94%, transparent 94%);
 }
 
 .login-desc {
+    max-width: 440px;
+    margin: 0 0 34px;
     font-size: 16px;
     line-height: 1.7;
-    opacity: 0.92;
-    margin-bottom: 40px;
+    color: rgba(255, 255, 255, 0.82);
 }
 
-.login-features {
-    list-style: none;
+/* ---- sổ đầu bài ---- */
+.logbook-wrap {
+    position: relative;
+    max-width: 450px;
 }
 
-.login-features li {
+.logbook {
+    position: relative;
+    padding: 20px 24px 14px 34px;
+    border-radius: 14px;
+    background: #fbfcff;
+    color: var(--text);
+    box-shadow: 0 28px 50px rgba(3, 10, 35, 0.45);
+    transform: rotate(-1.4deg);
+    /* gáy lò xo */
+    background-image: radial-gradient(circle at 12px 50%, #cdd6ea 0 3px, transparent 3.5px);
+    background-size: 24px 28px;
+    background-repeat: repeat-y;
+    background-position: 0 6px;
+}
+
+.logbook::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 26px;
+    width: 1.5px;
+    background: var(--phuong);
+    opacity: 0.7;
+}
+
+.logbook-head {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--phuong);
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.logbook-head strong {
     font-size: 15px;
-    margin-bottom: 16px;
+    color: var(--ink);
 }
 
-.login-features span {
-    width: 26px;
-    height: 26px;
-    background: rgba(255,255,255,0.18);
-    border-radius: 8px;
-    display: flex;
+.logbook-row {
+    display: grid;
+    grid-template-columns: 52px 1fr auto;
+    gap: 12px;
     align-items: center;
-    justify-content: center;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--line);
     font-size: 14px;
 }
 
-/* RIGHT */
+.logbook-row:last-child {
+    border-bottom: 0;
+}
+
+.logbook-period {
+    font-weight: 700;
+    color: var(--blue);
+}
+
+.logbook-subject b {
+    display: block;
+    font-weight: 600;
+}
+
+.logbook-subject span {
+    font-size: 12.5px;
+    color: var(--muted);
+}
+
+.logbook-count {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #e6edfd;
+    color: var(--ink-2);
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.logbook-count.warn {
+    background: #fde9ea;
+    color: #c0222f;
+}
+
+/* nhãn nổi quanh sổ */
+.chip {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border-radius: 12px;
+    background: #fff;
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 14px 28px rgba(3, 10, 35, 0.35);
+}
+
+.chip svg {
+    width: 18px;
+    height: 18px;
+}
+
+.chip-a {
+    top: -20px;
+    right: -34px;
+    transform: rotate(3deg);
+}
+
+.chip-a svg { color: #1a9d6a; }
+
+.chip-b {
+    bottom: -22px;
+    right: 26px;
+    transform: rotate(-2deg);
+}
+
+.chip-b svg { color: var(--phuong); }
+
+.login-note {
+    margin: 40px 0 0;
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ===================== RIGHT ===================== */
 .login-right {
-    width: 54%;
-    background: #f1f5f9;
+    position: relative;
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px;
+    padding: 40px 32px;
+    overflow: hidden;
+    background-color: var(--paper);
+    background-image: radial-gradient(circle, rgba(35, 73, 197, 0.14) 1.2px, transparent 1.6px);
+    background-size: 24px 24px;
 }
+
+.right-flower {
+    position: absolute;
+    pointer-events: none;
+}
+
+.right-flower.f1 { top: -34px; right: -30px; width: 150px; opacity: 0.95; }
+.right-flower.f2 { bottom: -50px; left: -40px; width: 170px; opacity: 0.9; }
 
 .login-box {
+    position: relative;
+    z-index: 1;
     width: 100%;
-    max-width: 420px;
-    background: white;
-    padding: 40px 36px;
-    border-radius: 20px;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+    max-width: 470px;
+    padding: 46px 40px 30px;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: 0 40px 70px -28px rgba(14, 34, 87, 0.3);
 }
 
-.login-box h2 {
-    font-size: 28px;
-    font-weight: 800;
-    color: #0f172a;
+/* thước kẻ ở mép trên thẻ */
+.login-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 28px;
+    right: 28px;
+    height: 12px;
+    border-radius: 0 0 6px 6px;
+    background:
+            repeating-linear-gradient(90deg, var(--ink-2) 0 1.5px, transparent 1.5px 8px) top / 100% 7px no-repeat,
+            repeating-linear-gradient(90deg, var(--ink-2) 0 2px, transparent 2px 40px) top / 100% 12px no-repeat;
+    opacity: 0.55;
+}
+
+.login-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
     margin-bottom: 8px;
 }
 
-.login-subtitle {
-    font-size: 15px;
-    color: #64748b;
-    margin-bottom: 28px;
+.login-title-flower {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: #fff1f2;
 }
 
+.login-title-flower svg {
+    width: 34px;
+    height: 34px;
+}
+
+.login-box h2 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+}
+
+.login-subtitle {
+    margin: 0 0 26px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+/* ---- vai trò ---- */
+.role-label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.role-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+@media (min-width: 500px) {
+    .role-tabs {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Khi có 7 vai trò, cho phép xuống hàng đẹp */
+.role-tabs {
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+}
+.role-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 4px 10px;
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+    color: var(--muted);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.role-tab svg {
+    width: 22px;
+    height: 22px;
+}
+
+.role-tab:hover {
+    border-color: #aebcdf;
+    color: var(--ink);
+}
+
+.role-tab[aria-selected='true'] {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 3px 3px 0 var(--sun);
+}
+
+.role-tab[aria-selected='true'] svg {
+    color: var(--sun);
+}
+
+/* ---- form ---- */
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .form-group label {
     display: block;
-    font-size: 13.5px;
-    font-weight: 600;
-    color: #334155;
     margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
 }
 
-.form-group input {
-    width: 100%;
-    height: 50px;
-    padding: 0 16px;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 12px;
-    font-size: 15px;
-    background: #f8fafc;
-    outline: none;
-}
-
-.form-group input:focus {
-    border-color: #3b82f6;
-    background: white;
-    box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
-}
-
-.password-wrap {
+.input-wrap {
     position: relative;
 }
 
-.password-wrap input {
-    padding-right: 70px;
+.input-wrap > svg {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    width: 20px;
+    height: 20px;
+    color: #8793ad;
+    transform: translateY(-50%);
+    pointer-events: none;
 }
 
-.password-wrap button {
+.input-wrap input {
+    width: 100%;
+    height: 54px;
+    padding: 0 16px 0 46px;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    background: #f8faff;
+    color: var(--text);
+    font: inherit;
+    font-size: 15.5px;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.input-wrap input::placeholder {
+    color: #9aa5bd;
+}
+
+.input-wrap input:focus {
+    outline: none;
+    border-color: var(--blue);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(35, 73, 197, 0.14);
+}
+
+/* chặn trình duyệt tô nền xanh khi tự điền */
+.input-wrap input:-webkit-autofill,
+.input-wrap input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 100px #fff inset;
+    -webkit-text-fill-color: var(--text);
+}
+
+.input-wrap.has-toggle input {
+    padding-right: 82px;
+}
+
+.toggle-pass {
     position: absolute;
-    right: 14px;
     top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: #64748b;
-    font-size: 13px;
+    right: 8px;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--blue);
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
     cursor: pointer;
+    transform: translateY(-50%);
+}
+
+.toggle-pass:hover {
+    background: #eef2fb;
 }
 
 .form-options {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 13.5px;
-    margin-bottom: 24px;
-    color: #475569;
-}
-
-.form-options a {
-    color: #2563eb;
-    text-decoration: none;
-    font-weight: 500;
+    margin: 4px 0 22px;
+    font-size: 14px;
 }
 
 .form-options label {
     display: flex;
     align-items: center;
     gap: 8px;
+    color: var(--muted);
     cursor: pointer;
 }
 
-.btn-login {
-    width: 100%;
-    height: 52px;
-    background: linear-gradient(135deg, #1d4ed8, #4f46e5);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
+.form-options input[type='checkbox'] {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--blue);
+}
+
+.form-options a {
+    color: var(--blue);
     font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 6px 20px rgba(29,78,216,0.3);
-}
-
-.btn-login:hover:not(:disabled) {
-    transform: translateY(-1px);
-}
-
-.btn-login:disabled {
-    opacity: 0.7;
-}
-
-.login-error {
-    background: #fef2f2;
-    color: #dc2626;
-    padding: 12px 16px;
-    border-radius: 10px;
-    font-size: 14px;
-    margin-bottom: 16px;
-    border: 1px solid #fecaca;
-}
-
-.login-footer {
-    margin-top: 28px;
-    text-align: center;
-}
-
-.login-footer a {
-    font-size: 14px;
-    color: #64748b;
     text-decoration: none;
 }
 
+.form-options a:hover {
+    text-decoration: underline;
+}
+
+.btn-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    height: 56px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--blue);
+    color: #fff;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #17339a;
+    transition: transform 0.12s, box-shadow 0.12s, background 0.15s;
+}
+
+.btn-login .arrow {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--sun);
+    color: var(--ink);
+}
+
+.btn-login .arrow svg {
+    width: 16px;
+    height: 16px;
+}
+
+.btn-login:hover:not(:disabled) {
+    background: #2a54d6;
+}
+
+.btn-login:active:not(:disabled) {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #17339a;
+}
+
+.btn-login:disabled {
+    opacity: 0.55;
+    box-shadow: 0 6px 0 #17339a;
+    cursor: not-allowed;
+}
+
+.login-error {
+    padding: 12px 14px;
+    margin-bottom: 18px;
+    border: 1px solid #f6c9cc;
+    border-left: 4px solid var(--phuong);
+    border-radius: 10px;
+    background: #fff4f4;
+    color: #a3202c;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.login-help {
+    margin: 22px 0 0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #eef3ff;
+    color: var(--ink-2);
+    font-size: 13.5px;
+    line-height: 1.6;
+}
+
+.login-help code {
+    padding: 1px 6px;
+    border-radius: 5px;
+    background: #fff;
+    font-size: 12.5px;
+}
+
+.login-footer {
+    margin-top: 22px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.login-footer a {
+    color: var(--muted);
+    text-decoration: none;
+}
+
+.login-footer a:hover {
+    color: var(--blue);
+}
+
+/* thương hiệu gọn cho điện thoại */
+.mobile-brand {
+    display: none;
+}
+
+.login-page a:focus-visible,
+.login-page button:focus-visible,
+.login-page input[type='checkbox']:focus-visible {
+    outline: 3px solid rgba(35, 73, 197, 0.5);
+    outline-offset: 2px;
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 1200px) {
+    .login-left { flex-basis: 48%; padding: 48px 40px; }
+}
+
 @media (max-width: 900px) {
-    .login-left {
-        display: none;
+    .login-left { display: none; }
+    .login-right { padding: 24px 16px; }
+    .login-box { padding: 40px 22px 24px; }
+    .mobile-brand {
+        position: absolute;
+        top: 18px;
+        left: 20px;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--ink);
     }
-    .login-right {
-        width: 100%;
+    .mobile-brand .login-logo {
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        background: var(--ink);
+        color: #fff;
+        font-size: 15px;
+        box-shadow: 3px 3px 0 var(--sun);
     }
+    .right-flower.f1 { width: 110px; }
+    .login-box { margin-top: 56px; }
+}
+
+@media (max-width: 420px) {
+    .role-tab { font-size: 12px; }
+    .login-box h2 { font-size: 26px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .branch { animation: none; }
+    .login-page * { transition: none !important; }
 }

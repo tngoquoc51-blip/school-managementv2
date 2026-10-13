@@ -1,0 +1,350 @@
+.gr-page {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* Hero */
+.gr-hero {
+    background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 100%);
+    border-radius: 16px;
+    padding: 22px 26px;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.gr-hero-label {
+    font-size: 12px;
+    color: #bae6fd;
+    margin: 0 0 4px;
+}
+
+.gr-hero h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.gr-hero-sub {
+    font-size: 13px;
+    color: #e0f2fe;
+    margin: 6px 0 0;
+}
+
+.gr-hero-avg {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    padding: 12px 20px;
+    text-align: center;
+    min-width: 140px;
+}
+
+.gr-hero-avg-label {
+    display: block;
+    font-size: 11px;
+    color: #bae6fd;
+}
+
+.gr-hero-avg strong {
+    display: block;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.gr-hero-rank {
+    display: block;
+    font-size: 12px;
+    color: #fef08a;
+    margin-top: 2px;
+    font-weight: 600;
+}
+
+/* Tabs */
+.gr-tabs {
+    display: flex;
+    gap: 6px;
+    background: #fff;
+    padding: 5px;
+    border-radius: 12px;
+    border: 1px solid #e0f2fe;
+    width: fit-content;
+}
+
+.gr-tab {
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748b;
+    text-decoration: none;
+    transition: all 0.15s;
+}
+
+.gr-tab:hover {
+    background: #f0f9ff;
+    color: #0284c7;
+}
+
+.gr-tab.active {
+    background: #0ea5e9;
+    color: #fff;
+}
+
+/* Stats */
+.gr-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.gr-stat {
+    background: #fff;
+    border: 1px solid #e0f2fe;
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 3px rgba(14, 165, 233, 0.05);
+}
+
+.gr-stat-val {
+    display: block;
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.gr-stat-val.sky { color: #0284c7; }
+.gr-stat-val.green { color: #16a34a; }
+.gr-stat-val.blue { color: #2563eb; }
+
+.gr-stat-lbl {
+    display: block;
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+/* Panel */
+.gr-panel {
+    background: #fff;
+    border: 1px solid #e0f2fe;
+    border-radius: 14px;
+    padding: 18px 20px 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.gr-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.gr-select {
+    padding: 8px 12px;
+    border: 1px solid #e0f2fe;
+    border-radius: 8px;
+    font-size: 13px;
+    background: #f0f9ff;
+    color: #0f172a;
+    outline: none;
+}
+
+.gr-select:focus {
+    border-color: #0ea5e9;
+}
+
+.gr-btn-outline {
+    padding: 8px 14px;
+    border: 1px solid #0ea5e9;
+    border-radius: 8px;
+    background: #fff;
+    color: #0284c7;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.gr-btn-outline:hover {
+    background: #e0f2fe;
+}
+
+/* Table */
+.gr-table-wrap {
+    overflow-x: auto;
+}
+
+.gr-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 860px;
+}
+
+.gr-table thead th {
+    background: #f0f9ff;
+    padding: 10px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #0369a1;
+    text-align: center;
+    border: 1px solid #e0f2fe;
+    white-space: nowrap;
+}
+
+.gr-table tbody td {
+    padding: 11px 8px;
+    font-size: 13px;
+    color: #334155;
+    text-align: center;
+    border: 1px solid #f1f5f9;
+}
+
+.gr-table tbody tr:hover {
+    background: #f0f9ff;
+}
+
+.col-stt {
+    width: 44px;
+    color: #94a3b8;
+}
+
+.col-subject {
+    text-align: left !important;
+    font-weight: 600;
+    color: #0c4a6e;
+    min-width: 110px;
+}
+
+.col-subject a {
+    color: #0c4a6e;
+    text-decoration: none;
+}
+
+.col-subject a:hover {
+    color: #0284c7;
+    text-decoration: underline;
+}
+
+.col-mid,
+.col-final {
+    font-weight: 500;
+}
+
+.col-avg {
+    font-weight: 700;
+    color: #0284c7;
+    background: #f0f9ff;
+}
+
+.gr-rank {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.rank-gioi { background: #dcfce7; color: #15803d; }
+.rank-kha { background: #dbeafe; color: #1d4ed8; }
+.rank-tb { background: #fef9c3; color: #a16207; }
+.rank-dat { background: #e0f2fe; color: #0369a1; }
+.rank-yeu { background: #fee2e2; color: #b91c1c; }
+
+.gr-note {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: #f0f9ff;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #475569;
+    border-left: 3px solid #0ea5e9;
+    line-height: 1.5;
+}
+
+.gr-note strong {
+    color: #0c4a6e;
+}
+
+@media (max-width: 900px) {
+    .gr-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+.gr-subject-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.gr-subject-card {
+    background: #fff;
+    border: 1px solid #e0f2fe;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 1px 3px rgba(14, 165, 233, 0.05);
+    transition: box-shadow 0.2s, transform 0.15s;
+}
+
+.gr-subject-card:hover {
+    box-shadow: 0 6px 16px rgba(14, 165, 233, 0.12);
+    transform: translateY(-2px);
+}
+
+.gr-subject-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.gr-subject-top h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #0c4a6e;
+}
+
+.gr-subject-tbm {
+    font-size: 32px;
+    font-weight: 700;
+    color: #0284c7;
+    line-height: 1.1;
+}
+
+.gr-subject-meta {
+    font-size: 12px;
+    color: #94a3b8;
+    margin: 2px 0 12px;
+}
+
+.gr-subject-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 10px;
+    border-top: 1px solid #e0f2fe;
+    font-size: 12px;
+}
+
+.gr-subject-detail div {
+    display: flex;
+    justify-content: space-between;
+    color: #64748b;
+}
+
+.gr-subject-detail strong {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+@media (max-width: 900px) {
+    .gr-subject-grid {
+        grid-template-columns: 1fr;
+    }
+}

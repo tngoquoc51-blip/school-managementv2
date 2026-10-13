@@ -1,14 +1,28 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { ReactNode, useEffect, useState } from 'react';
+import Link from 'next/link';
+import './teacher-layout.css';
 
 interface Props {
     children: ReactNode;
 }
 
+const MENU = [
+    { href: '/teacher/dashboard', label: 'Dashboard', icon: '📊' },
+    { href: '/teacher/schedule', label: 'Thời khóa biểu', icon: '📅' },
+    { href: '/teacher/attendance', label: 'Điểm danh', icon: '✅' },
+    { href: '/teacher/lesson-log', label: 'Sổ đầu bài', icon: '📝' },
+    { href: '/teacher/grades', label: 'Nhập điểm', icon: '🎯' },
+    { href: '/teacher/lesson-plan', label: 'Kế hoạch bài dạy', icon: '📋' },
+    { href: '/teacher/exams', label: 'Kiểm tra', icon: '📌' },
+    { href: '/teacher/profile', label: 'Hồ sơ cá nhân', icon: '👤' },
+];
+
 export default function TeacherLayout({ children }: Props) {
     const router = useRouter();
+    const pathname = usePathname();
     const [user, setUser] = useState<any>(null);
 
     useEffect(() => {
@@ -18,59 +32,59 @@ export default function TeacherLayout({ children }: Props) {
         } else {
             router.push('/login');
         }
-    }, []);
+    }, [router]);
 
     const handleLogout = () => {
         localStorage.clear();
         router.push('/login');
     };
 
-    const switchRole = () => {
-        router.push('/select-role');
-    };
-
     return (
-        <div className="min-h-screen bg-gray-100 flex">
+        <div className="teacher-layout">
             {/* Sidebar */}
-            <aside className="w-64 bg-blue-900 text-white flex flex-col">
-                <div className="p-5 border-b border-blue-700">
-                    <h1 className="text-lg font-bold">Giáo viên bộ môn</h1>
-                    <p className="text-sm text-blue-200 mt-1">{user?.name}</p>
+            <aside className="teacher-sidebar">
+                <div className="sidebar-header">
+                    <div className="logo">TH</div>
+                    <div>
+                        <div className="sidebar-title">Giáo viên bộ môn</div>
+                        <div className="sidebar-user">{user?.name || 'Giáo viên'}</div>
+                    </div>
                 </div>
 
-                <nav className="flex-1 p-4 space-y-1">
-                    <a href="/teacher/dashboard" className="block px-4 py-2.5 rounded-lg hover:bg-blue-800">Dashboard</a>
-                    <a href="/teacher/schedule" className="block px-4 py-2.5 rounded-lg hover:bg-blue-800">Thời khóa biểu</a>
-                    <a href="/teacher/attendance" className="block px-4 py-2.5 rounded-lg hover:bg-blue-800">Điểm danh</a>
-                    <a href="/teacher/lesson-log" className="block px-4 py-2.5 rounded-lg hover:bg-blue-800">Sổ đầu bài</a>
-                    <a href="/teacher/grades" className="block px-4 py-2.5 rounded-lg hover:bg-blue-800">Nhập điểm</a>
-                    <a href="/teacher/lesson-plan" className="block px-4 py-2.5 rounded-lg hover:bg-blue-800">Kế hoạch bài dạy</a>
-                    <a href="/teacher/exams" className="block px-4 py-2.5 rounded-lg hover:bg-blue-800">Kiểm tra</a>
-                    <a href="/teacher/profile" className="block px-4 py-2.5 rounded-lg hover:bg-blue-800">Hồ sơ cá nhân</a>
+                <nav className="sidebar-nav">
+                    {MENU.map((item) => (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className={`nav-item ${pathname === item.href ? 'active' : ''}`}
+                        >
+                            <span className="nav-icon">{item.icon}</span>
+                            {item.label}
+                        </Link>
+                    ))}
                 </nav>
 
-                <div className="p-4 border-t border-blue-700 space-y-2">
-                    <button onClick={switchRole} className="w-full text-left px-4 py-2 text-sm hover:bg-blue-800 rounded-lg">
-                        Đổi vai trò
-                    </button>
-                    <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm hover:bg-blue-800 rounded-lg">
+                <div className="sidebar-footer">
+                    <button onClick={handleLogout} className="btn-logout">
                         Đăng xuất
                     </button>
                 </div>
             </aside>
 
-            {/* Nội dung chính */}
-            <main className="flex-1 overflow-auto">
-                <header className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
-                    <h2 className="text-lg font-semibold text-gray-800">Hệ thống Quản lý Trường THPT</h2>
-                    <div className="text-sm text-gray-600">
-                        Năm học 2025 - 2026 | Học kỳ 1
+            {/* Main */}
+            <div className="teacher-main">
+                <header className="teacher-header">
+                    <div>
+                        <h1>Hệ thống Quản lý Trường THPT</h1>
+                        <p className="header-sub">Năm học 2025 – 2026 | Học kỳ 1</p>
+                    </div>
+                    <div className="header-right">
+                        <span className="badge">Giáo viên bộ môn</span>
                     </div>
                 </header>
-                <div className="p-6">
-                    {children}
-                </div>
-            </main>
+
+                <main className="teacher-content">{children}</main>
+            </div>
         </div>
     );
 }

@@ -1,0 +1,286 @@
+.student-layout {
+    display: flex;
+    min-height: 100vh;
+    background: #f0f9ff;
+    font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+}
+
+/* ========== Sidebar ========== */
+.student-sidebar {
+    width: 260px;
+    background: linear-gradient(180deg, #0c4a6e 0%, #075985 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+    width: 42px;
+    height: 42px;
+    background: #38bdf8;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 16px;
+    color: #0c4a6e;
+}
+
+.brand-name {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.brand-sub {
+    font-size: 12px;
+    color: #7dd3fc;
+    margin-top: 1px;
+}
+
+.sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    background: #38bdf8;
+    color: #0c4a6e;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.user-class {
+    font-size: 12px;
+    color: #7dd3fc;
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    color: #bae6fd;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.nav-item:hover {
+    background: rgba(56, 189, 248, 0.15);
+    color: #fff;
+}
+
+.nav-item.active {
+    background: #0ea5e9;
+    color: #fff;
+    font-weight: 500;
+}
+
+.nav-icon {
+    font-size: 16px;
+}
+
+.sidebar-footer {
+    padding: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-logout {
+    width: 100%;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fecaca;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.btn-logout:hover {
+    background: rgba(239, 68, 68, 0.25);
+    color: #fff;
+}
+
+/* ========== Main ========== */
+.student-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.student-header {
+    background: #fff;
+    padding: 14px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e0f2fe;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.header-left h1 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0;
+}
+
+.header-left p {
+    font-size: 13px;
+    color: #64748b;
+    margin: 2px 0 0;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.search-box input {
+    padding: 8px 14px;
+    border: 1px solid #e0f2fe;
+    border-radius: 999px;
+    font-size: 13px;
+    width: 200px;
+    outline: none;
+    transition: border-color 0.2s;
+    background: #f0f9ff;
+}
+
+.search-box input:focus {
+    border-color: #0ea5e9;
+    background: #fff;
+}
+
+.user-chip {
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.student-content {
+    flex: 1;
+    padding: 28px;
+    overflow-y: auto;
+}
+/* ===== Submenu Thời khóa biểu ===== */
+.nav-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.nav-parent {
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    color: #bae6fd;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.nav-parent:hover {
+    background: rgba(56, 189, 248, 0.15);
+    color: #fff;
+}
+
+.nav-parent.active {
+    background: #0ea5e9;
+    color: #fff;
+    font-weight: 500;
+}
+
+.nav-label {
+    flex: 1;
+}
+
+.nav-arrow {
+    font-size: 11px;
+    transition: transform 0.2s ease;
+    opacity: 0.85;
+    margin-left: auto;
+}
+
+.nav-arrow.open {
+    transform: rotate(180deg);
+}
+
+.nav-children {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px 8px 8px 36px;
+    margin: 0;
+}
+
+.nav-child {
+    display: block !important;
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #bae6fd;
+    text-decoration: none;
+    line-height: 1.4;
+    transition: all 0.15s;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+.nav-child:hover {
+    background: rgba(56, 189, 248, 0.15);
+    color: #fff;
+}
+
+.nav-child.active {
+    background: rgba(14, 165, 233, 0.45);
+    color: #fff;
+    font-weight: 500;
+}
