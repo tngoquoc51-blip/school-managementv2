@@ -1,0 +1,765 @@
+/* =========================================================
+   Cổng Quản trị – /quan-tri   (tiền tố qt-, độc lập home.css)
+   Phong cách: SKY hiện đại · kính mờ · nhấn 3 màu theo vai trò
+   ========================================================= */
+.qt-page {
+    /* màu, chữ, bo góc lấy từ design-tokens.css */
+    --violet: var(--role-admin);
+    --coral: var(--role-bgh);
+    --teal: var(--role-acc);
+
+    min-height: 100vh;
+    color: var(--text);
+    background: var(--sky-50);
+    font-family: var(--font-be-vietnam), 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+.qt-page *,
+.qt-page *::before,
+.qt-page *::after { box-sizing: border-box; }
+
+.qt-wrap {
+    width: 100%;
+    max-width: 1220px;
+    margin: 0 auto;
+    padding: 0 32px;
+}
+
+/* ================= NAV ================= */
+.qt-nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid rgba(186, 230, 253, 0.7);
+    background: rgba(240, 249, 255, 0.82);
+    backdrop-filter: blur(14px);
+}
+
+.qt-nav .qt-wrap {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: 74px;
+}
+
+.qt-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--deep);
+    text-decoration: none;
+}
+
+.qt-logo {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--sky-400), var(--violet));
+    color: #fff;
+    box-shadow: 0 8px 18px -6px rgba(14, 165, 233, 0.6);
+}
+
+.qt-logo svg { width: 24px; height: 24px; }
+
+.qt-brand b {
+    display: block;
+    font-size: 16.5px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+}
+
+.qt-brand small {
+    font-size: 12.5px;
+    color: var(--muted);
+}
+
+.qt-links {
+    display: flex;
+    gap: 6px;
+    margin-left: auto;
+}
+
+.qt-links a {
+    padding: 9px 14px;
+    border-radius: 10px;
+    color: var(--muted);
+    font-size: 14.5px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+}
+
+.qt-links a:hover { background: var(--sky-100); color: var(--sky-700); }
+
+/* ================= NÚT ================= */
+.qt-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 50px;
+    padding: 0 24px;
+    border: 1.5px solid transparent;
+    border-radius: 14px;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.qt-btn svg { width: 18px; height: 18px; }
+
+.qt-btn.primary {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 4px 0 var(--primary-shadow), var(--sh-md);
+}
+
+.qt-btn.primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+.qt-btn.primary:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--primary-shadow); }
+
+.qt-btn.ghost {
+    border-color: var(--sky-200);
+    background: #fff;
+    color: var(--sky-700);
+}
+
+.qt-btn.ghost:hover { border-color: var(--sky-500); background: var(--sky-50); }
+
+.qt-btn.small { height: 44px; padding: 0 20px; font-size: 14px; }
+
+/* ================= HERO ================= */
+.qt-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 84px 0 104px;
+    background:
+            radial-gradient(circle, rgba(14, 165, 233, 0.16) 1.2px, transparent 1.6px) 0 0 / 26px 26px,
+            linear-gradient(180deg, #e6f5ff 0%, var(--sky-50) 100%);
+}
+
+.qt-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.qt-blob.b1 { top: -140px; left: -120px; width: 460px; height: 460px; background: #7dd3fc; }
+.qt-blob.b2 { top: 40px; right: -100px; width: 420px; height: 420px; background: #c4b5fd; }
+.qt-blob.b3 { bottom: -160px; left: 38%; width: 380px; height: 380px; background: #99f6e4; opacity: 0.28; }
+
+.qt-hero .qt-wrap {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: 64px;
+    align-items: center;
+}
+
+.qt-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 16px 8px 12px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(225, 29, 72, 0.28);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.75);
+    color: var(--role-bgh);
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.qt-eyebrow svg { width: 16px; height: 16px; }
+
+.qt-hero h1 {
+    margin: 0 0 20px;
+    font-size: clamp(38px, 4.4vw, 62px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--deep);
+}
+
+.qt-grad {
+    color: var(--primary);
+    background: linear-gradient(transparent 80%, var(--sky-200) 80%, var(--sky-200) 92%, transparent 92%);
+}
+
+.qt-lead {
+    max-width: 540px;
+    margin: 0 0 34px;
+    font-size: 17.5px;
+    line-height: 1.7;
+    color: var(--muted);
+}
+
+.qt-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+.qt-trust {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14.5px;
+    color: var(--muted);
+}
+
+.qt-trust svg { flex: none; width: 20px; height: 20px; color: var(--teal); }
+
+/* ---- bảng điều khiển minh hoạ (kính mờ) ---- */
+.qt-art { position: relative; }
+
+.qt-glass {
+    position: relative;
+    padding: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 40px 70px -30px rgba(3, 105, 161, 0.45), 0 0 0 1px rgba(186, 230, 253, 0.6);
+}
+
+.qt-glass-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.qt-glass-top b { font-size: 14.5px; color: var(--deep); }
+
+.qt-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--role-acc-soft);
+    color: var(--role-acc);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.qt-live i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--teal);
+}
+
+.qt-kpis {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.qt-kpi {
+    padding: 14px 12px;
+    border-radius: 14px;
+    background: var(--soft);
+}
+
+.qt-kpi b {
+    display: block;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--c);
+}
+
+.qt-kpi span { font-size: 12px; color: var(--muted); }
+
+.qt-kpi.v { --c: var(--violet); --soft: var(--role-admin-soft); }
+.qt-kpi.c { --c: var(--role-bgh); --soft: var(--role-bgh-soft); }
+.qt-kpi.t { --c: var(--role-acc); --soft: var(--role-acc-soft); }
+
+.qt-chart {
+    padding: 14px 14px 8px;
+    margin-bottom: 14px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+}
+
+.qt-chart small { font-size: 12px; font-weight: 600; color: var(--muted); }
+.qt-chart svg { display: block; width: 100%; height: 74px; margin-top: 6px; }
+
+.qt-approve {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px solid var(--line);
+    font-size: 13.5px;
+}
+
+.qt-approve .qt-dot {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--role-bgh-soft);
+    color: var(--coral);
+}
+
+.qt-approve .qt-dot svg { width: 18px; height: 18px; }
+.qt-approve b { display: block; color: var(--deep); }
+.qt-approve span { color: var(--muted); font-size: 12.5px; }
+
+.qt-pill {
+    margin-left: auto;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--amber-soft);
+    color: var(--warn);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.qt-float {
+    position: absolute;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 14px;
+    background: #fff;
+    color: var(--deep);
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 16px 30px -10px rgba(3, 105, 161, 0.4);
+}
+
+.qt-float svg { width: 18px; height: 18px; }
+.qt-float.f1 { top: -20px; right: 24px; }
+.qt-float.f1 svg { color: var(--teal); }
+.qt-float.f2 { bottom: -20px; left: -22px; }
+.qt-float.f2 svg { color: var(--violet); }
+
+.qt-art-note {
+    margin: 30px 0 0;
+    font-size: 12.5px;
+    text-align: right;
+    color: var(--muted);
+}
+
+/* ================= SECTION ================= */
+.qt-section { padding: 92px 0; scroll-margin-top: 74px; }
+.qt-section.white { background: #fff; border-block: 1px solid var(--line); }
+
+.qt-head { max-width: 660px; margin-bottom: 44px; }
+
+.qt-kicker {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.qt-head h2 {
+    margin: 0 0 12px;
+    font-size: clamp(28px, 3.2vw, 40px);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--deep);
+}
+
+.qt-head p { margin: 0; font-size: 16.5px; line-height: 1.7; color: var(--muted); }
+
+/* ================= VAI TRÒ ================= */
+.qt-roles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.qt-role {
+    --c: var(--violet);
+    --soft: var(--role-admin-soft);
+    --glow: rgba(91, 75, 232, 0.35);
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 30px 28px 28px;
+    overflow: hidden;
+    border: 1.5px solid var(--line);
+    border-radius: 24px;
+    background: #fff;
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.qt-role.bgh { --c: var(--coral); --soft: var(--role-bgh-soft); --glow: rgba(225, 29, 72, 0.3); }
+.qt-role.acc { --c: var(--teal); --soft: var(--role-acc-soft); --glow: rgba(11, 127, 114, 0.32); }
+
+/* vầng sáng màu ở góc */
+.qt-role::before {
+    content: '';
+    position: absolute;
+    top: -70px;
+    right: -70px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: var(--soft);
+    transition: transform 0.3s;
+}
+
+.qt-role:hover {
+    transform: translateY(-6px);
+    border-color: var(--c);
+    box-shadow: 0 30px 50px -24px var(--glow);
+}
+
+.qt-role:hover::before { transform: scale(1.35); }
+
+.qt-role > * { position: relative; }
+
+.qt-role-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+.qt-role-icon {
+    display: grid;
+    place-items: center;
+    width: 62px;
+    height: 62px;
+    border-radius: 18px;
+    background: var(--c);
+    color: #fff;
+    box-shadow: 0 12px 22px -8px var(--glow);
+}
+
+.qt-role-icon svg { width: 30px; height: 30px; }
+
+.qt-role-no {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--c);
+}
+
+.qt-role h3 {
+    margin: 0 0 6px;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--deep);
+}
+
+.qt-role-note { margin: 0 0 20px; font-size: 14.5px; line-height: 1.6; color: var(--muted); }
+
+.qt-tasks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 28px;
+    padding: 0;
+    list-style: none;
+}
+
+.qt-tasks li {
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--soft);
+    color: var(--deep);
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.qt-role-go {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 50px;
+    margin-top: auto;
+    border: 1.5px solid var(--c);
+    border-radius: 14px;
+    background: transparent;
+    color: var(--c);
+    font-size: 15px;
+    font-weight: 700;
+    transition: background 0.2s, color 0.2s;
+}
+
+.qt-role-go svg { width: 18px; height: 18px; transition: transform 0.2s; }
+.qt-role:hover .qt-role-go { background: var(--c); color: #fff; }
+.qt-role:hover .qt-role-go svg { transform: translateX(4px); }
+
+/* ================= MA TRẬN QUYỀN ================= */
+.qt-matrix-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 24px 44px -34px rgba(3, 105, 161, 0.4);
+}
+
+.qt-matrix {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: collapse;
+    font-size: 14.5px;
+}
+
+.qt-matrix th,
+.qt-matrix td { padding: 16px 20px; text-align: center; }
+
+.qt-matrix thead th {
+    border-bottom: 1px solid var(--line);
+    background: var(--sky-50);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: var(--deep);
+}
+
+.qt-matrix thead th:first-child,
+.qt-matrix tbody th { text-align: left; }
+
+.qt-matrix tbody th { font-weight: 600; color: var(--text); }
+.qt-matrix tbody tr + tr > * { border-top: 1px solid #e7f1f8; }
+.qt-matrix tbody tr:hover { background: #f8fcff; }
+
+.qt-col-v { color: var(--violet); }
+.qt-col-c { color: var(--role-bgh); }
+.qt-col-t { color: var(--role-acc); }
+
+.qt-level {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.qt-level.full { background: var(--role-acc-soft); color: var(--role-acc); }
+.qt-level.view { background: var(--amber-soft); color: var(--warn); }
+.qt-level.none { color: #a7b8c7; font-weight: 600; }
+
+.qt-level svg { width: 14px; height: 14px; }
+
+.qt-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 16px;
+    font-size: 13.5px;
+    color: var(--muted);
+}
+
+/* ================= QUY TRÌNH ================= */
+.qt-steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.qt-step {
+    position: relative;
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: var(--sky-50);
+}
+
+.qt-step-no {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 18px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--sky-400), var(--sky-600));
+    color: #fff;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.qt-step:nth-child(2) .qt-step-no { background: linear-gradient(135deg, #8b7dff, var(--violet)); }
+.qt-step:nth-child(3) .qt-step-no { background: linear-gradient(135deg, #2dd4bf, var(--teal)); }
+
+.qt-step h3 { margin: 0 0 8px; font-size: 19px; font-weight: 800; color: var(--deep); }
+.qt-step p { margin: 0; font-size: 14.5px; line-height: 1.7; color: var(--muted); }
+
+/* ================= SỐ LIỆU ================= */
+.qt-stats {
+    padding: 56px 0;
+    background: linear-gradient(120deg, var(--sky-800), var(--sky-700) 55%, var(--role-admin));
+    color: #fff;
+}
+
+.qt-stats dl {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+    margin: 0;
+}
+
+.qt-stat { padding-left: 18px; border-left: 3px solid var(--amber); }
+.qt-stat dt { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; }
+.qt-stat dd { margin: 4px 0 0; font-size: 14px; color: rgba(255, 255, 255, 0.85); }
+
+/* ================= FOOTER ================= */
+.qt-footer {
+    padding: 48px 0 30px;
+    background: var(--deep);
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 14.5px;
+}
+
+.qt-footer .qt-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.qt-footer b { display: block; margin-bottom: 6px; font-size: 17px; color: #fff; }
+.qt-footer nav { display: flex; flex-wrap: wrap; gap: 22px; }
+.qt-footer a { color: var(--sky-200); font-weight: 600; text-decoration: none; }
+.qt-footer a:hover { color: #fff; text-decoration: underline; }
+
+.qt-copy {
+    width: 100%;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.qt-page a:focus-visible {
+    outline: var(--focus);
+    outline-offset: 3px;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1024px) {
+    .qt-hero .qt-wrap { grid-template-columns: 1fr; gap: 64px; }
+    .qt-art { max-width: 540px; }
+    .qt-roles, .qt-steps { grid-template-columns: 1fr; }
+    .qt-stats dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .qt-links { display: none; }
+    .qt-nav .qt-btn { margin-left: auto; }
+}
+
+@media (max-width: 600px) {
+    .qt-wrap { padding: 0 20px; }
+    .qt-hero { padding: 56px 0 80px; }
+    .qt-section { padding: 64px 0; }
+    .qt-nav .qt-btn { display: none; }
+    .qt-float.f1 { right: -6px; }
+    .qt-float.f2 { left: -6px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .qt-page * { transition: none !important; }
+}
+
+/* ================= v2: BỔ SUNG ================= */
+
+/* làm mờ đáy hero để không còn đường cắt cứng */
+.qt-hero::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 140px;
+    background: linear-gradient(180deg, transparent, var(--bg));
+    pointer-events: none;
+}
+
+/* thanh tiện ích trên cùng */
+.qt-topbar {
+    background: var(--deep);
+    color: rgba(255, 255, 255, 0.82);
+    font-size: var(--fs-xs);
+}
+
+.qt-topbar .qt-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 36px;
+}
+
+.qt-topbar span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.qt-topbar svg {
+    width: 14px;
+    height: 14px;
+    color: var(--sky-300);
+}
+
+/* ghi chú hỗ trợ dưới các thẻ vai trò */
+.qt-help {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 32px 0 0;
+    padding: 16px 20px;
+    border: 1.5px dashed var(--sky-300);
+    border-radius: var(--r-lg);
+    background: var(--sky-50);
+    color: var(--muted);
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+}
+
+.qt-help svg {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    color: var(--primary);
+}
+
+@media (max-width: 600px) {
+    .qt-topbar span:last-child { display: none; }
+}

@@ -1,0 +1,80 @@
+/* =========================================================
+   DESIGN TOKENS – Hệ thống Quản lý Trường THPT
+   Một bảng màu / cỡ chữ / bo góc dùng chung cho MỌI trang:
+   Cổng quản trị · Đăng nhập · Admin · BGH · Kế toán · ...
+   Đặt tại: src/app/design-tokens.css
+   ========================================================= */
+:root {
+    /* ---- Thang màu SKY (màu chủ đạo của hệ thống) ---- */
+    --sky-50:  #f0f9ff;
+    --sky-100: #e0f2fe;
+    --sky-200: #bae6fd;
+    --sky-300: #7dd3fc;
+    --sky-400: #38bdf8;
+    --sky-500: #0ea5e9;
+    --sky-600: #0284c7;
+    --sky-700: #0369a1;
+    --sky-800: #075985;
+    --sky-900: #0c3a5e;
+
+    /* ---- Nền, chữ, đường kẻ ---- */
+    --bg: #f0f9ff;
+    --surface: #ffffff;
+    --deep: #0a2f4d;        /* xanh biển đậm: tiêu đề, footer */
+    --text: #0b2540;
+    --muted: #4b6177;       /* đạt tương phản AA trên nền trắng */
+    --line: #d3e6f3;
+
+    /* ---- Màu thương hiệu (nút, liên kết) – chữ trắng đạt AA ---- */
+    --primary: #0369a1;
+    --primary-hover: #075985;
+    --primary-shadow: #064a73;
+    --primary-soft: #e0f2fe;
+
+    /* ---- Màu theo VAI TRÒ (mỗi vai trò một màu nhận diện) ---- */
+    --role-admin: #5b4be8;          /* Quản trị hệ thống */
+    --role-admin-soft: #eeebff;
+    --role-bgh: #e11d48;            /* Ban Giám hiệu */
+    --role-bgh-soft: #ffe8ee;
+    --role-acc: #0b7f72;            /* Kế toán */
+    --role-acc-soft: #d9f5f0;
+
+    /* ---- Nhấn nhá ---- */
+    --amber: #f59e0b;
+    --amber-soft: #fff4d9;
+
+    /* ---- Trạng thái ---- */
+    --ok: #15803d;      --ok-bg: #e3f6ee;
+    --warn: #a86a00;    --warn-bg: #fff1d6;
+    --bad: #c0222f;     --bad-bg: #fde9ea;
+
+    /* ---- Bo góc ---- */
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-lg: 16px;
+    --r-xl: 24px;
+
+    /* ---- Đổ bóng ---- */
+    --sh-sm: 0 1px 2px rgba(10, 47, 77, 0.06), 0 2px 6px rgba(10, 47, 77, 0.05);
+    --sh-md: 0 10px 24px -12px rgba(3, 105, 161, 0.35);
+    --sh-lg: 0 30px 60px -28px rgba(3, 105, 161, 0.45);
+
+    /* ---- Cỡ chữ ---- */
+    --fs-xs: 12.5px;
+    --fs-sm: 14px;
+    --fs-md: 15.5px;
+    --fs-lg: 18px;
+    --fs-xl: 24px;
+    --fs-2xl: 32px;
+
+    /* ---- Khoảng cách (lưới 8px) ---- */
+    --sp-1: 8px;
+    --sp-2: 16px;
+    --sp-3: 24px;
+    --sp-4: 32px;
+    --sp-6: 48px;
+    --sp-8: 64px;
+
+    /* ---- Viền focus cho bàn phím ---- */
+    --focus: 3px solid rgba(14, 165, 233, 0.6);
+}

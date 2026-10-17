@@ -1,25 +1,12 @@
 import Link from 'next/link';
-import './home.css';
+import '../home.css';
+
+/* CỔNG THÔNG TIN – http://localhost:3000/he-thong
+   (Trang chủ / nay là website giới thiệu trường. Trang này là nơi các vai trò chọn cổng đăng nhập.)
+   Chỉ: Giáo viên · Giáo vụ · Học sinh · Phụ huynh
+   KHÔNG hiện: Quản trị · Ban Giám hiệu · Kế toán */
 
 const roles = [
-    {
-        href: '/login/admin',
-        name: 'Quản trị hệ thống',
-        note: 'Quản lý tài khoản, phân quyền, cấu hình hệ thống',
-        tasks: ['Phân quyền', 'Năm học, học kỳ', 'Báo cáo', 'Sao lưu dữ liệu'],
-        icon: (
-            <path d="M12 3 4 6v5c0 4.5 3.2 8.4 8 10 4.8-1.6 8-5.5 8-10V6l-8-3Zm-1 12-3-3 1.4-1.4L11 12.2l3.6-3.6L16 10l-5 5Z" />
-        ),
-    },
-    {
-        href: '/login/bgh',
-        name: 'Ban Giám hiệu',
-        note: 'Hiệu trưởng & Phó Hiệu trưởng',
-        tasks: ['Bảng điều khiển', 'Phê duyệt', 'Báo cáo toàn trường', 'Thi đua'],
-        icon: (
-            <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 10h.01M15 10h.01M9 14h.01M15 14h.01" />
-        ),
-    },
     {
         href: '/login/teacher',
         name: 'Giáo viên',
@@ -36,15 +23,6 @@ const roles = [
         tasks: ['Hồ sơ học sinh', 'Xếp lớp', 'Thời khóa biểu', 'Tổng kết'],
         icon: (
             <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 3h6v4H9V3zM9 12h6M9 16h4" />
-        ),
-    },
-    {
-        href: '/login/accountant',
-        name: 'Kế toán',
-        note: 'Quản lý học phí và thu chi',
-        tasks: ['Học phí', 'Công nợ', 'Báo cáo tài chính'],
-        icon: (
-            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 4v12m3-9.5c0-1.5-1.3-2.5-3-2.5s-3 1-3 2.5 1.3 2.5 3 2.5 3 1 3 2.5-1.3 2.5-3 2.5" />
         ),
     },
     {
@@ -78,7 +56,7 @@ const features = [
 
 const stats = [
     ['12+', 'Phân hệ chức năng'],
-    ['9', 'Vai trò người dùng'],
+    ['4', 'Cổng công khai'],
     ['TT 22', 'Đánh giá theo Thông tư 22'],
     ['24/7', 'Truy cập mọi lúc, mọi nơi'],
 ];
@@ -88,7 +66,7 @@ export default function Home() {
         <div className="home-wrapper">
             <header className="home-header">
                 <div className="home-container home-header-inner">
-                    <div className="home-logo">
+                    <Link href="/" className="home-logo" aria-label="Về website giới thiệu trường">
                         <div className="home-logo-mark" aria-hidden="true">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff">
                                 <path d="m12 3 10 5-10 5L2 8l10-5Zm-6 9.2 6 3 6-3V16c0 1.7-2.7 3-6 3s-6-1.3-6-3v-3.8Z" />
@@ -98,14 +76,15 @@ export default function Home() {
                             <div className="home-logo-title">Hệ thống Quản lý</div>
                             <div className="home-logo-sub">Trường Trung học Phổ thông</div>
                         </div>
-                    </div>
+                    </Link>
 
                     <nav className="home-nav" aria-label="Điều hướng chính">
+                        <Link href="/">Website trường</Link>
                         <a href="#vai-tro">Cổng truy cập</a>
                         <a href="#chuc-nang">Chức năng</a>
                     </nav>
 
-                    <Link href="/login/admin" className="home-btn home-btn-primary">
+                    <Link href="/login/teacher" className="home-btn home-btn-primary">
                         Đăng nhập
                     </Link>
                 </div>
@@ -119,11 +98,11 @@ export default function Home() {
                                 Mọi sổ sách của nhà trường, gọn trong một hệ thống
                             </h1>
                             <p className="home-desc">
-                                Ban giám hiệu, giáo viên, giáo vụ, học sinh và phụ huynh cùng làm việc trên
+                                Giáo viên, giáo vụ, học sinh và phụ huynh cùng làm việc trên
                                 một nguồn dữ liệu: điểm, điểm danh, sổ đầu bài và thời khóa biểu.
                             </p>
                             <div className="home-hero-actions">
-                                <Link href="/login/admin" className="home-btn home-btn-primary">
+                                <Link href="/login/teacher" className="home-btn home-btn-primary">
                                     Đăng nhập hệ thống
                                 </Link>
                                 <a href="#vai-tro" className="home-btn home-btn-outline">
@@ -258,10 +237,11 @@ export default function Home() {
                     <div className="home-footer-grid">
                         <div>
                             <div className="home-footer-name">Hệ thống Quản lý Trường THPT</div>
-                            <div>Quản lý điểm, điểm danh, sổ đầu bài và thời khóa biểu</div>
+                            <div>Cổng dành cho Giáo viên · Giáo vụ · Học sinh · Phụ huynh</div>
                         </div>
                         <nav className="home-footer-links" aria-label="Liên kết nhanh">
-                            <Link href="/login/admin">Đăng nhập</Link>
+                            <Link href="/">Website trường</Link>
+                            <Link href="/login/teacher">Đăng nhập</Link>
                             <a href="#vai-tro">Cổng truy cập</a>
                             <a href="#chuc-nang">Chức năng</a>
                         </nav>
