@@ -3,13 +3,15 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AccountantController;
 use App\Http\Controllers\Api\Admin\UserController;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Student\StudentGradeController;
-// Nếu sau này auth login dùng Sanctum:
-// use Illuminate\Http\Request;
 
 Route::get('/health', fn () => response()->json(['status' => 'ok']));
 
-// Kế toán (giữ nguyên)
+// Đăng nhập
+Route::post('/auth/login', [AuthController::class, 'login']);
+
+// Kế toán
 Route::prefix('v1/accountant')->group(function () {
     Route::get('/dashboard', [AccountantController::class, 'dashboard']);
     Route::get('/fees', [AccountantController::class, 'fees']);
@@ -24,8 +26,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
 });
 
-// ===== Học sinh – bảng điểm =====
-// Frontend gọi: GET /api/student/grades?school_year=2025-2026&semester=1
+// Học sinh – bảng điểm
 Route::prefix('student')->group(function () {
     Route::get('/grades', [StudentGradeController::class, 'index']);
 });
