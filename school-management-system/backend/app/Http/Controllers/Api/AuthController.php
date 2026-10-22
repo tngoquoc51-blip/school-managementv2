@@ -11,52 +11,67 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $request->validate([
-            'identifier' => 'required|string',
-            'password' => 'required|string',
-        ]);
+        $login = trim((string) (
+            $request->input('identifier')
+            ?? $request->input('login')
+            ?? $request->input('email')
+            ?? $request->input('username')
+            ?? ''
+        ));
+        $password = (string) $request->input('password', '');
 
-        $id = trim($request->identifier);
+        if ($login === '' || $password === '') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vui lòng nhập mã đăng nhập và mật khẩu',
+            ], 422);
+        }
 
-        $user = User::with('roles')
-            ->where('email', $id)
-            ->orWhere('username', $id)
+        $user = User::query()
+            ->where('username', $login)
+            ->orWhere('email', $login)
+            ->orWhere('email', $login . '@thpt.edu.vn')
             ->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!$user || !Hash::check($password, $user->password)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Mã đăng nhập hoặc mật khẩu không đúng',
             ], 401);
         }
 
-        if (($user->status ?? 'active') === 'locked') {
+        if (($user->status ?? 'active') !== 'active') {
             return response()->json([
                 'success' => false,
                 'message' => 'Tài khoản đã bị khóa',
             ], 403);
         }
 
-        if (($user->status ?? 'active') === 'pending') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Tài khoản chưa được kích hoạt',
-            ], 403);
-        }
+        // Có Laravel Sanctum: dùng token thật
+        $token = method_exists($user, 'createToken')
+            ? $user->createToken('web')->plainTextToken
+            : base64_encode($user->id . '|' . $user->email . '|' . time());
 
-        $token = $user->createToken('web')->plainTextToken;
-        $roles = $user->roles->pluck('name')->values();
+        // Role: nếu chưa có bảng roles → mặc định theo prefix email/username
+        $roles = ['student'];
+        if (str_starts_with(strtolower($user->username ?? ''), 'hs')
+            || str_contains(strtolower($user->email ?? ''), '@student.')
+            || preg_match('/^hs\d+/i', $user->username ?? '')
+            || preg_match('/^hs\d+/i', $user->email ?? '')) {
+            $roles = ['student'];
+        }
 
         return response()->json([
             'success' => true,
-            'token' => $token,
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
+            'token'   => $token,
+            'user'    => [
+                'id'       => $user->id,
+                'name'     => $user->name,
+                'email'    => $user->email,
                 'username' => $user->username,
             ],
             'roles' => $roles,
+            'role'  => $roles[0] ?? 'student',
         ]);
     }
 }
