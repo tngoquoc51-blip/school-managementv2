@@ -346,79 +346,55 @@ export default function LoginPage() {
         setError('');
 
         try {
-            await new Promise((r) => setTimeout(r, 600));
+            const API = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
 
-            const accounts: Record<string, { password: string; role: string; name: string; redirect: string }> = {
-                'admin@thpt.edu.vn': {
-                    password: '123456',
-                    role: 'super_admin',
-                    name: 'Quản trị viên',
-                    redirect: '/admin/dashboard',
+            const res = await fetch(`${API}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
                 },
-                'hieutruong@thpt.edu.vn': {
-                    password: '123456',
-                    role: 'principal',
-                    name: 'Hiệu trưởng',
-                    redirect: '/bgh/dashboard',
-                },
-                'phoht@thpt.edu.vn': {
-                    password: '123456',
-                    role: 'vice_principal',
-                    name: 'Phó Hiệu trưởng',
-                    redirect: '/bgh/dashboard',
-                },
-                'gv0001': {
-                    password: '123456',
-                    role: 'teacher',
-                    name: 'Nguyễn Văn Giáo',
-                    redirect: '/teacher/dashboard',
-                },
-                'giaovu@thpt.edu.vn': {
-                    password: '123456',
-                    role: 'academic',
-                    name: 'Giáo vụ',
-                    redirect: '/academic/dashboard',
-                },
-                'ketoan@thpt.edu.vn': {
-                    password: '123456',
-                    role: 'accountant',
-                    name: 'Kế toán',
-                    redirect: '/accountant/dashboard',
-                },
-                'hs0001': {
-                    password: '123456',
-                    role: 'student',
-                    name: 'Trần Thị Học',
-                    redirect: '/student/dashboard',
-                },
-                '0900000000': {
-                    password: '123456',
-                    role: 'parent',
-                    name: 'Lê Văn Phụ',
-                    redirect: '/parent/dashboard',
-                },
-            };
-            const account = accounts[identifier.toLowerCase()];   // ← Sửa chỗ này
+                body: JSON.stringify({
+                    identifier: identifier.trim(),
+                    password,
+                }),
+            });
 
-            if (account && account.password === password) {
-                localStorage.setItem('token', 'demo-token');
-                localStorage.setItem('user', JSON.stringify({
-                    name: account.name,
-                    email: identifier                               // ← Sửa chỗ này
-                }));
-                localStorage.setItem('roles', JSON.stringify([account.role]));
-                localStorage.setItem('current_role', account.role);
+            const json = await res.json();
 
-                router.push(account.redirect);
-            } else {
-                setError('Sai email/mã hoặc mật khẩu. Vui lòng kiểm tra lại.');
+            if (!res.ok || !json.success) {
+                setError(json.message || 'Sai email/mã hoặc mật khẩu. Vui lòng kiểm tra lại.');
+                return;
             }
+
+            const apiRoles: string[] = Array.isArray(json.roles) ? json.roles : [];
+
+            // Chưa gán role trong DB vẫn cho vào theo tab đang chọn
+            const matchRole =
+                apiRoles.length === 0 ||
+                apiRoles.some((r) => current.roles.includes(r));
+
+            if (!matchRole) {
+                setError('Tài khoản không đúng với vai trò đã chọn.');
+                return;
+            }
+
+            localStorage.setItem('token', json.token);
+            localStorage.setItem('user', JSON.stringify(json.user));
+            localStorage.setItem(
+                'roles',
+                JSON.stringify(apiRoles.length ? apiRoles : current.roles)
+            );
+            localStorage.setItem('current_role', role);
+
+            router.push(current.redirect);
         } catch {
-            setError('Có lỗi xảy ra, vui lòng thử lại');
+            setError('Không kết nối được máy chủ. Kiểm tra php artisan serve.');
         } finally {
             setLoading(false);
         }
     };
+
 
     return (
         <div className={`login-page ${beVietnam.variable}`}>

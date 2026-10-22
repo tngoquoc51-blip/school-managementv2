@@ -1,0 +1,267 @@
+.ph-layout {
+    --navy: #0b1f3a;
+    --navy-2: #132a4a;
+    --sky: #0ea5e9;
+    --sky-dark: #0284c7;
+    --ink: #0f172a;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --bg: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    background: var(--bg);
+    font-family: inherit;
+}
+
+.ph-sidebar {
+    width: 260px;
+    background: linear-gradient(180deg, var(--navy) 0%, #0a1830 100%);
+    color: #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.ph-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ph-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--sky), #6366f1);
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    font-size: 14px;
+    color: #fff;
+}
+
+.ph-brand strong {
+    display: block;
+    font-size: 14px;
+    color: #fff;
+}
+
+.ph-brand small {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.ph-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 10px 20px;
+}
+
+.ph-nav-group {
+    margin-bottom: 14px;
+}
+
+.ph-nav-title {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #64748b;
+    padding: 8px 12px 6px;
+}
+
+.ph-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 13.5px;
+    transition: 0.15s;
+}
+
+.ph-nav-item svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    opacity: 0.9;
+}
+
+.ph-nav-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+}
+
+.ph-nav-item.active {
+    background: linear-gradient(135deg, var(--sky), var(--sky-dark));
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(14, 165, 233, 0.35);
+}
+
+.ph-sidebar-foot {
+    padding: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ph-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.ph-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #1e3a5f;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    color: #7dd3fc;
+}
+
+.ph-user b {
+    display: block;
+    font-size: 13px;
+    color: #fff;
+}
+
+.ph-user small {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.ph-logout {
+    width: 100%;
+    padding: 10px;
+    border: 0;
+    border-radius: 10px;
+    background: #1e293b;
+    color: #f87171;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.ph-logout:hover {
+    background: #7f1d1d;
+    color: #fff;
+}
+
+.ph-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.ph-header {
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.ph-header h1 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.ph-header p {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: var(--muted);
+}
+
+.ph-header-right {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.ph-badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.ph-badge.sky {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.ph-content {
+    padding: 24px 28px 48px;
+    flex: 1;
+}
+
+.ph-burger,
+.ph-close {
+    display: none;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+}
+
+.ph-burger svg,
+.ph-close svg {
+    width: 22px;
+    height: 22px;
+}
+
+.ph-overlay {
+    display: none;
+}
+
+@media (max-width: 960px) {
+    .ph-sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        z-index: 50;
+        transform: translateX(-100%);
+        transition: transform 0.22s ease;
+    }
+    .ph-sidebar.open {
+        transform: translateX(0);
+    }
+    .ph-burger,
+    .ph-close {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+    }
+    .ph-close {
+        margin-left: auto;
+        color: #fff;
+    }
+    .ph-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        background: rgba(11, 31, 58, 0.45);
+    }
+    .ph-header {
+        padding: 14px 16px;
+    }
+    .ph-content {
+        padding: 16px;
+    }
+}

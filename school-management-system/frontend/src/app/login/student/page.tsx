@@ -125,19 +125,64 @@ export default function StudentLoginPage() {
         setError('');
 
         try {
-            await new Promise((r) => setTimeout(r, 500));
+            const API = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
 
-            if (identifier.toLowerCase() === 'hs0001' && password === '123456') {
-                localStorage.setItem('token', 'demo-token');
-                localStorage.setItem('user', JSON.stringify({ name: 'Trần Thị Học', email: identifier }));
-                localStorage.setItem('roles', JSON.stringify(['student']));
-                localStorage.setItem('current_role', 'student');
-                router.push('/student/dashboard');
-            } else {
-                setError('Mã học sinh hoặc mật khẩu không đúng');
+            // Đăng nhập bằng hệ thống học sinh mới (dữ liệu thật trong bảng sm_*)
+            const res = await fetch(`${API}/hs/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                },
+                body: JSON.stringify({
+                    username: identifier.trim(),
+                    password,
+                }),
+            });
+
+            const json = await res.json().catch(() => ({}));
+
+            if (!res.ok || !json.data?.token) {
+                setError(json.message || 'Mã học sinh hoặc mật khẩu không đúng');
+                return;
             }
+
+            const d = json.data;
+            const st = d.student || {};
+            const className = st.class?.name || '';
+            // Thông tin người dùng: thanh trên, thanh bên và trang chủ đều đọc từ đây
+            const user = {
+                id: st.id,
+                name: st.name,
+                full_name: st.name,
+                username: identifier.trim().toLowerCase(),
+                student_code: st.code,
+                code: st.code,
+                class_name: className,
+                class: className,
+                grade: st.class?.grade,
+                school_year: st.year?.label,
+                gender: st.gender,
+                birth_date: st.birth_date,
+                roles: ['student'],
+            };
+
+            // Xóa phiên đăng nhập cũ để không lẫn tên người khác
+            ['token', 'hs_token', 'user', 'roles', 'current_role'].forEach((k) => {
+                localStorage.removeItem(k);
+                sessionStorage.removeItem(k);
+            });
+
+            localStorage.setItem('hs_token', d.token);
+            localStorage.setItem('token', d.token);
+            localStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem('roles', JSON.stringify(['student']));
+            localStorage.setItem('current_role', 'student');
+            if (d.must_change_password) localStorage.setItem('must_change_password', '1');
+            else localStorage.removeItem('must_change_password');
+            router.push('/student/dashboard');
         } catch {
-            setError('Có lỗi xảy ra, vui lòng thử lại');
+            setError('Không kết nối được máy chủ. Kiểm tra API đang chạy (port 8000).');
         } finally {
             setLoading(false);
         }
@@ -185,7 +230,7 @@ export default function StudentLoginPage() {
                                 <span className="logbook-period">Tiết 1</span>
                                 <div className="logbook-subject">
                                     <b>Toán</b>
-                                    <span>Phòng 201</span>
+                                    <span>GV bộ môn</span>
                                 </div>
                                 <span className="logbook-count">7:00</span>
                             </div>
@@ -193,7 +238,7 @@ export default function StudentLoginPage() {
                                 <span className="logbook-period">Tiết 2</span>
                                 <div className="logbook-subject">
                                     <b>Ngữ văn</b>
-                                    <span>Phòng 201</span>
+                                    <span>GV bộ môn</span>
                                 </div>
                                 <span className="logbook-count">7:50</span>
                             </div>
@@ -201,7 +246,7 @@ export default function StudentLoginPage() {
                                 <span className="logbook-period">Tiết 3</span>
                                 <div className="logbook-subject">
                                     <b>Vật lí</b>
-                                    <span>Phòng thí nghiệm</span>
+                                    <span>GV bộ môn</span>
                                 </div>
                                 <span className="logbook-count warn">Đang học</span>
                             </div>
@@ -237,7 +282,7 @@ export default function StudentLoginPage() {
                                     type="text"
                                     value={identifier}
                                     onChange={(e) => setIdentifier(e.target.value)}
-                                    placeholder="VD: hs0001"
+                                    placeholder="VD: hs250086"
                                     autoComplete="username"
                                     required
                                     autoFocus
@@ -277,10 +322,6 @@ export default function StudentLoginPage() {
                             {!loading && <span className="arrow"><IconArrow /></span>}
                         </button>
                     </form>
-
-                    <p className="login-help">
-                        Demo: <code>hs0001</code> / <code>123456</code>
-                    </p>
 
                     <div className="login-footer">
                         <Link href="/">← Quay lại trang chủ</Link>

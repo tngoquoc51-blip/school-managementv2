@@ -1,82 +1,51 @@
 'use client';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { Card, Empty, ErrorBox, Loading, PageHead, Pager, Pill, useApi } from '../_components/ui';
+import { qs } from '../_lib/api';
 
-import AcademicLayout from '@/layouts/AcademicLayout';
-import { useState } from 'react';
-
-const mockStudents = [
-    { id: 1, student_code: 'HS2025001', full_name: 'Nguyễn Văn A', class_name: '10A1', gender: 'Nam', status: 'Đang học' },
-    { id: 2, student_code: 'HS2025002', full_name: 'Trần Thị B', class_name: '10A1', gender: 'Nữ', status: 'Đang học' },
-    { id: 3, student_code: 'HS2025003', full_name: 'Lê Văn C', class_name: '11B2', gender: 'Nam', status: 'Đang học' },
-];
-
-export default function StudentsPage() {
-    const [search, setSearch] = useState('');
-
-    const filtered = mockStudents.filter(
-        (s) =>
-            s.full_name.toLowerCase().includes(search.toLowerCase()) ||
-            s.student_code.toLowerCase().includes(search.toLowerCase())
-    );
+export default function Students() {
+    const [q, setQ] = useState('');
+    const [dq, setDq] = useState('');
+    const [grade, setGrade] = useState('');
+    const [classId, setClassId] = useState('');
+    const [gender, setGender] = useState('');
+    const [page, setPage] = useState(1);
+    useEffect(() => { const id = setTimeout(() => { setDq(q); setPage(1); }, 350); return () => clearTimeout(id); }, [q]);
+    const classes = useApi<any>('classes');
+    const { data, err, loading, reload } = useApi<any>(`students${qs({ q: dq, grade, class_id: classId, gender, page })}`);
+    const cl = (classes.data?.items ?? []).filter((c: any) => !grade || String(c.grade) === grade);
 
     return (
-        <AcademicLayout>
-            <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                    <h1 className="text-2xl font-bold">Quản lý Học sinh</h1>
-                    <button className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700">
-                        + Thêm học sinh
-                    </button>
+        <>
+            <PageHead title="Hồ sơ học sinh" sub="Tra cứu, xem và cập nhật hồ sơ của học sinh trong năm học hiện tại" />
+            <Card pad={false}>
+                <div className="ac-filters" style={{ padding: 16, margin: 0 }}>
+                    <input className="ac-in" placeholder="Tìm theo họ tên hoặc mã học sinh…" value={q} onChange={(e) => setQ(e.target.value)} />
+                    <select className="ac-sel" value={grade} onChange={(e) => { setGrade(e.target.value); setClassId(''); setPage(1); }}><option value="">Tất cả khối</option><option value="10">Khối 10</option><option value="11">Khối 11</option><option value="12">Khối 12</option></select>
+                    <select className="ac-sel" value={classId} onChange={(e) => { setClassId(e.target.value); setPage(1); }}><option value="">Tất cả lớp</option>{cl.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
+                    <select className="ac-sel" value={gender} onChange={(e) => { setGender(e.target.value); setPage(1); }}><option value="">Giới tính</option><option>Nam</option><option>Nữ</option></select>
                 </div>
-
-                <div className="bg-white p-4 rounded-xl shadow-sm border flex gap-4">
-                    <input
-                        type="text"
-                        placeholder="Tìm theo tên hoặc mã học sinh..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="flex-1 px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-teal-500"
-                    />
-                    <select className="px-4 py-2 border rounded-lg">
-                        <option value="">Tất cả lớp</option>
-                        <option value="10A1">10A1</option>
-                        <option value="11B2">11B2</option>
-                    </select>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-                    <table className="w-full text-sm">
-                        <thead className="bg-gray-50 text-gray-600">
-                        <tr>
-                            <th className="text-left px-4 py-3">Mã HS</th>
-                            <th className="text-left px-4 py-3">Họ và tên</th>
-                            <th className="text-left px-4 py-3">Lớp</th>
-                            <th className="text-left px-4 py-3">Giới tính</th>
-                            <th className="text-left px-4 py-3">Trạng thái</th>
-                            <th className="text-left px-4 py-3">Thao tác</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {filtered.map((student) => (
-                            <tr key={student.id} className="border-t hover:bg-gray-50">
-                                <td className="px-4 py-3">{student.student_code}</td>
-                                <td className="px-4 py-3 font-medium">{student.full_name}</td>
-                                <td className="px-4 py-3">{student.class_name}</td>
-                                <td className="px-4 py-3">{student.gender}</td>
-                                <td className="px-4 py-3">
-                    <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">
-                      {student.status}
-                    </span>
-                                </td>
-                                <td className="px-4 py-3 space-x-2">
-                                    <button className="text-blue-600 hover:underline">Xem</button>
-                                    <button className="text-teal-600 hover:underline">Sửa</button>
-                                </td>
+                {err ? <div style={{ padding: 16 }}><ErrorBox msg={err} retry={reload} /></div> : loading && !data ? <Loading /> : !data || data.items.length === 0 ? <Empty text="Không tìm thấy học sinh phù hợp." /> : (
+                    <>
+                        <div className="ac-tw"><table className="ac-table"><thead><tr><th>Mã HS</th><th>Họ và tên</th><th>Giới tính</th><th>Ngày sinh</th><th>Lớp</th><th>Tài khoản</th><th /></tr></thead><tbody>
+                        {data.items.map((s: any) => (
+                            <tr key={s.code}>
+                                <td>{s.code}</td>
+                                <td><Link className="lk" href={`/academic/students/${s.code}`}>{s.full_name}</Link></td>
+                                <td>{s.gender}</td><td>{s.birth_date}</td>
+                                <td><Link href={`/academic/classes/${s.class_id}`}>{s.class_name}</Link></td>
+                                <td>{s.account_status !== 'active' ? <Pill tone="err">Bị khóa</Pill> : s.default_password ? <Pill tone="warn">Mật khẩu mặc định</Pill> : <Pill tone="ok">Đã đổi mật khẩu</Pill>}</td>
+                                <td className="n"><Link className="ac-btn ghost sm" href={`/academic/students/${s.code}`}>Xem hồ sơ</Link></td>
                             </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </AcademicLayout>
+                        ))}</tbody></table></div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 16px', color: '#5b6f85', flexWrap: 'wrap' }}>
+                            <span>Tổng <b>{data.total}</b> học sinh</span>
+                            <Pager page={data.page} pages={data.pages} onChange={setPage} />
+                        </div>
+                    </>
+                )}
+            </Card>
+        </>
     );
 }

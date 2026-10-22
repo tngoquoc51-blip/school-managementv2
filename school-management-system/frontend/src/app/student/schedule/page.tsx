@@ -1,20 +1,24 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import './schedule.css';
+import { getStudentToken, useCurrentStudent } from '@/hooks/useCurrentStudent';
+import ClassmatesModal from '@/components/student/ClassmatesModal';
+
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
 
 const DAY_LABELS = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 const WEEKDAY_HEADERS = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
 
-const PERIODS = [
+// Giờ mặc định; sẽ được thay bằng giờ thật từ API
+const DEFAULT_PERIODS = [
     { id: 1, time: '07:00 – 07:45' },
     { id: 2, time: '07:50 – 08:35' },
-    { id: 3, time: '08:45 – 09:30' },
-    { id: 4, time: '09:40 – 10:25' },
+    { id: 3, time: '08:55 – 09:40' },
+    { id: 4, time: '09:45 – 10:30' },
     { id: 5, time: '10:35 – 11:20' },
 ];
 
-// Màu theo môn (cố định)
 const SUBJECT_COLORS: Record<string, string> = {
     Toán: 'blue',
     'Ngữ văn': 'violet',
@@ -28,60 +32,16 @@ const SUBJECT_COLORS: Record<string, string> = {
     'Tin học': 'cyan',
     'Công nghệ': 'indigo',
     'Thể dục': 'lime',
+    'GDQP-AN': 'rose',
+    'HĐ trải nghiệm': 'emerald',
 };
 
-type Cell = { subject: string; teacher: string; room: string } | null;
-
-const TIMETABLE: Record<number, Record<number, Cell>> = {
-    // 0 = Thứ 2 ... 5 = Thứ 7
-    0: {
-        1: { subject: 'Toán', teacher: 'Thầy Nguyễn Văn A', room: 'P.201' },
-        2: { subject: 'Toán', teacher: 'Thầy Nguyễn Văn A', room: 'P.201' },
-        3: { subject: 'Ngữ văn', teacher: 'Cô Trần Thị B', room: 'P.105' },
-        4: { subject: 'Tiếng Anh', teacher: 'Cô Lê Thị C', room: 'P.302' },
-        5: { subject: 'Lịch sử', teacher: 'Thầy Phạm Văn D', room: 'P.108' },
-    },
-    1: {
-        1: { subject: 'Vật lý', teacher: 'Thầy Hoàng Văn E', room: 'P.203' },
-        2: { subject: 'Vật lý', teacher: 'Thầy Hoàng Văn E', room: 'P.203' },
-        3: { subject: 'Hóa học', teacher: 'Cô Nguyễn Thị F', room: 'P.204' },
-        4: { subject: 'Toán', teacher: 'Thầy Nguyễn Văn A', room: 'P.201' },
-        5: null,
-    },
-    2: {
-        1: { subject: 'Ngữ văn', teacher: 'Cô Trần Thị B', room: 'P.105' },
-        2: { subject: 'Tiếng Anh', teacher: 'Cô Lê Thị C', room: 'P.302' },
-        3: { subject: 'Địa lý', teacher: 'Cô Vũ Thị G', room: 'P.110' },
-        4: { subject: 'GDCD', teacher: 'Thầy Lê Văn H', room: 'P.106' },
-        5: { subject: 'Thể dục', teacher: 'Thầy Trần Văn I', room: 'Sân' },
-    },
-    3: {
-        1: { subject: 'Toán', teacher: 'Thầy Nguyễn Văn A', room: 'P.201' },
-        2: { subject: 'Hóa học', teacher: 'Cô Nguyễn Thị F', room: 'P.204' },
-        3: { subject: 'Sinh học', teacher: 'Cô Đỗ Thị K', room: 'P.205' },
-        4: { subject: 'Tin học', teacher: 'Thầy Ngô Văn L', room: 'P.Lab1' },
-        5: { subject: 'Tin học', teacher: 'Thầy Ngô Văn L', room: 'P.Lab1' },
-    },
-    4: {
-        1: { subject: 'Tiếng Anh', teacher: 'Cô Lê Thị C', room: 'P.302' },
-        2: { subject: 'Ngữ văn', teacher: 'Cô Trần Thị B', room: 'P.105' },
-        3: { subject: 'Vật lý', teacher: 'Thầy Hoàng Văn E', room: 'P.203' },
-        4: { subject: 'Công nghệ', teacher: 'Thầy Bùi Văn M', room: 'P.207' },
-        5: null,
-    },
-    5: {
-        1: { subject: 'Toán', teacher: 'Thầy Nguyễn Văn A', room: 'P.201' },
-        2: { subject: 'Sinh học', teacher: 'Cô Đỗ Thị K', room: 'P.205' },
-        3: { subject: 'Thể dục', teacher: 'Thầy Trần Văn I', room: 'Sân' },
-        4: null,
-        5: null,
-    },
-};
+type Cell = { subject: string; teacher: string } | null;
 
 function startOfWeek(date: Date) {
     const d = new Date(date);
-    const day = d.getDay(); // 0 CN
-    const diff = day === 0 ? -6 : 1 - day; // về Thứ 2
+    const day = d.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
     d.setDate(d.getDate() + diff);
     d.setHours(0, 0, 0, 0);
     return d;
@@ -110,6 +70,8 @@ function sameDay(a: Date, b: Date) {
 }
 
 export default function StudentSchedulePage() {
+    const { student, loading: stLoading } = useCurrentStudent();
+
     const today = useMemo(() => {
         const t = new Date();
         t.setHours(0, 0, 0, 0);
@@ -117,7 +79,67 @@ export default function StudentSchedulePage() {
     }, []);
 
     const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date()));
-    const [calMonth, setCalMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
+    const [calMonth, setCalMonth] = useState(
+        () => new Date(today.getFullYear(), today.getMonth(), 1)
+    );
+    const [timetable, setTimetable] = useState<Record<number, Record<number, Cell>>>({});
+    const [tkLoading, setTkLoading] = useState(true);
+    const [tkError, setTkError] = useState('');
+    const [PERIODS, setPeriods] = useState(DEFAULT_PERIODS);
+
+    const [rosterOpen, setRosterOpen] = useState(false);
+    const [activeCell, setActiveCell] = useState<{
+        subject?: string;
+        teacher?: string;
+        dayLabel?: string;
+        period?: number;
+    } | null>(null);
+
+    // Load TKB từ API theo lớp của học sinh đăng nhập
+    useEffect(() => {
+        const token = getStudentToken();
+        if (!token) {
+            setTkLoading(false);
+            setTkError('Chưa đăng nhập');
+            return;
+        }
+
+        setTkLoading(true);
+        setTkError('');
+
+        fetch(`${API}/hs/schedule`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json',
+            },
+        })
+            .then(async (r) => {
+                if (!r.ok) throw new Error(r.status === 401 ? 'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại' : `HTTP ${r.status}`);
+                return r.json();
+            })
+            .then((j) => {
+                const d = j?.data;
+                if (!d) throw new Error(j?.message || 'Lỗi API');
+                const map: Record<number, Record<number, Cell>> = {};
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                for (const day of d.days || []) {
+                    const dayIdx = Number(day.weekday) - 2; // 2 = Thứ 2 → 0
+                    if (dayIdx < 0 || dayIdx > 5) continue;
+                    map[dayIdx] = {};
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    for (const l of day.lessons || []) {
+                        map[dayIdx][Number(l.period)] = { subject: l.subject || '', teacher: l.teacher || '' };
+                    }
+                }
+                setTimetable(map);
+                if (Array.isArray(d.periods) && d.periods.length) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    setPeriods(d.periods.map((p: any) => ({ id: Number(p.period), time: `${p.start} – ${p.end}` })));
+                }
+            })
+            .catch((e) => setTkError(e.message || 'Không tải được thời khóa biểu'))
+            .finally(() => setTkLoading(false));
+    }, [student?.class_name]);
 
     const weekDays = useMemo(
         () => Array.from({ length: 6 }, (_, i) => addDays(weekStart, i)),
@@ -126,69 +148,78 @@ export default function StudentSchedulePage() {
 
     const weekLabel = `Tuần ${formatVN(weekStart)} – ${formatVN(addDays(weekStart, 5))}`;
 
-    // Lịch tháng
     const calendarDays = useMemo(() => {
         const year = calMonth.getFullYear();
         const month = calMonth.getMonth();
         const first = new Date(year, month, 1);
-        const startPad = first.getDay(); // 0 CN
+        const startPad = first.getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const cells: (Date | null)[] = [];
-
         for (let i = 0; i < startPad; i++) cells.push(null);
         for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d));
         while (cells.length % 7 !== 0) cells.push(null);
-
         return cells;
     }, [calMonth]);
 
     const goToday = () => {
-        const s = startOfWeek(new Date());
-        setWeekStart(s);
+        setWeekStart(startOfWeek(new Date()));
         setCalMonth(new Date(today.getFullYear(), today.getMonth(), 1));
     };
 
     const prevWeek = () => setWeekStart((d) => addDays(d, -7));
     const nextWeek = () => setWeekStart((d) => addDays(d, 7));
-
     const prevMonth = () =>
         setCalMonth((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
     const nextMonth = () =>
         setCalMonth((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
-
-    const selectDate = (date: Date) => {
-        setWeekStart(startOfWeek(date));
-    };
+    const selectDate = (date: Date) => setWeekStart(startOfWeek(date));
 
     const monthTitle = calMonth.toLocaleDateString('vi-VN', {
         month: 'long',
         year: 'numeric',
     });
 
+    if (stLoading || tkLoading) {
+        return (
+            <div className="sch-page" style={{ padding: 24 }}>
+                Đang tải lịch học...
+            </div>
+        );
+    }
+
     return (
         <div className="sch-page">
             <div className="sch-header">
                 <div>
                     <h1>Lịch học</h1>
-                    <p>Lớp 10A2 · Năm học 2025 – 2026 · Học kỳ 1</p>
+                    <p>
+                        {student?.class_name ? `Lớp ${student.class_name}` : '—'}
+                        {' · '}
+                        Năm học {(student?.academic_year || '2025-2026').replace('-', ' – ')}
+                    </p>
                 </div>
             </div>
 
+            {tkError && (
+                <div style={{ margin: '0 0 12px', padding: '10px 14px', background: '#fef2f2', color: '#b91c1c', borderRadius: 10, fontSize: 13.5 }}>
+                    {tkError}
+                </div>
+            )}
+
             <div className="sch-layout">
-                {/* ===== Cột chính: Thời khóa biểu ===== */}
                 <div className="sch-main">
                     <div className="sch-panel">
                         <div className="sch-toolbar">
                             <div className="sch-week-nav">
-                                <button className="sch-nav-btn" onClick={prevWeek} aria-label="Tuần trước">
+                                <button type="button" className="sch-nav-btn" onClick={prevWeek} aria-label="Tuần trước">
                                     ←
                                 </button>
                                 <span className="sch-week-label">{weekLabel}</span>
-                                <button className="sch-nav-btn" onClick={nextWeek} aria-label="Tuần sau">
+                                <button type="button" className="sch-nav-btn" onClick={nextWeek} aria-label="Tuần sau">
                                     →
                                 </button>
                             </div>
-                            <button className="sch-btn-outline" onClick={goToday}>
+                            <button type="button" className="sch-btn-outline" onClick={goToday}>
                                 Hôm nay
                             </button>
                         </div>
@@ -201,7 +232,9 @@ export default function StudentSchedulePage() {
                                     {weekDays.map((d, i) => (
                                         <th key={i} className={sameDay(d, today) ? 'sch-th-today' : ''}>
                                             <span className="sch-th-day">{WEEKDAY_HEADERS[i]}</span>
-                                            <span className="sch-th-date">{d.getDate()}/{d.getMonth() + 1}</span>
+                                            <span className="sch-th-date">
+                                                    {d.getDate()}/{d.getMonth() + 1}
+                                                </span>
                                         </th>
                                     ))}
                                 </tr>
@@ -214,11 +247,14 @@ export default function StudentSchedulePage() {
                                             <span className="sch-period-time">{p.time}</span>
                                         </td>
                                         {weekDays.map((d, dayIdx) => {
-                                            const cell = TIMETABLE[dayIdx]?.[p.id];
+                                            const cell = timetable[dayIdx]?.[p.id] ?? null;
                                             const isToday = sameDay(d, today);
                                             if (!cell) {
                                                 return (
-                                                    <td key={dayIdx} className={`sch-empty ${isToday ? 'sch-col-today' : ''}`}>
+                                                    <td
+                                                        key={dayIdx}
+                                                        className={`sch-empty ${isToday ? 'sch-col-today' : ''}`}
+                                                    >
                                                         <span className="sch-dash">—</span>
                                                     </td>
                                                 );
@@ -226,11 +262,24 @@ export default function StudentSchedulePage() {
                                             const color = SUBJECT_COLORS[cell.subject] || 'sky';
                                             return (
                                                 <td key={dayIdx} className={isToday ? 'sch-col-today' : ''}>
-                                                    <div className={`sch-card sch-card-${color}`}>
+                                                    <button
+                                                        type="button"
+                                                        className={`sch-card sch-card-${color} sch-card-click`}
+                                                        onClick={() => {
+                                                            setActiveCell({
+                                                                subject: cell.subject,
+                                                                teacher: cell.teacher,
+                                                                dayLabel: WEEKDAY_HEADERS[dayIdx],
+                                                                period: p.id,
+                                                            });
+                                                            setRosterOpen(true);
+                                                        }}
+                                                    >
                                                         <p className="sch-subject">{cell.subject}</p>
-                                                        <p className="sch-teacher">{cell.teacher}</p>
-                                                        <p className="sch-room">{cell.room}</p>
-                                                    </div>
+                                                        {cell.teacher && (
+                                                            <p className="sch-teacher">{cell.teacher}</p>
+                                                        )}
+                                                    </button>
                                                 </td>
                                             );
                                         })}
@@ -241,23 +290,29 @@ export default function StudentSchedulePage() {
                         </div>
 
                         <div className="sch-note">
-                            <strong>Ghi chú:</strong> Thời khóa biểu có thể thay đổi theo thông báo của Giáo vụ. Cột ngày hôm nay được tô sáng.
+                            <strong>Ghi chú:</strong> Thời khóa biểu theo lớp{' '}
+                            {student?.class_name || 'của bạn'}. Cột ngày hôm nay được tô sáng.
                         </div>
                     </div>
                 </div>
 
-                {/* ===== Cột phải: Lịch tháng ===== */}
                 <aside className="sch-side">
                     <div className="sch-calendar">
                         <div className="sch-cal-header">
-                            <button className="sch-nav-btn" onClick={prevMonth}>←</button>
+                            <button type="button" className="sch-nav-btn" onClick={prevMonth}>
+                                ←
+                            </button>
                             <span className="sch-cal-title">{monthTitle}</span>
-                            <button className="sch-nav-btn" onClick={nextMonth}>→</button>
+                            <button type="button" className="sch-nav-btn" onClick={nextMonth}>
+                                →
+                            </button>
                         </div>
 
                         <div className="sch-cal-grid">
                             {DAY_LABELS.map((l) => (
-                                <div key={l} className="sch-cal-weekday">{l}</div>
+                                <div key={l} className="sch-cal-weekday">
+                                    {l}
+                                </div>
                             ))}
                             {calendarDays.map((date, idx) => {
                                 if (!date) return <div key={idx} className="sch-cal-day empty" />;
@@ -283,10 +338,18 @@ export default function StudentSchedulePage() {
                     </div>
 
                     <div className="sch-side-tip">
-                        <p><strong>Mẹo:</strong> Bấm vào ngày trên lịch để chuyển sang tuần tương ứng.</p>
+                        <p>
+                            <strong>Mẹo:</strong> Bấm vào ngày trên lịch để chuyển sang tuần tương ứng.
+                        </p>
                     </div>
                 </aside>
             </div>
+
+            <ClassmatesModal
+                open={rosterOpen}
+                onClose={() => setRosterOpen(false)}
+                cell={activeCell}
+            />
         </div>
     );
 }
