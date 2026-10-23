@@ -161,12 +161,33 @@ class AcademicRepo
     /** @return array<string,mixed> */
     public function login(string $username, string $password): array
     {
-        $username = strtolower(trim($username));
-        $a = $this->one('SELECT id, username, full_name, role, password_hash, status, failed_attempts, locked_until FROM sm_staff_accounts WHERE LOWER(username) = ?', [$username]);
-        if (!$a) {
-            password_verify($password, '$2y$10$usesomesillystringfore7hnbRJHxXVLeakoG8K30oukPsA.ztMG');
-            return ['ok' => false, 'status' => 401, 'message' => 'Sai tên đăng nhập hoặc mật khẩu.'];
-        }
+                $username = strtolower(trim($username));
+
+                // Cho phép: giaovu  hoặc  giaovu@thpt.edu.vn
+                $candidates = [$username];
+                if (str_contains($username, '@')) {
+                    $candidates[] = explode('@', $username, 2)[0];
+                } else {
+                    $candidates[] = $username . '@thpt.edu.vn';
+                }
+                $candidates = array_values(array_unique($candidates));
+
+                $a = null;
+                foreach ($candidates as $cand) {
+                    $a = $this->one(
+                        'SELECT id, username, full_name, role, password_hash, status, failed_attempts, locked_until
+                         FROM sm_staff_accounts WHERE LOWER(username) = ?',
+                        [$cand]
+                    );
+                    if ($a) {
+                        break;
+                    }
+                }
+
+                if (!$a) {
+                    password_verify($password, '$2y$10$usesomesillystringfore7hnbRJHxXVLeakoG8K30oukPsA.ztMG');
+                    return ['ok' => false, 'status' => 401, 'message' => 'Sai tên đăng nhập hoặc mật khẩu.'];
+                }
         if ($a['status'] !== 'active') {
             return ['ok' => false, 'status' => 403, 'message' => 'Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên.'];
         }

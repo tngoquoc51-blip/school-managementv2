@@ -47,18 +47,71 @@ class AuthController extends Controller
             ], 403);
         }
 
-        // Có Laravel Sanctum: dùng token thật
         $token = method_exists($user, 'createToken')
             ? $user->createToken('web')->plainTextToken
             : base64_encode($user->id . '|' . $user->email . '|' . time());
 
-        // Role: nếu chưa có bảng roles → mặc định theo prefix email/username
-        $roles = ['student'];
-        if (str_starts_with(strtolower($user->username ?? ''), 'hs')
-            || str_contains(strtolower($user->email ?? ''), '@student.')
-            || preg_match('/^hs\d+/i', $user->username ?? '')
-            || preg_match('/^hs\d+/i', $user->email ?? '')) {
-            $roles = ['student'];
+        // 1) Ưu tiên role Spatie
+        $roles = [];
+        if (method_exists($user, 'getRoleNames')) {
+            try {
+                $roles = $user->getRoleNames()->values()->all();
+            } catch (\Throwable $e) {
+                $roles = [];
+            }
+        }
+
+        // 2) Fallback theo username / email nếu chưa có Spatie
+        if (empty($roles)) {
+            $uname = strtolower((string) ($user->username ?? ''));
+            $email = strtolower((string) ($user->email ?? ''));
+
+            if (
+                str_starts_with($uname, 'hs')
+                || preg_match('/^hs\d+/i', $uname)
+                || str_contains($email, '@student.')
+            ) {
+                $roles = ['student'];
+            } elseif (
+                in_array($uname, ['giaovu', 'academic'], true)
+                || str_contains($email, 'giaovu')
+                || str_contains($email, 'academic')
+            ) {
+                $roles = ['academic'];
+            } elseif (
+                in_array($uname, ['admin', 'superadmin'], true)
+                || str_contains($email, 'admin@')
+            ) {
+                $roles = ['super_admin'];
+            } elseif (
+                str_starts_with($uname, 'gv')
+                || str_contains($email, 'teacher')
+                || str_contains($email, '@gv.')
+            ) {
+                $roles = ['teacher'];
+            } elseif (
+                str_contains($uname, 'hieutruong')
+                || str_contains($uname, 'bgh')
+                || str_contains($email, 'hieutruong')
+            ) {
+                $roles = ['principal'];
+            } else {
+                $roles = ['student'];
+            }
+        }
+
+        // 3) Role chính (ưu tiên quyền cao)
+        $priority = [
+            'super_admin', 'admin', 'principal', 'vice_principal',
+            'academic', 'giao_vu', 'teacher', 'homeroom_teacher',
+            'accountant', 'parent', 'student',
+        ];
+        $primary = $roles[0] ?? 'student';
+        foreach ($priority as $r) {
+            if (in_array($r, $roles, true)) {
+                $primary = $r;
+                break;
+            }
         }
 
         return response()->json([
@@ -70,8 +123,8 @@ class AuthController extends Controller
                 'email'    => $user->email,
                 'username' => $user->username,
             ],
-            'roles' => $roles,
-            'role'  => $roles[0] ?? 'student',
+            'roles' => array_values($roles),
+            'role'  => $primary,
         ]);
     }
 }
