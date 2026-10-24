@@ -5,22 +5,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="697b4476-35a9-45e0-8e56-10612acca154" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Console/Commands/EncryptExistingPii.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/StudentTuitionController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Support/DataCrypto.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Support/FeeRepo.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/database/migrations/2026_10_23_000100_school_security_and_indexes.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/students/requests/requests.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/student/fees/[id]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/student/fees/[id]/pay/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/student/fees/_shared/api.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/student/fees/_shared/ui.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/student/fees/fees.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/student/fees/payments/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/student/fees/receipt/[id]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/student/fees/schedule/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/AcademicApiController.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/AcademicApiController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/AuthController.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/AuthController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/NotificationController.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/NotificationController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/StudentApiController.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/StudentApiController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/StudentClassmatesController.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/StudentClassmatesController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/StudentPortalController.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/StudentPortalController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Http/Middleware/StaffToken.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Middleware/StaffToken.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Http/Middleware/StudentToken.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Middleware/StudentToken.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Models/Notification.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Models/Notification.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Support/AcademicRepo.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Support/AcademicRepo.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Support/SchoolRepo.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Support/SchoolRepo.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/school-management-system/backend/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/routes/api.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/login/academic/academic-login.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/login/academic/academic-login.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/login/academic/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/login/academic/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/tai-khoan-hoc-sinh.csv" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/tai-khoan-hoc-sinh.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/academic.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/academic.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/students/requests/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/students/requests/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/StudentLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/StudentLayout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/student-layout.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/student-layout.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,5 +117,17 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/school-management-system/frontend/src/layouts/AcademicLayout.tsx</url>
+          <line>35</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

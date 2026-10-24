@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\StudentPortalController;
 use App\Http\Controllers\Api\StudentApiController;
+use App\Http\Controllers\Api\StudentTuitionController;
 use App\Http\Controllers\Api\AcademicApiController;
 use App\Http\Middleware\StaffToken;
 use App\Http\Controllers\Api\StudentWalletController;
@@ -71,6 +72,17 @@ Route::prefix('hs')->group(function () {
         Route::put('profile/name', [StudentApiController::class, 'updateName'])->middleware('throttle:10,1');
         Route::post('profile/requests', [StudentApiController::class, 'createProfileRequest'])->middleware('throttle:20,1');
         Route::post('profile/requests/{id}/cancel', [StudentApiController::class, 'cancelProfileRequest'])->whereNumber('id');
+
+        // Học phí của học sinh
+        Route::get('fees/summary', [StudentTuitionController::class, 'summary']);
+        Route::get('fees/catalog', [StudentTuitionController::class, 'catalog']);
+        Route::get('fees/invoices', [StudentTuitionController::class, 'invoices']);
+        Route::get('fees/invoices/{id}', [StudentTuitionController::class, 'invoice'])->whereNumber('id');
+        Route::post('fees/invoices/{id}/declare', [StudentTuitionController::class, 'declare'])->whereNumber('id')->middleware('throttle:20,1');
+        Route::post('fees/invoices/{id}/dispute', [StudentTuitionController::class, 'dispute'])->whereNumber('id')->middleware('throttle:10,1');
+        Route::get('fees/payments', [StudentTuitionController::class, 'payments']);
+        Route::post('fees/payments/{id}/cancel', [StudentTuitionController::class, 'cancelPayment'])->whereNumber('id');
+        Route::get('fees/receipts/{id}', [StudentTuitionController::class, 'receipt'])->whereNumber('id');
 
         // Thông báo / badge
         Route::get('notifications/badges', [NotificationController::class, 'badges']);

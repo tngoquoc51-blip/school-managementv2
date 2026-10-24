@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Support;
-
 use PDO;
+use App\Support\DataCrypto; // có thể viết tắt: không cần nếu cùng namespace App\Support
+
 
 /**
  * Truy vấn dữ liệu học sinh từ các bảng sm_* (xem school_data.sql).
@@ -493,14 +494,15 @@ class SchoolRepo
     }
 
     /** @return array<string,mixed>|null */
-    private function profileRow(int $studentId): ?array
-    {
-        try {
-            return $this->one('SELECT * FROM sm_student_profiles WHERE student_id = ?', [$studentId]);
-        } catch (\Throwable $e) {
-            return null; // chưa chạy SQL hồ sơ
+        private function profileRow(int $studentId): ?array
+        {
+            try {
+                $row = $this->one('SELECT * FROM sm_student_profiles WHERE student_id = ?', [$studentId]);
+                return $row ? DataCrypto::decryptFields($row) : null;
+            } catch (\Throwable $e) {
+                return null; // chưa chạy SQL hồ sơ
+            }
         }
-    }
 
     /** @return array<int,array<string,mixed>> */
     private function requestsOf(int $studentId): array
@@ -651,8 +653,15 @@ class SchoolRepo
         if (!$set) {
             return ['ok' => false, 'status' => 422, 'message' => 'Không có thông tin nào để cập nhật.'];
         }
+
+        // Mã hóa PII trước khi ghi DB (phone, địa chỉ, health_note, ...)
+        $set = DataCrypto::encryptFields($set);
+
         $cols = implode(', ', array_map(fn ($c) => "$c = ?", array_keys($set)));
-        $this->run("UPDATE sm_student_profiles SET $cols, updated_at = ? WHERE student_id = ?", [...array_values($set), $this->ts($this->now()), $studentId]);
+        $this->run(
+            "UPDATE sm_student_profiles SET $cols, updated_at = ? WHERE student_id = ?",
+            [...array_values($set), $this->ts($this->now()), $studentId]
+        );
 
         return ['ok' => true, 'status' => 200, 'message' => 'Đã lưu thông tin.'];
     }
