@@ -3,7 +3,8 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1';
+const BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api').replace(/\/$/, '');
+const API = BASE.endsWith('/v1') ? BASE : `${BASE}/v1`;
 
 /* Cấu trúc dữ liệu API trả về (giữ nguyên các trường của bạn) */
 interface Receipt {

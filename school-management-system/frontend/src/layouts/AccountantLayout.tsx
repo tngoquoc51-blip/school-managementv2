@@ -4,11 +4,13 @@ import { useRouter, usePathname } from 'next/navigation';
 import { ReactNode, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import '../app/design-tokens.css'; // src/app/design-tokens.css
-import './accountant-layout.css';
+import './accountant-layout.css'; // giữ lại cho an toàn – có thể xóa sau khi kiểm tra không trang nào còn dùng
+import './accountant-frame.css'; // MỚI: khung giao diện
 import './accountant-ui.css';
 
 /* ======================================================
    ICON (SVG inline – không cần cài thư viện)
+   Giữ nguyên toàn bộ icon + màu gốc (màu lấy từ CSS)
    ====================================================== */
 const ICONS = {
     dashboard: (<><rect x="3" y="3" width="7" height="9" rx="1" /><rect x="14" y="3" width="7" height="5" rx="1" /><rect x="14" y="12" width="7" height="9" rx="1" /><rect x="3" y="16" width="7" height="5" rx="1" /></>),
@@ -39,6 +41,10 @@ const ICONS = {
     menu: (<path d="M4 6h16M4 12h16M4 18h16" />),
     close: (<path d="M6 6l12 12M18 6L6 18" />),
     plus: (<path d="M12 5v14M5 12h14" />),
+    /* thêm cho khung mới */
+    chevd: (<path d="M6 9l6 6 6-6" />),
+    panel: (<><rect x="3" y="5" width="18" height="14" rx="1.5" /><path d="M9 5v14" /></>),
+    cal: (<><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></>),
 } as const;
 
 type IconName = keyof typeof ICONS;
@@ -151,6 +157,9 @@ export default function AccountantLayout({ children }: Props) {
     const [user, setUser] = useState<StoredUser | null>(null);
     const [query, setQuery] = useState('');
     const [open, setOpen] = useState(false); // sidebar trên điện thoại
+    const [mini, setMini] = useState(false); // sidebar thu gọn (desktop)
+    const [closed, setClosed] = useState<Record<string, boolean>>({});
+    const [logoFail, setLogoFail] = useState(false);
 
     useEffect(() => {
         try {
@@ -168,6 +177,20 @@ export default function AccountantLayout({ children }: Props) {
 
     // đóng sidebar khi chuyển trang
     useEffect(() => setOpen(false), [pathname]);
+
+    // nhớ trạng thái thu gọn + phím Esc
+    useEffect(() => {
+        try { setMini(localStorage.getItem('acc-mini') === '1'); } catch { /* ignore */ }
+        const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, []);
+
+    const toggleMini = () => {
+        const next = !mini;
+        setMini(next);
+        try { localStorage.setItem('acc-mini', next ? '1' : '0'); } catch { /* ignore */ }
+    };
 
     const handleLogout = () => {
         ['token', 'user', 'roles'].forEach((k) => {
@@ -196,33 +219,50 @@ export default function AccountantLayout({ children }: Props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pathname]);
 
+    // vào trang thuộc nhóm đang gập → tự mở nhóm đó
+    useEffect(() => {
+        setClosed((c) => (c[current.group] ? { ...c, [current.group]: false } : c));
+    }, [current.group]);
+
     if (!user) return null; // tránh nháy giao diện trước khi kiểm tra đăng nhập
 
+    const searching = query.trim().length > 0;
+
     return (
-        <div className="acc-layout">
-            {open && <div className="acc-overlay" onClick={() => setOpen(false)} />}
+        <div className={`acf-layout${mini ? ' mini' : ''}`}>
+            {open && <div className="acf-overlay" onClick={() => setOpen(false)} />}
 
-            <aside className={`acc-sidebar ${open ? 'open' : ''}`}>
-                <div className="acc-brand">
-                    <div className="acc-logo">TH</div>
-                    <div>
-                        <div className="acc-brand-name">Phòng Kế toán</div>
-                        <div className="acc-brand-sub">Trường THPT</div>
+            <aside className={`acf-sidebar ${open ? 'open' : ''}`}>
+                <button type="button" className="acf-close" onClick={() => setOpen(false)} aria-label="Đóng menu">
+                    <Icon name="close" />
+                </button>
+
+                <div className="acf-brand">
+                    {logoFail ? (
+                        <div className="acf-logo acf-logo-fb">TH</div>
+                    ) : (
+                        <img
+                            src="/images/logo-thpt-ngo-sy-lien.png"
+                            alt="Logo trường"
+                            className="acf-logo"
+                            onError={() => setLogoFail(true)}
+                        />
+                    )}
+                    <div className="acf-brand-text">
+                        <div className="acf-brand-name">Phòng Kế toán</div>
+                        <div className="acf-brand-sub">Trường THPT</div>
                     </div>
-                    <button type="button" className="acc-close" onClick={() => setOpen(false)} aria-label="Đóng menu">
-                        <Icon name="close" />
-                    </button>
                 </div>
 
-                <div className="acc-user">
-                    <div className="acc-avatar">{user.name?.charAt(0) || 'K'}</div>
-                    <div className="acc-user-text">
-                        <div className="acc-user-name">{user.name || 'Kế toán'}</div>
-                        <div className="acc-user-role">Phòng Kế toán</div>
+                <div className="acf-user">
+                    <div className="acf-avatar">{user.name?.charAt(0) || 'K'}</div>
+                    <div className="acf-user-text">
+                        <div className="acf-user-name">{user.name || 'Kế toán'}</div>
+                        <div className="acf-user-role">Phòng Kế toán</div>
                     </div>
                 </div>
 
-                <div className="acc-search">
+                <div className="acf-search">
                     <Icon name="search" />
                     <input
                         type="search"
@@ -233,56 +273,78 @@ export default function AccountantLayout({ children }: Props) {
                     />
                 </div>
 
-                <nav className="acc-nav" aria-label="Chức năng kế toán">
-                    {groups.map((group) => (
-                        <div className="acc-group" key={group.title}>
-                            <div className="acc-group-title">{group.title}</div>
-                            {group.items.map((item) => (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    className={`acc-nav-item ${isActive(item.href) ? 'active' : ''}`}
-                                    aria-current={isActive(item.href) ? 'page' : undefined}
+                <nav className="acf-nav" aria-label="Chức năng kế toán">
+                    {groups.map((group) => {
+                        const shut = !searching && !!closed[group.title];
+                        return (
+                            <div className="acf-group" key={group.title}>
+                                <button
+                                    type="button"
+                                    className="acf-group-title"
+                                    aria-expanded={!shut}
+                                    onClick={() => setClosed((c) => ({ ...c, [group.title]: !c[group.title] }))}
                                 >
-                                    <span className="acc-nav-icon">
-                                        <Icon name={item.icon} />
-                                    </span>
-                                    {item.label}
-                                </Link>
-                            ))}
-                        </div>
-                    ))}
-                    {groups.length === 0 && <p className="acc-empty">Không tìm thấy chức năng phù hợp.</p>}
+                                    <span>{group.title}</span>
+                                    <span className={`acf-chev${shut ? ' shut' : ''}`}><Icon name="chevd" /></span>
+                                </button>
+
+                                <div className={`acf-group-items${shut ? ' shut' : ''}`}>
+                                    {group.items.map((item) => (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            title={item.label}
+                                            className={`acf-nav-item ${isActive(item.href) ? 'active' : ''}`}
+                                            aria-current={isActive(item.href) ? 'page' : undefined}
+                                        >
+                                            <span className="acf-nav-icon">
+                                                <Icon name={item.icon} />
+                                            </span>
+                                            <span className="acf-nav-label">{item.label}</span>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                    })}
+                    {groups.length === 0 && <p className="acf-empty">Không tìm thấy chức năng phù hợp.</p>}
                 </nav>
 
-                <div className="acc-footer">
-                    <button type="button" onClick={handleLogout} className="acc-btn-logout">
+                <div className="acf-footer">
+                    <button type="button" onClick={handleLogout} className="acf-btn-logout" title="Đăng xuất">
                         <Icon name="logout" />
-                        Đăng xuất
+                        <span>Đăng xuất</span>
                     </button>
                 </div>
             </aside>
 
-            <div className="acc-main">
-                <header className="acc-header">
-                    <button type="button" className="acc-burger" onClick={() => setOpen(true)} aria-label="Mở menu">
+            <div className="acf-main">
+                <header className="acf-header">
+                    <button type="button" className="acf-burger" onClick={() => setOpen(true)} aria-label="Mở menu">
                         <Icon name="menu" />
                     </button>
-                    <div className="acc-title">
-                        <p>
-                            Hệ thống Quản lý Trường THPT · {current.group}
-                        </p>
+                    <button
+                        type="button"
+                        className="acf-rail"
+                        onClick={toggleMini}
+                        aria-label={mini ? 'Mở rộng menu' : 'Thu gọn menu'}
+                        title={mini ? 'Mở rộng menu' : 'Thu gọn menu'}
+                    >
+                        <Icon name="panel" />
+                    </button>
+                    <div className="acf-title">
+                        <p>Hệ thống Quản lý Trường THPT · {current.group}</p>
                         <h1>{current.label}</h1>
                     </div>
-                    <div className="acc-header-right">
-                        <span className="acc-year">Năm học {schoolYear()}</span>
-                        <Link href="/accountant/collection" className="acc-quick">
+                    <div className="acf-header-right">
+                        <span className="acf-year"><Icon name="cal" />Năm học <b>{schoolYear()}</b></span>
+                        <Link href="/accountant/collection" className="acf-quick">
                             <Icon name="plus" />
                             Lập phiếu thu
                         </Link>
                     </div>
                 </header>
-                <main className="acc-content">{children}</main>
+                <main className="acf-content">{children}</main>
             </div>
         </div>
     );
