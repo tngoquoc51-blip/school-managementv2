@@ -881,56 +881,90 @@ class SchoolRepo
             /* ------------------------------------------------------------------ lịch thi */
 
     /** @return array<string,mixed>|null */
+    /* ------------------------------------------------------------------ lịch thi */
+
+    /** Lịch thi theo khối (sm_exam_periods.grade + sm_exam_items) */
     public function exams(int $studentId): ?array
     {
         $p = $this->profile($studentId);
-        if (!$p || !$p['class']) {
+        if (!$p || empty($p['class'])) {
             return null;
         }
-        $rows = $this->all(
-            'SELECT p.id AS pid, p.code, p.name, p.semester, p.start_date, p.end_date,
-                    e.exam_date, e.start_time, e.duration_minutes, e.exam_format,
-                    s.name AS subject, s.code AS subject_code
-               FROM sm_exam_periods p
-               JOIN sm_exam_schedules e ON e.exam_period_id = p.id AND e.grade = ?
-               JOIN sm_subjects s ON s.id = e.subject_id
-              WHERE p.school_year_id = ?
-              ORDER BY p.start_date, e.exam_date, e.start_time',
-            [$p['class']['grade'], $p['year']['id']]
+
+        $grade  = (int) ($p['class']['grade'] ?? 10);
+        $yearId = (int) ($p['year']['id'] ?? 1);
+        $today  = date('Y-m-d', $this->now());
+
+        $periodRows = $this->all(
+            'SELECT id, code, name, semester, start_date, end_date
+               FROM sm_exam_periods
+              WHERE school_year_id = ? AND grade = ?
+              ORDER BY semester, FIELD(code, \'GK1\', \'CK1\', \'GK2\', \'CK2\'), id',
+            [$yearId, $grade]
         );
-        $today = date('Y-m-d', $this->now());
+
         $periods = [];
-        foreach ($rows as $r) {
-            $pid = (int) $r['pid'];
-            if (!isset($periods[$pid])) {
-                $periods[$pid] = [
-                    'id' => $pid, 'code' => $r['code'], 'name' => $r['name'], 'semester' => (int) $r['semester'],
-                    'start_date' => $r['start_date'], 'end_date' => $r['end_date'], 'items' => [],
+        foreach ($periodRows as $pr) {
+            $pid = (int) $pr['id'];
+            $items = $this->all(
+                'SELECT subject, exam_date, start_time, end_time, format, duration_minutes
+                   FROM sm_exam_items
+                  WHERE period_id = ?
+                  ORDER BY exam_date, start_time, sort_order',
+                [$pid]
+            );
+
+            $mapped = [];
+            foreach ($items as $e) {
+                $d = substr((string) $e['exam_date'], 0, 10);
+                $n = (int) date('N', strtotime($d)); // 1=Mon … 7=Sun
+                $wd = $n + 1; // khớp WEEKDAY_LABEL 2..8
+                $start = self::hm($e['start_time']);
+                $end = self::hm($e['end_time']);
+                if (!$end && $start && !empty($e['duration_minutes'])) {
+                    $end = date('H:i', strtotime($d . ' ' . $start) + (int) $e['duration_minutes'] * 60);
+                }
+                if ($d < $today) {
+                    $status = 'done';
+                } elseif ($d === $today) {
+                    $status = 'today';
+                } else {
+                    $status = 'upcoming';
+                }
+                $mapped[] = [
+                    'date'             => $d,
+                    'weekday'          => $wd,
+                    'weekday_label'    => self::WEEKDAY_LABEL[$wd] ?? '',
+                    'start'            => $start,
+                    'end'              => $end,
+                    'duration_minutes' => (int) ($e['duration_minutes'] ?? 0) ?: null,
+                    'subject'          => $e['subject'],
+                    'subject_code'     => null,
+                    'format'           => $e['format'],
+                    'status'           => $status,
                 ];
             }
-            $d = substr($r['exam_date'], 0, 10);
-            $startTs = strtotime($d . ' ' . self::hm($r['start_time']));
-            $dur = (int) $r['duration_minutes'];
-            $wd = (int) date('N', strtotime($d)) + 1; // 2 = Thứ Hai … 8 = Chủ nhật
-            $periods[$pid]['items'][] = [
-                'date' => $d,
-                'weekday' => $wd,
-                'weekday_label' => self::WEEKDAY_LABEL[$wd],
-                'start' => self::hm($r['start_time']),
-                'end' => date('H:i', $startTs + $dur * 60),
-                'duration_minutes' => $dur,
-                'subject' => $r['subject'],
-                'subject_code' => $r['subject_code'],
-                'format' => $r['exam_format'],
-                'status' => $d < $today ? 'done' : ($d === $today ? 'today' : 'upcoming'),
+
+            $periods[] = [
+                'id'         => $pid,
+                'code'       => $pr['code'],
+                'name'       => $pr['name'],
+                'semester'   => (int) $pr['semester'],
+                'start_date' => $pr['start_date'],
+                'end_date'   => $pr['end_date'],
+                'items'      => $mapped,
             ];
         }
+
         return [
-            'student' => ['code' => $p['code'], 'name' => $p['name']],
-            'class' => $p['class'],
-            'year' => $p['year'],
-            'today' => $today,
-            'periods' => array_values($periods),
+            'student'     => ['code' => $p['code'], 'name' => $p['name']],
+            'class'       => $p['class'],
+            'class_name'  => $p['class']['name'] ?? null,
+            'grade'       => $grade,
+            'year'        => $p['year'],
+            'school_year' => $p['year']['label'] ?? null,
+            'today'       => $today,
+            'periods'     => $periods,
         ];
     }
 

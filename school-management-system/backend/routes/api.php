@@ -8,30 +8,64 @@ use App\Http\Controllers\Api\StudentPortalController;
 use App\Http\Controllers\Api\StudentApiController;
 use App\Http\Controllers\Api\StudentTuitionController;
 use App\Http\Controllers\Api\AcademicApiController;
+use App\Http\Controllers\Api\FeePeriodController;
+use App\Http\Controllers\Api\FeeCashierController;
+use App\Http\Middleware\FeeStaffToken;
 use App\Http\Middleware\StaffToken;
 use App\Http\Controllers\Api\StudentWalletController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Student\StudentGradeController;
 use App\Http\Middleware\StudentToken;
+use App\Http\Controllers\Api\GvNotificationController;
+use App\Http\Controllers\Api\Admin\RoleController;
+use App\Http\Controllers\Api\Admin\SchoolYearController;
 
 Route::get('/health', fn () => response()->json(['status' => 'ok']));
 
 // Đăng nhập hệ thống (Sanctum / admin…)
 Route::post('/auth/login', [AuthController::class, 'login']);
+// Alias cho frontend gọi /api/v1/...
+Route::prefix('v1')->group(function () {
+    Route::post('auth/login', [AuthController::class, 'login']);
+    Route::post('gv/login', [AcademicApiController::class, 'login'])->middleware('throttle:20,1');
+    Route::post('kt/login', [FeePeriodController::class, 'login'])->middleware('throttle:20,1');
+});
 
 // Kế toán
 Route::prefix('v1/accountant')->group(function () {
     Route::get('/dashboard', [AccountantController::class, 'dashboard']);
+
+    // Danh mục khoản thu
     Route::get('/fees', [AccountantController::class, 'fees']);
+    Route::post('/fees', [AccountantController::class, 'storeFee']);
+    Route::put('/fees/{id}', [AccountantController::class, 'updateFee'])->whereNumber('id');
+    Route::patch('/fees/{id}/status', [AccountantController::class, 'toggleFeeStatus'])->whereNumber('id');
+    Route::post('/fees/generate-debts', [AccountantController::class, 'generateDebts']);
+    Route::get('/fees/export', [AccountantController::class, 'exportFees']);
+
+    // Công nợ · phiếu thu · báo cáo · tìm HS
     Route::get('/debts', [AccountantController::class, 'debts']);
     Route::get('/receipts', [AccountantController::class, 'receipts']);
     Route::get('/reports', [AccountantController::class, 'reports']);
     Route::get('/students/search', [AccountantController::class, 'searchStudent']);
 });
 
-// Quản trị tài khoản
+// Quản trị tài khoản + vai trò
 Route::prefix('admin')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
+
+    // Vai trò & phân quyền
+    Route::get('/roles', [\App\Http\Controllers\Api\Admin\RoleController::class, 'index']);
+    Route::get('/roles/{id}', [\App\Http\Controllers\Api\Admin\RoleController::class, 'show'])->whereNumber('id');
+    Route::post('/roles', [\App\Http\Controllers\Api\Admin\RoleController::class, 'store']);
+    Route::put('/roles/{id}/permissions', [\App\Http\Controllers\Api\Admin\RoleController::class, 'syncPermissions'])->whereNumber('id');
+    Route::delete('/roles/{id}', [\App\Http\Controllers\Api\Admin\RoleController::class, 'destroy'])->whereNumber('id');
+
+    Route::get('/school-years', [SchoolYearController::class, 'index']);
+    Route::post('/school-years', [SchoolYearController::class, 'store']);
+    Route::put('/school-years/{id}', [SchoolYearController::class, 'update']);
+    Route::post('/school-years/{id}/set-current', [SchoolYearController::class, 'setCurrent']);
+    Route::put('/semesters/{id}', [SchoolYearController::class, 'updateSemester']);
 });
 
 // Cổng học sinh cũ (Sanctum)
@@ -44,7 +78,7 @@ Route::middleware('auth:sanctum')->prefix('student')->group(function () {
 });
 
 // ===== Học sinh DB thật (sm_*) =====
-Route::prefix('hs')->group(function () {
+Route::prefix('v1/hs')->group(function () {
     Route::post('login', [StudentApiController::class, 'login'])->middleware('throttle:20,1');
 
     Route::post('forgot-password', [StudentApiController::class, 'forgotPassword'])->middleware('throttle:6,1');
@@ -100,6 +134,7 @@ Route::prefix('hs')->group(function () {
 });
 
 // ===== Khu Giáo vụ / Ban giám hiệu =====
+// ===== Khu Giáo vụ / Ban giám hiệu =====
 Route::prefix('gv')->group(function () {
     Route::post('login', [AcademicApiController::class, 'login'])->middleware('throttle:20,1');
 
@@ -125,5 +160,66 @@ Route::prefix('gv')->group(function () {
         Route::get('grades', [AcademicApiController::class, 'grades']);
         Route::get('promotion', [AcademicApiController::class, 'promotion']);
         Route::get('reports', [AcademicApiController::class, 'reports']);
+
+                // ========== THÔNG BÁO GIÁO VỤ ==========
+                Route::get('notifications', [GvNotificationController::class, 'index']);
+                Route::post('notifications', [GvNotificationController::class, 'store']);
+                Route::post('notifications/read-all', [GvNotificationController::class, 'readAll']);
+                Route::post('notifications/{id}/read', [GvNotificationController::class, 'read'])->whereNumber('id');
+                Route::delete('notifications/{id}', [GvNotificationController::class, 'destroy'])->whereNumber('id');
+
+                // ========== HỒ SƠ CỦA TÔI – THÊM TẠI ĐÂY ==========
+                Route::put('profile/contact', [AcademicApiController::class, 'updateContact']);
+                Route::post('change-password', [AcademicApiController::class, 'changePassword']);
+                Route::get('security', [AcademicApiController::class, 'security']);
+                Route::post('security/revoke-others', [AcademicApiController::class, 'revokeOthers']);
+                Route::post('security/sessions/{id}/revoke', [AcademicApiController::class, 'revokeSession'])->whereNumber('id');
+                Route::get('activity', [AcademicApiController::class, 'activity']);
+                // ==================================================
+            });
+        });
+
+// ===== Khu Kế toán: Đợt thu / Kỳ thu =====
+Route::prefix('kt')->group(function () {
+    Route::post('login', [FeePeriodController::class, 'login'])->middleware('throttle:20,1');
+
+    Route::middleware(FeeStaffToken::class)->group(function () {
+        Route::post('logout', [FeePeriodController::class, 'logout']);
+        Route::get('me', [FeePeriodController::class, 'me']);
+        Route::get('meta', [FeePeriodController::class, 'meta']);
+
+        Route::get('periods', [FeePeriodController::class, 'index']);
+        Route::post('periods', [FeePeriodController::class, 'store'])->middleware('throttle:30,1');
+        Route::post('periods/preview', [FeePeriodController::class, 'preview'])->middleware('throttle:60,1');
+        Route::get('periods/{id}', [FeePeriodController::class, 'show'])->whereNumber('id');
+        Route::put('periods/{id}', [FeePeriodController::class, 'update'])->whereNumber('id');
+        Route::get('periods/{id}/edit', [FeePeriodController::class, 'edit'])->whereNumber('id');
+        Route::get('periods/{id}/invoices', [FeePeriodController::class, 'invoices'])->whereNumber('id');
+        Route::get('periods/{id}/debtors', [FeePeriodController::class, 'debtors'])->whereNumber('id');
+        Route::post('periods/{id}/preview', [FeePeriodController::class, 'previewPeriod'])->whereNumber('id');
+        Route::post('periods/{id}/issue', [FeePeriodController::class, 'issue'])->whereNumber('id')->middleware('throttle:10,1');
+        Route::post('periods/{id}/extend', [FeePeriodController::class, 'extend'])->whereNumber('id');
+        Route::post('periods/{id}/close', [FeePeriodController::class, 'close'])->whereNumber('id');
+        Route::post('periods/{id}/reopen', [FeePeriodController::class, 'reopen'])->whereNumber('id');
+        Route::post('periods/{id}/cancel', [FeePeriodController::class, 'cancel'])->whereNumber('id');
+
+        // ----- Quầy thu học phí -----
+        Route::prefix('cashier')->group(function () {
+            Route::get('meta', [FeeCashierController::class, 'meta']);
+            Route::get('overview', [FeeCashierController::class, 'overview']);
+            Route::get('students', [FeeCashierController::class, 'students']);
+            Route::get('students/{id}', [FeeCashierController::class, 'student'])->whereNumber('id');
+            Route::post('collect', [FeeCashierController::class, 'collect'])->middleware('throttle:60,1');
+            Route::get('pending', [FeeCashierController::class, 'pending']);
+            Route::post('payments/bulk-confirm', [FeeCashierController::class, 'bulkConfirm'])->middleware('throttle:20,1');
+            Route::get('payments', [FeeCashierController::class, 'payments']);
+            Route::get('payments/{id}', [FeeCashierController::class, 'receipt'])->whereNumber('id');
+            Route::post('payments/{id}/confirm', [FeeCashierController::class, 'confirm'])->whereNumber('id');
+            Route::post('payments/{id}/reject', [FeeCashierController::class, 'reject'])->whereNumber('id');
+            Route::post('payments/{id}/void', [FeeCashierController::class, 'void'])->whereNumber('id');
+            Route::get('daily', [FeeCashierController::class, 'daily']);
+            Route::get('disputes', [FeeCashierController::class, 'disputes']);
+            Route::post('disputes/{id}/reply', [FeeCashierController::class, 'replyDispute'])->whereNumber('id');
+        });
     });
 });

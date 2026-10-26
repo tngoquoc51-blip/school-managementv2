@@ -154,4 +154,210 @@ class AcademicApiController extends Controller
     {
         return response()->json(['data' => $this->repo()->reports()]);
     }
+    /** PUT /api/gv/profile/contact */
+    /** PUT /api/gv/profile/contact */
+    public function updateContact(Request $request)
+    {
+        $staff = $this->staff($request);
+        $id = (int) ($staff['id'] ?? 0);
+        $username = trim((string) ($staff['username'] ?? ''));
+        $staffEmail = trim((string) ($staff['email'] ?? ''));
+
+        if ($id <= 0 && $username === '') {
+            return response()->json(['message' => 'Chưa đăng nhập'], 401);
+        }
+
+        $phone = trim((string) $request->input('phone', ''));
+        $email = trim((string) $request->input('email', ''));
+
+        if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return response()->json(['message' => 'Email không hợp lệ'], 422);
+        }
+
+        // Tìm user: id staff HOẶC username/email đăng nhập Giáo vụ
+        $row = DB::table('users')
+            ->where(function ($q) use ($id, $username, $staffEmail) {
+                if ($id > 0) {
+                    $q->where('id', $id);
+                }
+                if ($username !== '') {
+                    $q->orWhere('username', $username)
+                        ->orWhere('email', $username);
+                }
+                if ($staffEmail !== '') {
+                    $q->orWhere('email', $staffEmail)
+                        ->orWhere('username', $staffEmail);
+                }
+                // hay dùng: giaovu
+                $q->orWhere('username', 'giaovu')
+                    ->orWhere('email', 'giaovu@thpt.edu.vn');
+            })
+            ->first();
+
+        if (!$row) {
+            return response()->json(['message' => 'Không tìm thấy tài khoản'], 404);
+        }
+
+        $upd = ['updated_at' => now()];
+        $upd['phone'] = $phone !== '' ? $phone : null;
+        if ($email !== '') {
+            $upd['email'] = $email;
+        }
+        DB::table('users')->where('id', $row->id)->update($upd);
+
+        $row = DB::table('users')->where('id', $row->id)->first();
+
+        $out = array_merge($staff, [
+            'email' => $row->email ?? $email,
+            'phone' => $row->phone ?? $phone,
+        ]);
+
+        return response()->json(['data' => $out, 'message' => 'Đã cập nhật liên hệ.']);
+    }
+
+    /** POST /api/gv/change-password */
+   /** POST /api/gv/change-password */
+   public function changePassword(Request $request)
+   {
+       $staff = $this->staff($request);
+       $id = (int) ($staff['id'] ?? 0);
+       $username = trim((string) ($staff['username'] ?? ''));
+
+       $current = (string) $request->input('current_password', '');
+       $new = (string) $request->input('new_password', '');
+
+       if ($current === '' || $new === '') {
+           return response()->json(['message' => 'Vui lòng nhập đủ mật khẩu'], 422);
+       }
+       if (strlen($new) < 6) {
+           return response()->json(['message' => 'Mật khẩu mới tối thiểu 6 ký tự'], 422);
+       }
+
+       $user = DB::table('users')
+           ->where(function ($q) use ($id, $username) {
+               if ($id > 0) {
+                   $q->where('id', $id);
+               }
+               if ($username !== '') {
+                   $q->orWhere('username', $username)->orWhere('email', $username);
+               }
+               $q->orWhere('username', 'giaovu')->orWhere('email', 'giaovu@thpt.edu.vn');
+           })
+           ->first();
+
+       if (!$user) {
+           return response()->json(['message' => 'Không tìm thấy tài khoản'], 404);
+       }
+
+       if (empty($user->password) || !password_verify($current, $user->password)) {
+           return response()->json(['message' => 'Mật khẩu hiện tại không đúng'], 422);
+       }
+
+       DB::table('users')->where('id', $user->id)->update([
+           'password' => password_hash($new, PASSWORD_BCRYPT),
+           'updated_at' => now(),
+       ]);
+
+       return response()->json(['message' => 'Đã đổi mật khẩu.']);
+   }
+
+    /** GET /api/gv/security */
+    public function security(Request $request)
+    {
+        $staff = $this->staff($request);
+        $id = (int) ($staff['id'] ?? 0);
+
+        // Nếu có bảng token staff riêng thì query thật; tạm trả phiên hiện tại
+        $sessions = [[
+            'id' => 0,
+            'device' => 'Trình duyệt hiện tại',
+            'ip' => $request->ip(),
+            'last_active_at' => now()->format('d/m/Y H:i'),
+            'is_current' => true,
+        ]];
+
+        // personal_access_tokens (Sanctum) nếu dùng
+        if (DB::getSchemaBuilder()->hasTable('personal_access_tokens') && $id > 0) {
+            $rows = DB::table('personal_access_tokens')
+                ->where('tokenable_id', $id)
+                ->orderByDesc('last_used_at')
+                ->limit(10)
+                ->get();
+            if ($rows->count()) {
+                $sessions = $rows->map(function ($t, $i) use ($request) {
+                    return [
+                        'id' => (int) $t->id,
+                        'device' => $t->name ?: 'Token #' . $t->id,
+                        'ip' => '—',
+                        'last_active_at' => $t->last_used_at ?: $t->created_at,
+                        'is_current' => $i === 0,
+                    ];
+                })->values()->all();
+            }
+        }
+
+        return response()->json(['data' => ['sessions' => $sessions]]);
+    }
+
+    /** POST /api/gv/security/revoke-others */
+    public function revokeOthers(Request $request)
+    {
+        $staff = $this->staff($request);
+        $id = (int) ($staff['id'] ?? 0);
+        if ($id > 0 && DB::getSchemaBuilder()->hasTable('personal_access_tokens')) {
+            DB::table('personal_access_tokens')->where('tokenable_id', $id)->delete();
+        }
+        return response()->json(['message' => 'Đã thu hồi các phiên khác.']);
+    }
+
+    /** POST /api/gv/security/sessions/{id}/revoke */
+    public function revokeSession(Request $request, int $id)
+    {
+        if ($id > 0 && DB::getSchemaBuilder()->hasTable('personal_access_tokens')) {
+            DB::table('personal_access_tokens')->where('id', $id)->delete();
+        }
+        return response()->json(['message' => 'Đã thu hồi phiên.']);
+    }
+
+    /** GET /api/gv/activity */
+    public function activity(Request $request)
+    {
+        $staff = $this->staff($request);
+        $id = (int) ($staff['id'] ?? 0);
+        $limit = min(50, max(5, (int) $request->query('limit', 20)));
+
+        $items = [];
+        if ($id > 0 && DB::getSchemaBuilder()->hasTable('sm_staff_activity')) {
+            $items = DB::table('sm_staff_activity')
+                ->where('user_id', $id)
+                ->orderByDesc('created_at')
+                ->limit($limit)
+                ->get()
+                ->map(fn ($r) => [
+                    'id' => $r->id,
+                    'time' => $r->created_at,
+                    'created_at' => $r->created_at,
+                    'action' => $r->action,
+                    'detail' => $r->detail,
+                ])
+                ->all();
+        }
+
+        if (!$items) {
+            $items = [
+                [
+                    'time' => now()->subMinutes(5)->format('d/m/Y H:i'),
+                    'action' => 'Đăng nhập Cổng Giáo vụ',
+                    'detail' => 'IP ' . $request->ip(),
+                ],
+                [
+                    'time' => now()->subHour()->format('d/m/Y H:i'),
+                    'action' => 'Xem thông báo hệ thống',
+                    'detail' => '',
+                ],
+            ];
+        }
+
+        return response()->json(['data' => ['items' => $items]]);
+    }
 }

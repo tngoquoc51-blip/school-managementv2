@@ -407,6 +407,14 @@ class FeeRepo
         if (!$inv['can_pay']) {
             return ['ok' => false, 'status' => 422, 'message' => $inv['status'] === 'paid' ? 'Hóa đơn này đã thanh toán đủ.' : 'Hóa đơn không còn khoản nào cần thanh toán (đang chờ xác nhận hoặc đã hủy).'];
         }
+        try {
+            $ps = $this->one('SELECT p.status, p.name FROM sm_invoices i JOIN sm_fee_periods p ON p.id = i.period_id WHERE i.id = ?', [$invoiceId]);
+        } catch (\Throwable $e) {
+            $ps = null; // chưa chạy them-dot-thu.sql
+        }
+        if ($ps && $ps['status'] === 'closed') {
+            return ['ok' => false, 'status' => 422, 'message' => 'Đợt thu "' . $ps['name'] . '" đã kết thúc. Vui lòng liên hệ phòng Kế toán để được hỗ trợ.'];
+        }
         if (!in_array($method, ['bank_transfer', 'ewallet'], true)) {
             return ['ok' => false, 'status' => 422, 'message' => 'Hình thức thanh toán không hợp lệ.'];
         }
