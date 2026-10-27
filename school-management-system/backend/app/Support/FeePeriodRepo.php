@@ -25,7 +25,7 @@ class FeePeriodRepo
     public const CAN_CANCEL = ['principal', 'vice_principal', 'super_admin'];
     public const TERMS = ['YEAR' => 'Đầu năm học', 'HK1' => 'Học kỳ 1', 'HK2' => 'Học kỳ 2'];
     public const STATUS = ['draft' => 'Bản nháp', 'open' => 'Đang thu', 'closed' => 'Đã kết thúc', 'cancelled' => 'Đã hủy'];
-    public const TOKEN_HOURS = 12;
+    public const TOKEN_HOURS = 168; // 7 ngày: đăng nhập một lần dùng cả tuần
     public const MAX_FAILS = 5;
     public const LOCK_MINUTES = 10;
     public const MAX_AMOUNT = 100000000;

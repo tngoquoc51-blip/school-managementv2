@@ -106,17 +106,27 @@ class AuthController extends Controller
             'academic', 'giao_vu', 'teacher', 'homeroom_teacher',
             'accountant', 'parent', 'student',
         ];
-        $primary = $roles[0] ?? 'student';
-        foreach ($priority as $r) {
-            if (in_array($r, $roles, true)) {
-                $primary = $r;
-                break;
-            }
-        }
+                $primary = $roles[0] ?? 'student';
+                foreach ($priority as $r) {
+                    if (in_array($r, $roles, true)) {
+                        $primary = $r;
+                        break;
+                    }
+                }
 
-        return response()->json([
-            'success' => true,
-            'token'   => $token,
+                // ===== THÊM MỚI: cảnh báo đăng nhập cho tài khoản quản trị / BGH =====
+                if (array_intersect($roles, ['super_admin', 'admin', 'principal', 'vice_principal'])) {
+                    try {
+                        \App\Support\AdminNotifier::loginAlert($user, $request);
+                    } catch (\Throwable $e) {
+                        // Lỗi thông báo không được làm hỏng đăng nhập
+                    }
+                }
+                // =====================================================================
+
+                return response()->json([
+                    'success' => true,
+                    'token'   => $token,
             'user'    => [
                 'id'       => $user->id,
                 'name'     => $user->name,

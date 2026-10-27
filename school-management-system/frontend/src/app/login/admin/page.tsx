@@ -113,25 +113,60 @@ export default function AdminLoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [remember, setRemember] = useState(false);
 
+    const API = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
+// Bỏ /v1 nếu env đang trỏ .../api/v1
+    const AUTH_URL = API.replace(/\/v1\/?$/, '') + '/auth/login';
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
         try {
-            await new Promise((r) => setTimeout(r, 500));
+            const res = await fetch(AUTH_URL, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    identifier: identifier.trim(),
+                    password,
+                }),
+            });
 
-            if (identifier.toLowerCase() === 'admin@thpt.edu.vn' && password === '123456') {
-                localStorage.setItem('token', 'demo-token');
-                localStorage.setItem('user', JSON.stringify({ name: 'Quản trị viên', email: identifier }));
-                localStorage.setItem('roles', JSON.stringify(['super_admin']));
-                localStorage.setItem('current_role', 'super_admin');
-                router.push('/admin/dashboard');
-            } else {
-                setError('Email hoặc mật khẩu không đúng');
+            const data = await res.json().catch(() => ({}));
+
+            if (!res.ok) {
+                setError(data?.message || 'Email hoặc mật khẩu không đúng');
+                return;
             }
+
+            const token = data.token ?? data.data?.token;
+            const user = data.user ?? data.data?.user ?? {};
+            const roles = data.roles ?? data.data?.roles ?? [];
+
+            if (!token) {
+                setError('Máy chủ không trả token. Kiểm tra API /auth/login.');
+                return;
+            }
+
+            // Token Sanctum thật — khớp adminProfile + adminApi
+            localStorage.setItem('token', token);
+            localStorage.setItem('admin_token', token);
+            localStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem('roles', JSON.stringify(roles));
+            localStorage.setItem('current_role', roles[0] || 'super_admin');
+
+            if (remember) {
+                localStorage.setItem('remember_admin', '1');
+            } else {
+                localStorage.removeItem('remember_admin');
+            }
+
+            router.push('/admin/dashboard');
         } catch {
-            setError('Có lỗi xảy ra, vui lòng thử lại');
+            setError('Không kết nối được máy chủ. Hãy bật backend (php artisan serve).');
         } finally {
             setLoading(false);
         }

@@ -1,13 +1,9 @@
 'use client';
 
-import './admin-layout.css';   // ← THÊM DÒNG NÀY
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-// ... phần còn lại giữ nguyên
+import './dashboard.css';
 
-/* ======================================================
-   KIỂU DỮ LIỆU
-   ====================================================== */
 interface Stats {
     totalUsers: number;
     activeUsers: number;
@@ -32,9 +28,6 @@ interface QuickLink {
     icon: string;
 }
 
-/* ======================================================
-   DỮ LIỆU DEMO (sau này thay bằng API)
-   ====================================================== */
 const DEMO_STATS: Stats = {
     totalUsers: 1562,
     activeUsers: 1489,
@@ -57,7 +50,7 @@ const DEMO_ACTIVITY: Activity[] = [
 const QUICK_LINKS: QuickLink[] = [
     { href: '/admin/users', title: 'Tài khoản', desc: 'Tạo, khóa, phân quyền', icon: 'users' },
     { href: '/admin/classes', title: 'Lớp học', desc: 'Quản lý lớp, sĩ số', icon: 'class' },
-    { href: '/admin/schedule', title: 'Thời khóa biểu', desc: 'Xếp lịch lớp / GV', icon: 'calendar' },
+    { href: '/admin/timetable', title: 'Thời khóa biểu', desc: 'Xếp lịch lớp / GV', icon: 'calendar' },
     { href: '/admin/exams', title: 'Lịch thi', desc: 'Giữa kỳ, cuối kỳ', icon: 'exam' },
     { href: '/admin/grades', title: 'Điểm số', desc: 'Tổng hợp theo TT22', icon: 'grade' },
     { href: '/admin/attendance', title: 'Điểm danh', desc: 'Chuyên cần toàn trường', icon: 'check' },
@@ -65,9 +58,6 @@ const QUICK_LINKS: QuickLink[] = [
     { href: '/admin/reports', title: 'Báo cáo', desc: 'Thống kê học lực', icon: 'chart' },
 ];
 
-/* ======================================================
-   ICON SVG nhỏ
-   ====================================================== */
 const ICONS: Record<string, React.ReactNode> = {
     users: (
         <>
@@ -94,11 +84,7 @@ const ICONS: Record<string, React.ReactNode> = {
             <path d="M14 2v6h6M9 13h6M9 17h4" />
         </>
     ),
-    grade: (
-        <>
-            <path d="M12 20V10M18 20V4M6 20v-4" />
-        </>
-    ),
+    grade: <path d="M12 20V10M18 20V4M6 20v-4" />,
     check: (
         <>
             <path d="M9 11l3 3L22 4" />
@@ -119,37 +105,17 @@ const ICONS: Record<string, React.ReactNode> = {
     ),
 };
 
-const Svg = ({ children }: { children: React.ReactNode }) => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-        {children}
-    </svg>
-);
+function Svg({ children }: { children: React.ReactNode }) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+            {children}
+        </svg>
+    );
+}
 
-/* ======================================================
-   COMPONENT
-   ====================================================== */
 export default function AdminDashboard() {
-    const [stats, setStats] = useState<Stats>(DEMO_STATS);
-    const [activity, setActivity] = useState<Activity[]>(DEMO_ACTIVITY);
-    const [loading, setLoading] = useState(false);
-
-    /* ===== Gọi API thật (bật khi backend sẵn sàng) ===== */
-    useEffect(() => {
-        // Uncomment khi API đã có:
-        /*
-        setLoading(true);
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/dashboard`, {
-            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        })
-            .then((r) => r.json())
-            .then((data) => {
-                setStats(data.stats);
-                setActivity(data.activity);
-            })
-            .catch(console.error)
-            .finally(() => setLoading(false));
-        */
-    }, []);
+    const [stats] = useState<Stats>(DEMO_STATS);
+    const [activity] = useState<Activity[]>(DEMO_ACTIVITY);
 
     const statusLabel = (s: Activity['status']) => {
         if (s === 'success') return <span className="ad-badge ok">Thành công</span>;
@@ -159,7 +125,6 @@ export default function AdminDashboard() {
 
     return (
         <div className="ad-dashboard">
-            {/* Header trang */}
             <div className="ad-page-head">
                 <div>
                     <h1>Bảng điều khiển quản trị</h1>
@@ -172,7 +137,6 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            {/* Stats */}
             <div className="ad-stats">
                 <div className="ad-stat">
                     <div className="ad-stat-label">Tổng tài khoản</div>
@@ -196,7 +160,6 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            {/* Truy cập nhanh */}
             <section className="ad-section">
                 <div className="ad-section-head">
                     <h2>Truy cập nhanh chức năng nhà trường</h2>
@@ -216,7 +179,6 @@ export default function AdminDashboard() {
                 </div>
             </section>
 
-            {/* Nhật ký + Tình trạng hệ thống */}
             <div className="ad-two-col">
                 <section className="ad-section">
                     <div className="ad-section-head">

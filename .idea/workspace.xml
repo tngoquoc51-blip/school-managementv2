@@ -5,13 +5,72 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="697b4476-35a9-45e0-8e56-10612acca154" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/Accountant-frame.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/Admin/AdminNotificationController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/Admin/AdminProfileController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/FeeDebtController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/FeeReceiptController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Support/AdminNotifier.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Support/FeeReceiptRepo.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/debts/_components/List.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/debts/_components/Overview.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/debts/_components/Promises.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/debts/_components/StudentModal.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/debts/_lib/db.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/debts/debts.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/debts/layout.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/_lib/bridge.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/receipts/_components/Recon.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/receipts/_components/Register.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/receipts/_components/Stats.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/receipts/_lib/rc.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/receipts/layout.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/receipts/receipts.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/profile/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/profile/profile.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/services/adminProfile.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/dashboard/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/dashboard/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/AccountantLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/AccountantLayout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/TeacherLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/TeacherLayout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/accountant-ui.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/accountant-ui.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/teacher-layout.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/teacher-layout.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/AuthController.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/AuthController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Support/FeePeriodRepo.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Support/FeePeriodRepo.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/backend/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/routes/api.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/_lib/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/_lib/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/notifications/notifications.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/notifications/notifications.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/notifications/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/notifications/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/profile/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/profile/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/profile/profile.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/profile/profile.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/students/requests/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/students/requests/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/students/requests/requests.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/academic/students/requests/requests.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/collection/_components/Counter.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/collection/_components/Counter.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/collection/_components/Daily.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/collection/_components/Daily.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/collection/_components/History.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/collection/_components/History.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/collection/_components/Receipt.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/collection/_components/Receipt.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/collection/_lib/cash.ts" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/collection/_lib/cash.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/collection/collection.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/collection/collection.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/collection/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/collection/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/debts/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/debts/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/fees/fees.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/fees/fees.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/fees/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/fees/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/[id]/edit/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/[id]/edit/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/[id]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/_components/PeriodForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/_components/PeriodForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/_components/ui.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/_components/ui.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/_lib/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/_lib/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/new/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/new/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/periods.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/periods/periods.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/receipts/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/receipts/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/dashboard/dashboard.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/dashboard/dashboard.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/dashboard/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/dashboard/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/roles/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/roles/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/roles/roles.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/roles/roles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/school-year/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/school-year/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/school-year/school-year.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/school-year/school-year.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/login/admin/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/login/admin/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/student/schedule/exams/exams.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/student/schedule/exams/exams.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/student/schedule/exams/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/student/schedule/exams/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/AdminLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/AdminLayout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/admin-layout.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/admin-layout.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/lib/adminApi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/lib/adminApi.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,6 +169,16 @@
           <url>file://$PROJECT_DIR$/school-management-system/frontend/src/layouts/AcademicLayout.tsx</url>
           <line>35</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/school-management-system/frontend/src/lib/adminApi.ts</url>
+          <line>70</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/school-management-system/frontend/src/app/accountant/collection/page.tsx</url>
+          <line>13</line>
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

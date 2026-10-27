@@ -1,0 +1,354 @@
+.arl-page {
+    --ink: #0c4a6e;
+    --blue: #0284c7;
+    --sky: #0ea5e9;
+    --line: #e2e8f0;
+    --muted: #64748b;
+    --paper: #f0f9ff;
+    --ok: #059669;
+    --bad: #dc2626;
+    color: var(--ink);
+}
+
+.arl-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+.arl-head h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+}
+.arl-head p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 13.5px;
+}
+.arl-head-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.arl-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+}
+.arl-stat {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px;
+}
+.arl-stat span {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+}
+.arl-stat b {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--ink);
+}
+
+.arl-body {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 16px;
+    min-height: 520px;
+}
+
+.arl-list {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 12px;
+    overflow: auto;
+    max-height: calc(100dvh - 220px);
+}
+.arl-list-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    padding: 8px 8px 12px;
+}
+
+.arl-role {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: 1px solid transparent;
+    background: transparent;
+    border-radius: 12px;
+    padding: 12px;
+    cursor: pointer;
+    margin-bottom: 6px;
+    transition: 0.15s;
+}
+.arl-role:hover {
+    background: var(--paper);
+}
+.arl-role.on {
+    background: #e0f2fe;
+    border-color: #7dd3fc;
+}
+.arl-role-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    align-items: baseline;
+}
+.arl-role-top strong {
+    font-size: 14px;
+}
+.arl-role-top code {
+    font-size: 11px;
+    color: var(--muted);
+}
+.arl-role-meta {
+    display: flex;
+    gap: 12px;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.arl-detail {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px 22px;
+    overflow: auto;
+    max-height: calc(100dvh - 220px);
+}
+.arl-detail-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+.arl-detail-head h2 {
+    margin: 0;
+    font-size: 18px;
+}
+.arl-detail-head p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+.arl-detail-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.arl-tabs {
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 16px;
+}
+.arl-tabs button {
+    border: 0;
+    background: none;
+    padding: 10px 14px;
+    font-weight: 600;
+    font-size: 13.5px;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+}
+.arl-tabs button.on {
+    color: var(--blue);
+    border-bottom-color: var(--sky);
+}
+
+.arl-group {
+    margin-bottom: 18px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+}
+.arl-group-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: var(--paper);
+}
+.arl-group-head h3 {
+    margin: 0;
+    font-size: 13.5px;
+    font-weight: 700;
+}
+.arl-group ul {
+    list-style: none;
+    margin: 0;
+    padding: 8px 12px 12px;
+}
+.arl-group li label {
+    display: grid;
+    grid-template-columns: 18px 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 6px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13.5px;
+}
+.arl-group li label:hover {
+    background: #f8fafc;
+}
+.arl-group li code {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.arl-users table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+}
+.arl-users th,
+.arl-users td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+}
+.arl-users th {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.arl-btn {
+    border: 0;
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+}
+.arl-btn.primary {
+    background: linear-gradient(135deg, var(--blue), var(--sky));
+    color: #fff;
+}
+.arl-btn.primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.arl-btn.ghost {
+    background: #f1f5f9;
+    color: var(--ink);
+}
+.arl-btn.danger {
+    color: var(--bad);
+}
+.arl-link {
+    border: 0;
+    background: none;
+    color: var(--blue);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.arl-badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #e0f2fe;
+    color: var(--blue);
+}
+.arl-st {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+.arl-st.active {
+    color: var(--ok);
+}
+.arl-st.locked {
+    color: var(--bad);
+}
+
+.arl-alert {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+.arl-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #0f172a;
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 12px;
+    z-index: 50;
+    font-size: 13.5px;
+}
+.arl-empty,
+.arl-muted {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.arl-modal-bg {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    display: grid;
+    place-items: center;
+    z-index: 40;
+}
+.arl-modal {
+    width: min(420px, 92vw);
+    background: #fff;
+    border-radius: 16px;
+    padding: 22px;
+}
+.arl-modal h3 {
+    margin: 0 0 8px;
+}
+.arl-input {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-size: 14px;
+}
+.arl-modal-foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+@media (max-width: 960px) {
+    .arl-body {
+        grid-template-columns: 1fr;
+    }
+    .arl-list {
+        max-height: 240px;
+    }
+    .arl-stats {
+        grid-template-columns: 1fr;
+    }
+}

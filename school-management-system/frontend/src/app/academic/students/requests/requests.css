@@ -1,4 +1,4 @@
-/* Duyệt hồ sơ – Cổng Giáo vụ (sky / navy, đồng bộ hệ thống) */
+/* Duyệt hồ sơ – full width, sky/navy */
 .prq {
     --ink: #0c4a6e;
     --blue: #0284c7;
@@ -7,25 +7,39 @@
     --paper: #f0f9ff;
     --mut: #64748b;
     --ok: #059669;
-    --ok-bg: #d1fae5;
     --err: #dc2626;
-    --err-bg: #fee2e2;
-    max-width: 1100px;
+    width: 100%;
+    max-width: none;
+}
+
+.prq-head-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+.prq-head-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 4px;
 }
 
 .prq-stats {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 12px;
-    margin: 0 0 16px;
+    margin: 12px 0 16px;
 }
 
 .prq-stat {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     gap: 4px;
-    padding: 16px 18px;
+    padding: 18px 20px;
     border-radius: 16px;
     border: 1px solid var(--line);
     background: #fff;
@@ -36,16 +50,16 @@
 
 .prq-stat:hover {
     border-color: var(--sky);
-    box-shadow: 0 6px 18px rgba(14, 165, 233, 0.12);
+    box-shadow: 0 8px 22px rgba(14, 165, 233, 0.12);
 }
 
 .prq-stat.on {
     border-color: var(--blue);
-    box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+    box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.22);
 }
 
 .prq-stat-n {
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 800;
     color: var(--ink);
     line-height: 1.1;
@@ -61,6 +75,43 @@
 .prq-stat.tone-err .prq-stat-n { color: var(--err); }
 .prq-stat.tone-pri .prq-stat-n { color: var(--blue); }
 
+.prq-features {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.prq-feat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, #fff, #f0f9ff);
+    text-align: left;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.prq-feat:hover {
+    border-color: var(--sky);
+    box-shadow: 0 6px 16px rgba(14, 165, 233, 0.1);
+}
+
+.prq-feat b {
+    font-size: 14px;
+    color: var(--ink);
+}
+
+.prq-feat span {
+    font-size: 12px;
+    color: var(--mut);
+}
+
 .prq-toolbar {
     display: flex;
     flex-wrap: wrap;
@@ -72,7 +123,7 @@
 .prq-search {
     position: relative;
     flex: 1;
-    min-width: 200px;
+    min-width: 220px;
 }
 
 .prq-search-ico {
@@ -81,7 +132,6 @@
     top: 50%;
     transform: translateY(-50%);
     color: var(--mut);
-    font-size: 16px;
 }
 
 .prq-search input {
@@ -107,22 +157,7 @@
     background: #fff;
     font-size: 13.5px;
     color: var(--ink);
-    min-width: 180px;
-}
-
-.prq-refresh {
-    padding: 11px 14px;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    background: #fff;
-    font-weight: 600;
-    font-size: 13.5px;
-    color: var(--blue);
-    cursor: pointer;
-}
-
-.prq-refresh:hover {
-    background: #e0f2fe;
+    min-width: 150px;
 }
 
 .prq-hint {
@@ -180,8 +215,30 @@
     color: #fff;
 }
 
-.prq-pad {
-    padding: 16px;
+.prq-pad { padding: 16px; }
+
+.prq-bulk-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 20px;
+    border-bottom: 1px solid #e0f2fe;
+    background: #f8fafc;
+}
+
+.prq-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+}
+
+.prq-bulk-n {
+    font-size: 13px;
+    color: var(--mut);
 }
 
 .prq-list {
@@ -195,9 +252,7 @@
     border-bottom: 1px solid #e0f2fe;
 }
 
-.prq-item:last-child {
-    border-bottom: 0;
-}
+.prq-item:last-child { border-bottom: 0; }
 
 .prq-item-head {
     display: flex;
@@ -211,6 +266,12 @@
     display: flex;
     gap: 12px;
     align-items: center;
+}
+
+.prq-item-check {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--blue);
 }
 
 .prq-av {
@@ -227,15 +288,17 @@
 }
 
 .prq-name {
+    border: 0;
+    background: none;
+    padding: 0;
     font-weight: 700;
     font-size: 15.5px;
     color: #0369a1;
-    text-decoration: none;
+    cursor: pointer;
+    text-align: left;
 }
 
-.prq-name:hover {
-    text-decoration: underline;
-}
+.prq-name:hover { text-decoration: underline; }
 
 .prq-meta {
     display: flex;
@@ -269,9 +332,7 @@
     margin-bottom: 12px;
 }
 
-.prq-diff.compact {
-    margin: 14px 0;
-}
+.prq-diff.compact { margin: 14px 0; }
 
 .prq-diff-box {
     padding: 12px 14px;
@@ -296,18 +357,12 @@
     word-break: break-word;
 }
 
-.prq-diff-box.old strong {
-    color: #b91c1c;
-}
-
+.prq-diff-box.old strong { color: #b91c1c; }
 .prq-diff-box.new {
     border-color: #6ee7b7;
     background: #ecfdf5;
 }
-
-.prq-diff-box.new strong {
-    color: #047857;
-}
+.prq-diff-box.new strong { color: #047857; }
 
 .prq-arrow {
     font-size: 18px;
@@ -365,9 +420,7 @@
     border: 1px solid #fecaca;
 }
 
-.prq-btn.danger:hover:not(:disabled) {
-    background: var(--err-bg);
-}
+.prq-btn.danger:hover:not(:disabled) { background: #fee2e2; }
 
 .prq-btn.ghost {
     background: #fff;
@@ -375,8 +428,11 @@
     border: 1px solid var(--line);
 }
 
-.prq-btn.ghost:hover {
-    background: #e0f2fe;
+.prq-btn.ghost:hover { background: #e0f2fe; }
+
+.prq-btn.pri {
+    background: linear-gradient(135deg, #0369a1, #0ea5e9);
+    color: #fff;
 }
 
 .prq-result {
@@ -388,9 +444,7 @@
     gap: 4px;
 }
 
-.prq-note {
-    font-style: italic;
-}
+.prq-note { font-style: italic; }
 
 .prq-pager {
     padding: 12px 16px 16px;
@@ -409,10 +463,7 @@
     color: var(--mut) !important;
 }
 
-.prq-field {
-    display: block;
-    margin-top: 8px;
-}
+.prq-field { display: block; margin-top: 8px; }
 
 .prq-field span {
     display: block;
@@ -472,24 +523,20 @@
     font-size: 14px;
 }
 
-@media (max-width: 800px) {
-    .prq-stats {
+@media (max-width: 1000px) {
+    .prq-stats,
+    .prq-features {
         grid-template-columns: 1fr 1fr;
     }
+}
 
-    .prq-diff {
-        grid-template-columns: 1fr;
-    }
-
+@media (max-width: 800px) {
+    .prq-diff { grid-template-columns: 1fr; }
     .prq-arrow {
         transform: rotate(90deg);
         justify-self: center;
     }
-
-    .prq-dl {
-        grid-template-columns: 1fr;
-    }
-
+    .prq-dl { grid-template-columns: 1fr; }
     .prq-hint {
         width: 100%;
         margin-left: 0;

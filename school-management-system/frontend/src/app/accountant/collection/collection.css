@@ -1,0 +1,148 @@
+/* Thu học phí – tiền tố cl-  (dùng chung biến màu và thành phần pd- của khu Kế toán) */
+.cl{min-width:0}
+.cl a{color:var(--pri);text-decoration:none}.cl a:hover{text-decoration:underline}
+.cl .ok{color:var(--ok)}.cl .bad{color:var(--err)}.cl .warn{color:var(--warn)}
+.cl-year{display:inline-flex;align-items:center;height:36px;padding:0 14px;border-radius:99px;background:var(--soft);color:var(--pri);font-weight:600;font-size:13px}
+.cl-quick{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+.cl-quick a{font-size:12.5px;color:var(--pri);background:#fff;border:1px solid var(--line);padding:5px 12px;border-radius:99px;text-decoration:none!important}
+.cl-quick a:hover{background:var(--soft)}
+.cl-top{margin-bottom:16px}
+.cl-stat-btn{all:unset;display:block;cursor:pointer;border-radius:16px;min-width:0}
+.cl-stat-btn:hover .pd-stat{border-color:#9ccbe8;box-shadow:0 8px 20px rgba(3,105,161,.1)}
+.cl-stat-btn:focus-visible{outline:3px solid #7dd3fc;outline-offset:2px}
+.cl .pd-tabs.solo{display:flex;width:fit-content}
+.cl-tabs{margin-bottom:16px}
+.cl-link{background:none;border:0;padding:0;color:var(--pri);cursor:pointer;font:inherit;text-align:left}.cl-link:hover{text-decoration:underline}.cl-link.mono{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;font-weight:600}
+.cl-h4{margin:14px 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
+.cl-note{margin:0;border-radius:0;background:#f5fbff;border-bottom:1px solid var(--line)}
+.cl-strike{text-decoration:line-through;color:var(--mut)}
+.cl-rowact{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.cl-av{flex:0 0 38px;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-style:normal;font-weight:700;color:#fff;background:linear-gradient(135deg,#0ea5e9,#0369a1)}
+.cl-av.lg{width:56px;height:56px;flex-basis:56px;border-radius:16px;font-size:24px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3)}
+
+/* bố cục quầy thu */
+.cl-counter{display:grid;grid-template-columns:minmax(300px,340px) minmax(0,1fr);gap:16px;align-items:start}
+.cl-find{position:sticky;top:12px;min-width:0}
+.cl-find .pd-card{margin-bottom:0}
+.cl-search{display:grid;gap:10px}
+.cl-search .pd-in{width:100%}
+.cl-search-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cl-search .pd-chips button{padding:4px 10px;font-size:12.5px}
+.cl-hint p{margin:12px 0 0;color:var(--mut)}
+.cl-count{margin:12px 0 6px;color:var(--mut);font-size:12.5px}
+.cl-res{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px;max-height:calc(100vh - 340px);min-height:60px;overflow-y:auto}
+.cl-res button{width:100%;display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);text-align:left;cursor:pointer;font:inherit}
+.cl-res button:hover{border-color:#9ccbe8;background:#f8fbfe}
+.cl-res button.on{border-color:var(--pri2);background:var(--soft);box-shadow:0 0 0 3px rgba(2,132,199,.12)}
+.cl-res b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cl-res small{display:block;color:var(--mut);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cl-res em{font-style:normal;font-weight:700;font-size:13px;white-space:nowrap}
+.cl-work{min-width:0;display:grid;gap:16px}.cl-work .pd-card,.cl-work .pd-stats{margin-bottom:0}
+.cl-welcome{display:grid;justify-items:center;gap:8px;text-align:center;padding:48px 24px;border:1px dashed #b9d6ec;border-radius:20px;background:linear-gradient(180deg,#fff,#f5fbff)}
+.cl-welcome>i{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;color:var(--pri);background:var(--soft)}
+.cl-welcome h2{margin:6px 0 0;color:var(--navy);font-size:20px}.cl-welcome p{margin:0;color:var(--mut);max-width:520px}
+.cl-welcome ol{margin:8px 0 0;padding:0;list-style:none;display:grid;gap:6px;counter-reset:s;text-align:left}
+.cl-welcome li{counter-increment:s;display:flex;gap:10px;align-items:center;color:var(--ink)}
+.cl-welcome li::before{content:counter(s);flex:0 0 24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;background:var(--pri);color:#fff}
+
+/* thông tin học sinh */
+.cl-banner{position:relative;display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:18px 22px;border-radius:20px;color:#fff;background:linear-gradient(135deg,#0b3a66,#0369a1 70%,#0284c7)}
+.cl-banner-info{flex:1 1 260px;min-width:0}.cl-banner h2{margin:0 0 4px;font-size:21px}
+.cl-banner p{margin:0;opacity:.92;font-size:13.5px}.cl-banner p b{color:#fff}
+.cl-waivers{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.cl-waivers span{font-size:12px;padding:2px 10px;border-radius:99px;background:rgba(245,158,11,.22);border:1px solid rgba(253,230,138,.5);color:#fde68a}
+.cl-banner-debt{display:grid;gap:4px;justify-items:end;text-align:right;padding-right:26px}
+.cl-banner-debt span{font-size:12px;opacity:.85}.cl-banner-debt b{font-size:26px;line-height:1.1}.cl-banner-debt b.debt{color:#fde68a}
+.cl-banner-debt .pd-chip{background:rgba(255,255,255,.95)}
+.cl-banner-x{position:absolute;top:10px;right:12px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:18px;line-height:1;cursor:pointer}.cl-banner-x:hover{background:rgba(255,255,255,.3)}
+.cl-mini{grid-template-columns:repeat(4,minmax(0,1fr))}.cl-mini .pd-stat{padding:12px 14px}.cl-mini .pd-stat b{font-size:17px}
+
+/* hóa đơn */
+.cl-quickpick{display:flex;gap:6px;flex-wrap:wrap}
+.pd-quick-b{border:1px solid #b9d6ec;background:var(--soft);color:var(--pri);border-radius:99px;padding:4px 12px;font-size:12.5px;cursor:pointer;font-weight:600}
+.pd-quick-b:hover:not(:disabled){background:#d7ecfa}.pd-quick-b:disabled{opacity:.45;cursor:not-allowed}
+.cl-inv{list-style:none;margin:0;padding:0}
+.cl-inv>li{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1.1fr) 200px;gap:10px 18px;align-items:start;padding:14px 18px;border-bottom:1px solid #eaf1f8;border-left:4px solid transparent}
+.cl-inv>li:last-child{border-bottom:0}
+.cl-inv>li.late{border-left-color:var(--err)}.cl-inv>li.sel{background:#f5fbff;border-left-color:var(--pri2)}.cl-inv>li.off{background:#fafcfe}
+.cl-inv-pick{display:flex;gap:12px;align-items:flex-start;cursor:pointer;min-width:0}
+.cl-inv-pick input{width:18px;height:18px;margin-top:3px;accent-color:var(--pri);flex:0 0 auto}
+.cl-inv-main{display:grid;gap:3px;min-width:0}.cl-inv-main b{color:var(--navy);overflow-wrap:anywhere}.cl-inv-main small{display:block}
+.cl-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.cl-inv-nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cl-inv-nums span{display:block;color:var(--mut);font-size:11.5px}.cl-inv-nums b{font-size:14px;white-space:nowrap}
+.cl-inv-amt{display:grid;gap:4px;justify-items:stretch}.cl-inv-amt>label{font-size:11.5px;color:var(--mut)}
+.cl-inv-amt>div{display:flex;align-items:center;gap:6px}.cl-inv-amt .pd-in{width:100%;text-align:right;font-weight:700;font-size:15px}.cl-inv-amt .pd-in:disabled{background:#f3f7fb;color:#98a9bb}
+.cl-inv-amt .cl-link{font-size:12px;justify-self:end}
+.cl-inv-more{grid-column:1/-1;font-size:12.5px}
+.cl-lines{grid-column:1/-1;width:100%;border-collapse:collapse;font-size:13px;background:#fbfdff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.cl-lines th{background:#f3f8fd;color:var(--mut);font-size:11.5px;text-transform:uppercase;text-align:left;padding:6px 10px}
+.cl-lines td{padding:7px 10px;border-top:1px solid #eaf1f8;vertical-align:top}.cl-lines .n{text-align:right;white-space:nowrap}.cl-lines small{display:block;color:var(--mut)}
+.cl-lines tr.sum td{font-weight:700;background:#f3f8fd}
+.cl-foldbar{padding:10px 18px;border-top:1px solid var(--line);background:#fafcfe}
+
+/* thanh toán */
+.cl-pay{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}
+.cl-pay-l{display:grid;gap:14px;min-width:0}.cl-pay-l .pd-row{gap:12px}
+.cl-pay-l .pd-seg button{flex:1 1 130px}
+.cl-pay-r{display:grid;gap:6px;padding:18px;border-radius:16px;background:linear-gradient(180deg,#f5fbff,#e8f4fd);border:1px solid #cfe6f6;position:sticky;top:12px}
+.cl-pay-r>span{color:var(--mut);font-size:12.5px}.cl-pay-r>b{font-size:30px;line-height:1.1;color:var(--navy)}.cl-pay-r>small{color:var(--mut)}
+.cl-submit{width:100%;height:46px;margin-top:6px;font-size:15px}
+.cl-problems{margin:6px 0 0;padding-left:18px;color:var(--err);font-size:12.5px}
+.cl-change{display:grid;gap:8px;padding:12px 14px;border:1px dashed #b9d6ec;border-radius:12px;background:#fbfdff;max-width:420px}
+.cl-change p{margin:0}
+.cl-quickcash{display:flex;gap:6px;flex-wrap:wrap}.cl-quickcash button{border:1px solid #b9d6ec;background:#fff;color:var(--pri);border-radius:8px;padding:4px 10px;font-size:12.5px;cursor:pointer;font-weight:600}
+.cl-qr{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.cl-qr img{border-radius:8px;border:1px solid var(--line);background:#fff}.cl-qr div{display:grid;gap:2px;min-width:0}.cl-qr span{color:var(--mut)}.cl-qr small{color:var(--warn);max-width:260px}
+.cl-okbar{display:grid;gap:2px;margin:0}
+
+/* phản hồi */
+.cl-disp{list-style:none;margin:0;padding:0}
+.cl-disp li{display:grid;gap:8px;justify-items:start;padding:14px 18px;border-bottom:1px solid #eaf1f8}.cl-disp li:last-child{border-bottom:0}
+.cl-disp-h{display:flex;gap:6px 12px;align-items:center;flex-wrap:wrap}
+.cl-quote{margin:0;padding:8px 12px;border-left:3px solid var(--pri2);background:var(--soft);border-radius:0 8px 8px 0;font-style:italic;color:var(--ink)}
+.cl-reply{margin:0;padding:8px 12px;border-left:3px solid #10b981;background:var(--ok-bg);border-radius:0 8px 8px 0;font-size:13.5px}
+
+/* lịch sử + tổng kết ngày */
+.cl-hfilter{flex-direction:column;align-items:stretch}
+.cl-daybar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.cl-daynav{display:flex;gap:6px;align-items:center}.cl-daynav .pd-btn{width:36px;padding:0}.cl-daynav .pd-btn:last-of-type:not(:first-child){width:auto;padding:0 12px}
+.cl-total td{font-weight:700;background:#f3f8fd}
+.cl-daylist{margin-top:16px}
+
+/* phiếu thu */
+.cl-preview{display:grid;gap:16px}
+.cl-paper{position:relative;padding:22px 26px;background:#fff;border:1px solid #cbd8e6;border-radius:12px;color:#111;font-size:13.5px;line-height:1.5}
+.cl-paper header{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;border-bottom:2px solid #111;padding-bottom:8px}
+.cl-paper header b{display:block;font-size:15px;text-transform:uppercase}.cl-paper header span{display:block;font-size:12px;color:#444}
+.cl-paper header .r{text-align:right}.cl-paper .cl-mono{font-family:ui-monospace,Consolas,monospace}
+.cl-paper h2{margin:14px 0 2px;text-align:center;font-size:19px;letter-spacing:.04em}
+.cl-paper-date{margin:0 0 10px;text-align:center;font-size:12.5px;color:#444}
+.cl-paper dl{margin:0 0 10px;display:grid;gap:3px}.cl-paper dl>div{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px}.cl-paper dt{color:#555}.cl-paper dd{margin:0}
+.cl-paper table{width:100%;border-collapse:collapse;margin:8px 0}.cl-paper th,.cl-paper td{border:1px solid #888;padding:4px 8px;text-align:left}.cl-paper th{background:#f1f1f1;font-size:12px}
+.cl-paper .n{text-align:right;white-space:nowrap}.cl-paper tr.sum td{font-weight:700}
+.cl-paper-amt{display:flex;gap:24px;flex-wrap:wrap;justify-content:space-between;margin:10px 0 4px;padding:8px 12px;border:2px solid #111;border-radius:6px}
+.cl-paper-amt span{display:block;font-size:12px;color:#444}.cl-paper-amt b{font-size:20px}.cl-paper-amt div:last-child{text-align:right}.cl-paper-amt div:last-child b{font-size:16px}
+.cl-paper-words{margin:6px 0 0}
+.cl-sign{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px;text-align:center}
+.cl-sign b{display:block}.cl-sign span{display:block;font-size:12px;color:#555;margin-top:2px}.cl-sign div{min-height:84px}
+.cl-paper-foot{margin:10px 0 0;font-size:12px;color:#555;text-align:center;font-style:italic}
+.cl-stamp{position:absolute;inset:0;display:grid;place-items:center;font-size:72px;font-weight:800;letter-spacing:.1em;color:rgba(190,18,60,.28);transform:rotate(-18deg);pointer-events:none}
+.cl-paper.void{opacity:.9}
+.cl-printroot{display:none}
+.cl-sheet{color:#111;font-size:12px}.cl-sheet header{text-align:center;margin-bottom:10px}.cl-sheet header span{display:block;text-transform:uppercase;font-weight:700}.cl-sheet h2{margin:4px 0 0;font-size:17px}
+.cl-sheet h3{margin:14px 0 4px;font-size:13px}.cl-sheet table{width:100%;border-collapse:collapse;margin:4px 0}.cl-sheet th,.cl-sheet td{border:1px solid #777;padding:3px 6px;text-align:left}.cl-sheet th{background:#eee}
+.cl-sheet .n{text-align:right;white-space:nowrap}.cl-sheet tr.sum td{font-weight:700}.cl-sheet-sum td{font-size:13px}
+
+/* màn hình hẹp */
+@media (max-width:1100px){.cl-counter{grid-template-columns:minmax(0,1fr)}.cl-find{position:static}.cl-res{max-height:340px}.cl-inv>li{grid-template-columns:minmax(0,1fr) 190px}.cl-inv-nums{grid-column:1/-1;order:3}.cl-pay{grid-template-columns:minmax(0,1fr)}.cl-pay-r{position:static}}
+@media (max-width:760px){.cl-mini{grid-template-columns:repeat(2,minmax(0,1fr))}.cl-inv>li{grid-template-columns:minmax(0,1fr);padding:14px}.cl-banner{padding:16px}.cl-banner-debt{justify-items:start;text-align:left;padding-right:0}.cl-sign{grid-template-columns:1fr}.cl-paper{padding:16px}.cl-paper dl>div{grid-template-columns:minmax(0,1fr)}}
+
+/* in ấn: chỉ in nội dung .cl-printroot (gắn vào <body>) */
+@page{size:A4;margin:12mm}
+@media print{
+    body>*:not(.cl-printroot){display:none!important}
+    .cl-printroot{display:block!important;position:static!important;width:100%;margin:0;padding:0;background:#fff!important}
+    .cl-printroot .cl-paper{page-break-after:always;break-after:page;border:1px solid #000;border-radius:0;box-shadow:none;margin:0}
+    .cl-printroot .cl-paper:last-child{page-break-after:auto;break-after:auto}
+    .cl-printroot .cl-stamp{color:rgba(190,18,60,.35)}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}

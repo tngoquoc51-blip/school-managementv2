@@ -1,0 +1,55 @@
+/* Trang Công nợ: dùng chung biến màu .pd, khung .cl và bảng .rc-table; chỉ bổ sung phần riêng (dbt-). */
+.dbt .rc-filters{display:grid;gap:10px}
+.dbt .rc-row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.dbt .pd-chips{display:flex;gap:6px;flex-wrap:wrap}
+.dbt .pd-chips button em{margin-left:6px;font-style:normal;font-size:11.5px;padding:1px 7px;border-radius:99px;background:rgba(15,42,67,.08)}
+.dbt .pd-chips button.on em{background:rgba(255,255,255,.28)}
+.dbt .rc-filters .pd-filters{display:grid;grid-template-columns:minmax(220px,2fr) repeat(3,minmax(130px,1fr)) auto;gap:10px;align-items:center}
+.dbt .rc-filters .pd-filters .pd-in{width:100%;min-width:0;flex:none!important}
+.dbt .rc-adv{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;padding:12px;border:1px dashed var(--line);border-radius:12px;background:var(--soft)}
+.dbt .rc-on{background:var(--soft)!important;border-color:var(--pri)!important}
+.dbt .rc-selbar{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin:0 16px 12px;padding:10px 14px;border-radius:12px;background:#e0f2fe;border:1px solid #bae6fd;color:#075985}
+.dbt .rc-selbar>div{display:flex;gap:8px;flex-wrap:wrap}
+.dbt .rc-table td small,.dbt .dbt-inv td small{display:block;color:var(--mut);font-size:12px}
+.dbt .rc-table td.n,.dbt .rc-table th.n,.dbt .pd-table td.n,.dbt .pd-table th.n{text-align:right;white-space:nowrap}
+.dbt small.bad,.dbt b.bad,.dbt .bad{color:var(--err)}.dbt small.ok,.dbt b.ok,.dbt .ok{color:var(--ok)}.dbt small.warn,.dbt .warn{color:var(--warn)}
+.dbt .dbt-prog{min-width:170px}.dbt .dbt-prog .pd-progress{margin-bottom:4px}
+.dbt .dbt-dot{display:inline-block;width:8px;height:8px;border-radius:99px;margin-right:6px;vertical-align:1px}
+.dbt .dbt-clip{display:block;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dbt .dbt-rate{display:grid;gap:6px;margin:-4px 0 16px;color:var(--mut);font-size:13px}.dbt .dbt-rate b{color:var(--navy)}
+.dbt .dbt-sel{display:flex;gap:10px;align-items:center;font-size:13px;color:var(--mut)}
+.dbt .dbt-more{padding:10px 16px;text-align:center;border-top:1px solid var(--line)}
+/* tuổi nợ */
+.dbt .dbt-aging{display:flex;height:34px;border-radius:10px;overflow:hidden;gap:2px;background:#e2ebf4}
+.dbt .dbt-aging button{border:0;cursor:pointer;min-width:6px;transition:filter .15s}.dbt .dbt-aging button:hover{filter:brightness(1.12)}
+.dbt .dbt-legend{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.dbt .dbt-legend button{width:100%;display:grid;grid-template-columns:12px 1fr;gap:2px 10px;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;cursor:pointer;font:inherit;color:inherit}
+.dbt .dbt-legend button:hover:not(:disabled){border-color:var(--pri);box-shadow:0 2px 8px rgba(15,42,67,.08)}.dbt .dbt-legend button:disabled{opacity:.55;cursor:default}
+.dbt .dbt-legend i{grid-row:1/4;width:12px;height:12px;border-radius:4px;margin-top:3px}
+.dbt .dbt-legend span{font-size:12.5px;color:var(--mut)}.dbt .dbt-legend b{font-size:17px;color:var(--navy)}.dbt .dbt-legend em{font-style:normal;font-size:12px;color:var(--mut)}
+/* top */
+.dbt .dbt-top{list-style:none;margin:0;padding:0}
+.dbt .dbt-top li{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 16px;border-top:1px solid var(--line)}.dbt .dbt-top li:first-child{border-top:0}
+.dbt .dbt-top li>div{text-align:right;display:grid;gap:2px;justify-items:end}
+.dbt .dbt-top small{display:block;color:var(--mut);font-size:12px}
+.dbt .dbt-rank{width:26px;height:26px;border-radius:99px;background:var(--soft);color:var(--pri);display:grid;place-items:center;font-size:12px;font-weight:700}
+.dbt .dbt-top li:nth-child(-n+3) .dbt-rank{background:var(--err-bg);color:var(--err)}
+/* hồ sơ học sinh */
+.dbt .dbt-detail{display:grid;gap:14px}.dbt .dbt-detail h4{margin:6px 0 0;color:var(--navy);font-size:14px}
+.dbt .dbt-who{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.dbt .dbt-who small{display:block;color:var(--mut);font-size:12.5px}
+.dbt .dbt-mini{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.dbt .dbt-mini>div{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff}.dbt .dbt-mini span{display:block;font-size:12px;color:var(--mut)}.dbt .dbt-mini b{font-size:16px;color:var(--navy);overflow-wrap:anywhere}
+.dbt .dbt-mini b.bad{color:var(--err)}.dbt .dbt-mini b.ok{color:var(--ok)}
+.dbt .dbt-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:18px;align-items:start}
+.dbt .dbt-pay{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
+.dbt .dbt-pay li{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px}.dbt .dbt-pay small{grid-column:1/-1;color:var(--mut);font-size:12px}
+.dbt .dbt-form{display:grid;gap:10px;margin-top:8px}
+.dbt .dbt-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dbt .dbt-tl{list-style:none;margin:0;padding:0 0 0 14px;border-left:2px solid var(--line);display:grid;gap:12px}
+.dbt .dbt-tl li{position:relative;padding:2px 0 0 10px}.dbt .dbt-tl li::before{content:'';position:absolute;left:-21px;top:8px;width:10px;height:10px;border-radius:99px;background:var(--pri);border:2px solid #fff}
+.dbt .dbt-tl p{margin:4px 0 0}.dbt .dbt-tl-h{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.dbt .dbt-tl-h small{color:var(--mut)}
+.dbt .dbt-act{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+@media (max-width:1100px){.dbt .rc-filters .pd-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.dbt .rc-filters .pd-filters .pd-in:first-child{grid-column:1/-1}}
+@media (max-width:760px){.dbt .dbt-cols{grid-template-columns:minmax(0,1fr)}.dbt .dbt-mini{grid-template-columns:repeat(2,minmax(0,1fr))}.dbt .dbt-two{grid-template-columns:minmax(0,1fr)}.dbt .rc-selbar{margin:0 10px 10px}}
+@media (max-width:520px){.dbt .rc-filters .pd-filters{grid-template-columns:minmax(0,1fr)}}
+@media print{.dbt{display:none!important}}

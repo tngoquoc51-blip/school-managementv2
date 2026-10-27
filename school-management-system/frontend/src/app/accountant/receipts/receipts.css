@@ -1,0 +1,30 @@
+/* Trang Phiếu thu / Biên lai: dùng chung biến màu .pd và khung .cl; chỉ bổ sung phần riêng (rc-). */
+.rc .rc-filters{display:grid;gap:10px}
+.rc .rc-row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.rc .rc-row .pd-chips{display:flex;gap:6px;flex-wrap:wrap}
+.rc .pd-chips button em{margin-left:6px;font-style:normal;font-size:11.5px;padding:1px 7px;border-radius:99px;background:rgba(15,42,67,.08)}
+.rc .pd-chips button.on em{background:rgba(255,255,255,.28)}
+.rc .rc-adv{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;padding:12px;border:1px dashed var(--line);border-radius:12px;background:var(--soft)}
+.rc .rc-on{background:var(--soft)!important;border-color:var(--pri)!important}
+.rc .rc-selbar{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin:0 16px 12px;padding:10px 14px;border-radius:12px;background:#e0f2fe;border:1px solid #bae6fd;color:#075985}
+.rc .rc-selbar small{opacity:.75}.rc .rc-selbar>div{display:flex;gap:8px;flex-wrap:wrap}
+.rc .rc-table td small{display:block;color:var(--mut);font-size:12px}
+.rc .rc-table td.n,.rc .rc-table th.n{text-align:right;white-space:nowrap}
+.rc .rc-void td{opacity:.62}.rc .rc-void td:nth-child(2) b{text-decoration:line-through}
+.rc .rc-howto{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.rc .rc-match{margin:0 16px 12px}
+.rc .rc-recon-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+.rc .rc-progress .pd-progress{margin-top:6px}
+.rc .rc-chart{display:flex;align-items:flex-end;gap:3px;height:200px;padding:8px 2px 0;border-bottom:1px solid var(--line)}
+.rc .rc-bar{flex:1 1 0;min-width:3px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative}
+.rc .rc-bar i{display:block;width:100%;max-width:26px;border-radius:5px 5px 0 0;background:linear-gradient(180deg,#38bdf8,#0369a1);transition:filter .15s}
+.rc .rc-bar:hover i{filter:brightness(1.15)}
+.rc .rc-bar span{position:absolute;bottom:-20px;font-size:10.5px;color:var(--mut);white-space:nowrap}
+.rc .rc-chart{margin-bottom:26px}
+.rc .pd-bars b.ok{color:var(--ok)}.rc .pd-bars b.warn{color:var(--warn)}.rc .pd-bars b.bad{color:var(--err)}
+@media (max-width:900px){.rc .rc-recon-stats{grid-template-columns:minmax(0,1fr)}.rc .rc-selbar{margin:0 10px 10px}}
+@media print{.rc{display:none!important}}
+.rc .rc-filters .pd-filters{display:grid;grid-template-columns:minmax(220px,2fr) repeat(4,minmax(130px,1fr));gap:10px}
+.rc .rc-filters .pd-filters .pd-in{width:100%;min-width:0;flex:none!important}
+@media (max-width:1100px){.rc .rc-filters .pd-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.rc .rc-filters .pd-filters .pd-in:first-child{grid-column:1/-1}}
+@media (max-width:520px){.rc .rc-filters .pd-filters{grid-template-columns:minmax(0,1fr)}}

@@ -1,0 +1,330 @@
+.apf {
+    --ink: #0c4a6e;
+    --blue: #0284c7;
+    --sky: #0ea5e9;
+    --line: #bae6fd;
+    --mut: #64748b;
+    --ok: #059669;
+    --err: #dc2626;
+    width: 100%;
+}
+
+.apf-banner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    align-items: center;
+    padding: 22px 24px;
+    margin-bottom: 16px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #0c4a6e 0%, #0369a1 55%, #0ea5e9 100%);
+    color: #fff;
+    box-shadow: 0 12px 28px rgba(3, 105, 161, 0.25);
+}
+
+.apf-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    font-size: 26px;
+    font-weight: 800;
+    background: #fff;
+    color: #0c4a6e;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.apf-banner-text {
+    flex: 1;
+    min-width: 180px;
+}
+
+.apf-banner-text h2 {
+    margin: 0 0 6px;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.apf-banner-text p {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    font-size: 13.5px;
+}
+
+.apf-banner-meta {
+    display: flex;
+    gap: 22px;
+}
+
+.apf-banner-meta small {
+    display: block;
+    opacity: 0.8;
+    font-size: 12px;
+}
+
+.apf-banner-meta b {
+    font-size: 14px;
+}
+
+.apf-banner-meta b.ok {
+    color: #bbf7d0;
+}
+
+.apf-chip {
+    display: inline-flex;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.apf-chip.ok {
+    background: #d1fae5;
+    color: #047857;
+}
+
+.apf-muted {
+    opacity: 0.85;
+}
+
+.apf-features {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.apf-feat {
+    text-align: left;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, #fff, #f0f9ff);
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.apf-feat:hover {
+    border-color: var(--sky);
+}
+
+.apf-feat.on {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.18);
+    background: #fff;
+}
+
+.apf-feat b {
+    display: block;
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 2px;
+}
+
+.apf-feat span {
+    font-size: 12px;
+    color: var(--mut);
+}
+
+.apf-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.apf-card-title {
+    margin: 0 0 14px;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--ink);
+}
+
+.apf-card-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px 0;
+}
+
+.apf-card-bar .apf-card-title {
+    margin: 0;
+}
+
+.apf-dl {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 18px;
+    margin: 0;
+}
+
+.apf-dl dt {
+    margin: 0 0 2px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--mut);
+}
+
+.apf-dl dd {
+    margin: 0;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.apf-dl code {
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: #e0f2fe;
+    color: #0369a1;
+    font-size: 13px;
+}
+
+.apf-form label {
+    display: block;
+    margin-bottom: 12px;
+}
+
+.apf-form label span {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.apf-form input {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    font-size: 14px;
+    outline: none;
+}
+
+.apf-form input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.apf-check {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--mut);
+}
+
+.apf-check input {
+    width: auto !important;
+}
+
+.apf-form-actions {
+    margin-top: 8px;
+}
+
+.apf-hint {
+    margin: 12px 0 0;
+    font-size: 12.5px;
+    color: var(--mut);
+    line-height: 1.45;
+}
+
+.apf-tips {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--mut);
+    font-size: 13.5px;
+    line-height: 1.65;
+}
+
+.apf-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.apf-btn.pri {
+    background: linear-gradient(135deg, #0369a1, #0ea5e9);
+    color: #fff;
+}
+
+.apf-btn.ghost {
+    background: #fff;
+    color: var(--blue);
+    border: 1px solid var(--line);
+}
+
+.apf-btn.danger {
+    background: #fff;
+    color: var(--err);
+    border: 1px solid #fecaca;
+}
+
+.apf-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.apf-session-list,
+.apf-activity {
+    list-style: none;
+    margin: 0;
+    padding: 8px 0;
+}
+
+.apf-session-list li,
+.apf-activity li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid #e0f2fe;
+}
+
+.apf-session-list b,
+.apf-activity b {
+    display: block;
+    color: var(--ink);
+    font-size: 14px;
+}
+
+.apf-session-list span,
+.apf-activity span {
+    font-size: 12.5px;
+    color: var(--mut);
+}
+
+.apf-activity time {
+    flex: 0 0 140px;
+    font-size: 12px;
+    color: var(--mut);
+}
+
+@media (max-width: 900px) {
+    .apf-features {
+        grid-template-columns: 1fr 1fr;
+    }
+    .apf-grid {
+        grid-template-columns: 1fr;
+    }
+    .apf-dl {
+        grid-template-columns: 1fr;
+    }
+    .apf-banner-meta {
+        width: 100%;
+    }
+}

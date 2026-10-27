@@ -1,5 +1,6 @@
-// Gọi API Giáo vụ (/api/gv/*). Token lưu ở localStorage: gv_token, gv_user
-const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
+// Gọi API Giáo vụ (/api/gv/*) — không dùng /api/v1/gv
+const RAW = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
+const BASE = RAW.replace(/\/v1\/?$/, '');
 
 export type Staff = { id: number; username: string; name: string; role: string; role_label: string };
 

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Api\AccountantController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\AuthController;
@@ -10,6 +11,8 @@ use App\Http\Controllers\Api\StudentTuitionController;
 use App\Http\Controllers\Api\AcademicApiController;
 use App\Http\Controllers\Api\FeePeriodController;
 use App\Http\Controllers\Api\FeeCashierController;
+use App\Http\Controllers\Api\FeeReceiptController;
+use App\Http\Controllers\Api\FeeDebtController;
 use App\Http\Middleware\FeeStaffToken;
 use App\Http\Middleware\StaffToken;
 use App\Http\Controllers\Api\StudentWalletController;
@@ -19,6 +22,8 @@ use App\Http\Middleware\StudentToken;
 use App\Http\Controllers\Api\GvNotificationController;
 use App\Http\Controllers\Api\Admin\RoleController;
 use App\Http\Controllers\Api\Admin\SchoolYearController;
+use App\Http\Controllers\Api\Admin\AdminProfileController;
+use App\Http\Controllers\Api\Admin\AdminNotificationController;
 
 Route::get('/health', fn () => response()->json(['status' => 'ok']));
 
@@ -134,7 +139,6 @@ Route::prefix('v1/hs')->group(function () {
 });
 
 // ===== Khu Giáo vụ / Ban giám hiệu =====
-// ===== Khu Giáo vụ / Ban giám hiệu =====
 Route::prefix('gv')->group(function () {
     Route::post('login', [AcademicApiController::class, 'login'])->middleware('throttle:20,1');
 
@@ -161,23 +165,22 @@ Route::prefix('gv')->group(function () {
         Route::get('promotion', [AcademicApiController::class, 'promotion']);
         Route::get('reports', [AcademicApiController::class, 'reports']);
 
-                // ========== THÔNG BÁO GIÁO VỤ ==========
-                Route::get('notifications', [GvNotificationController::class, 'index']);
-                Route::post('notifications', [GvNotificationController::class, 'store']);
-                Route::post('notifications/read-all', [GvNotificationController::class, 'readAll']);
-                Route::post('notifications/{id}/read', [GvNotificationController::class, 'read'])->whereNumber('id');
-                Route::delete('notifications/{id}', [GvNotificationController::class, 'destroy'])->whereNumber('id');
+        // ========== THÔNG BÁO GIÁO VỤ ==========
+        Route::get('notifications', [GvNotificationController::class, 'index']);
+        Route::post('notifications', [GvNotificationController::class, 'store']);
+        Route::post('notifications/read-all', [GvNotificationController::class, 'readAll']);
+        Route::post('notifications/{id}/read', [GvNotificationController::class, 'read'])->whereNumber('id');
+        Route::delete('notifications/{id}', [GvNotificationController::class, 'destroy'])->whereNumber('id');
 
-                // ========== HỒ SƠ CỦA TÔI – THÊM TẠI ĐÂY ==========
-                Route::put('profile/contact', [AcademicApiController::class, 'updateContact']);
-                Route::post('change-password', [AcademicApiController::class, 'changePassword']);
-                Route::get('security', [AcademicApiController::class, 'security']);
-                Route::post('security/revoke-others', [AcademicApiController::class, 'revokeOthers']);
-                Route::post('security/sessions/{id}/revoke', [AcademicApiController::class, 'revokeSession'])->whereNumber('id');
-                Route::get('activity', [AcademicApiController::class, 'activity']);
-                // ==================================================
-            });
-        });
+        // ========== HỒ SƠ CỦA TÔI ==========
+        Route::put('profile/contact', [AcademicApiController::class, 'updateContact']);
+        Route::post('change-password', [AcademicApiController::class, 'changePassword']);
+        Route::get('security', [AcademicApiController::class, 'security']);
+        Route::post('security/revoke-others', [AcademicApiController::class, 'revokeOthers']);
+        Route::post('security/sessions/{id}/revoke', [AcademicApiController::class, 'revokeSession'])->whereNumber('id');
+        Route::get('activity', [AcademicApiController::class, 'activity']);
+    });
+});
 
 // ===== Khu Kế toán: Đợt thu / Kỳ thu =====
 Route::prefix('kt')->group(function () {
@@ -221,5 +224,71 @@ Route::prefix('kt')->group(function () {
             Route::get('disputes', [FeeCashierController::class, 'disputes']);
             Route::post('disputes/{id}/reply', [FeeCashierController::class, 'replyDispute'])->whereNumber('id');
         });
+
+        // ----- Phiếu thu / Biên lai -----
+        Route::prefix('receipts')->group(function () {
+            Route::get('meta', [FeeReceiptController::class, 'meta']);
+            Route::get('stats', [FeeReceiptController::class, 'stats']);
+            Route::get('', [FeeReceiptController::class, 'index']);
+            Route::post('print', [FeeReceiptController::class, 'print'])->middleware('throttle:60,1');
+            Route::post('reconcile', [FeeReceiptController::class, 'reconcile'])->middleware('throttle:30,1');
+            Route::post('unreconcile', [FeeReceiptController::class, 'unreconcile'])->middleware('throttle:30,1');
+        });
+
+        // ----- Công nợ học phí -----
+        Route::prefix('debts')->group(function () {
+            Route::get('meta', [FeeDebtController::class, 'meta']);
+            Route::get('overview', [FeeDebtController::class, 'overview']);
+            Route::get('promises', [FeeDebtController::class, 'promises']);
+            Route::get('', [FeeDebtController::class, 'index']);
+            Route::get('students/{id}', [FeeDebtController::class, 'student'])->whereNumber('id');
+            Route::post('notes', [FeeDebtController::class, 'addNote'])->middleware('throttle:60,1');
+            Route::post('notes/{id}/resolve', [FeeDebtController::class, 'resolve'])->whereNumber('id')->middleware('throttle:60,1');
+        });
     });
 });
+
+// ===== Admin: Thông tin cá nhân + Hộp thư (THÊM MỚI) =====
+// Đăng ký cả /api/admin/profile lẫn /api/v1/admin/profile
+foreach (['admin/profile', 'v1/admin/profile'] as $profilePrefix) {
+    Route::middleware('auth:sanctum')->prefix($profilePrefix)->group(function () {
+        Route::get('/', [AdminProfileController::class, 'show']);
+        Route::put('/', [AdminProfileController::class, 'update']);
+        Route::put('email', [AdminProfileController::class, 'email'])->middleware('throttle:6,1');
+        Route::post('avatar', [AdminProfileController::class, 'avatar'])->middleware('throttle:10,1');
+        Route::put('preferences', [AdminProfileController::class, 'preferences']);
+        Route::post('password', [AdminProfileController::class, 'password'])->middleware('throttle:6,1');
+        Route::get('sessions', [AdminProfileController::class, 'sessions']);
+        Route::post('sessions/revoke-others', [AdminProfileController::class, 'revokeOthers']);
+        Route::delete('sessions/{id}', [AdminProfileController::class, 'revoke'])->whereNumber('id');
+        Route::get('activity', [AdminProfileController::class, 'activity']);
+
+        Route::get('notifications', [AdminNotificationController::class, 'index']);
+        Route::post('notifications/read-all', [AdminNotificationController::class, 'readAll']);
+        Route::post('notifications/{id}/read', [AdminNotificationController::class, 'read'])->whereNumber('id');
+        Route::delete('notifications/{id}', [AdminNotificationController::class, 'destroy'])->whereNumber('id');
+    });
+}
+
+// ===== Tự nhận cả /api/xxx lẫn /api/v1/xxx =====
+// Dùng Route::any (mọi phương thức GET/POST/PUT/DELETE) và đặt CUỐI file. Frontend gọi thiếu hoặc thừa "/v1" thì vẫn chạy, không còn lỗi "The route ... could not be found".
+Route::any('{aliasPath}', function (Request $r) {
+    $rest = preg_replace('#^api/#', '', ltrim($r->path(), '/'));
+    if ($r->headers->has('X-Api-Alias')) {
+        return response()->json(['message' => 'The route api/' . $rest . ' could not be found.'], 404);
+    }
+    $target = preg_match('#^v1(/|$)#', $rest) ? preg_replace('#^v1/?#', '', $rest) : 'v1/' . $rest;
+    $qs = $r->getQueryString();
+    $sub = Request::create(
+        '/api/' . $target . ($qs ? '?' . $qs : ''),
+        $r->method(),
+        $r->isMethod('GET') ? [] : $r->request->all(),
+        $r->cookies->all(),
+        $r->allFiles(),
+        [],
+        $r->getContent()
+    );
+    $sub->headers->replace($r->headers->all());
+    $sub->headers->set('X-Api-Alias', '1');
+    return app()->handle($sub);
+})->where('aliasPath', '.*');

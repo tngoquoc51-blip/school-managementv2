@@ -1,0 +1,49 @@
+.fee-page { display: flex; flex-direction: column; gap: 16px; }
+.fee-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; align-items: flex-start; }
+.fee-head h1 { margin: 0; font-size: 1.35rem; font-weight: 800; color: #0f172a; }
+.fee-head p { margin: 4px 0 0; color: #64748b; font-size: 0.9rem; }
+.fee-head-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.fee-link { font-size: 0.88rem; font-weight: 600; color: #0369a1; text-decoration: none; padding: 8px 12px; border-radius: 10px; background: #e0f2fe; }
+.fee-btn-primary { border: 0; background: #0369a1; color: #fff; font-weight: 700; padding: 10px 16px; border-radius: 10px; cursor: pointer; }
+.fee-btn-ghost { border: 1px solid #cbd5e1; background: #fff; border-radius: 10px; padding: 8px 12px; cursor: pointer; font-weight: 600; color: #334155; }
+.fee-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.fee-stat { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px 16px; }
+.fee-stat b { display: block; font-size: 1.4rem; font-weight: 800; color: #0f172a; }
+.fee-stat span { font-size: 0.82rem; color: #64748b; }
+.fee-stat.ok b { color: #059669; }
+.fee-panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; }
+.fee-toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; align-items: center; }
+.fee-search { flex: 1; min-width: 180px; height: 40px; border: 1px solid #cbd5e1; border-radius: 10px; padding: 0 12px; }
+.fee-seg { display: flex; background: #f1f5f9; border-radius: 10px; padding: 3px; }
+.fee-seg button { border: 0; background: transparent; padding: 7px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; color: #64748b; font-size: 0.85rem; }
+.fee-seg button.on { background: #fff; color: #0369a1; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.fee-alert { display: flex; justify-content: space-between; gap: 12px; align-items: center; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; font-size: 0.9rem; }
+.fee-table-wrap { overflow-x: auto; }
+.fee-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.fee-table th { text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: .04em; color: #64748b; padding: 10px 8px; border-bottom: 2px solid #e2e8f0; }
+.fee-table td { padding: 12px 8px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+.fee-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.fee-money { font-weight: 700; color: #0c4a6e; }
+.fee-name { font-weight: 700; color: #0f172a; }
+.fee-desc { font-size: 0.8rem; color: #94a3b8; margin-top: 2px; }
+.fee-badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; }
+.fee-badge.ok { background: #ecfdf5; color: #059669; }
+.fee-badge.off { background: #f1f5f9; color: #64748b; }
+.fee-acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.fee-acts button, .fee-acts a { font-size: 0.8rem; font-weight: 600; color: #0369a1; background: none; border: 0; cursor: pointer; text-decoration: none; }
+.fee-empty { text-align: center; color: #94a3b8; padding: 28px !important; }
+.fee-hint { margin: 14px 0 0; font-size: 0.85rem; color: #64748b; }
+.fee-hint a { color: #0369a1; font-weight: 600; }
+.fee-modal-bg { position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 80; display: grid; place-items: center; padding: 16px; }
+.fee-modal { background: #fff; border-radius: 16px; width: min(520px, 100%); padding: 22px; box-shadow: 0 20px 50px rgba(0,0,0,.2); }
+.fee-modal h2 { margin: 0 0 14px; font-size: 1.1rem; }
+.fee-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.fee-form label { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #475569; }
+.fee-form input, .fee-form select, .fee-form textarea { border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; font: inherit; font-weight: 500; color: #0f172a; }
+.fee-form .full { grid-column: 1 / -1; }
+.fee-check { flex-direction: row !important; align-items: center; gap: 8px !important; }
+.fee-modal-acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+@media (max-width: 700px) {
+    .fee-stats { grid-template-columns: 1fr; }
+    .fee-form { grid-template-columns: 1fr; }
+}

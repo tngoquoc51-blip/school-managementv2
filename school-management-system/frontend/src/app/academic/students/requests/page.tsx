@@ -4,8 +4,18 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { api } from '../../_lib/api';
 import {
-    Card, Empty, ErrorBox, Loading, Modal, PageHead, Pager, Pill, Toast,
-    fmtDT, useApi, useToast,
+    Card,
+    Empty,
+    ErrorBox,
+    Loading,
+    Modal,
+    PageHead,
+    Pager,
+    Pill,
+    Toast,
+    fmtDT,
+    useApi,
+    useToast,
 } from '../../_components/ui';
 import './requests.css';
 
@@ -17,17 +27,20 @@ const TABS: { key: string; label: string; tone: string }[] = [
 ];
 
 type Mode = 'approve' | 'reject' | null;
+type SortKey = 'newest' | 'oldest' | 'name';
 
 export default function ProfileRequestsPage() {
     const [tab, setTab] = useState('pending');
     const [page, setPage] = useState(1);
     const [q, setQ] = useState('');
     const [fieldFilter, setFieldFilter] = useState('all');
+    const [sort, setSort] = useState<SortKey>('newest');
     const [mode, setMode] = useState<Mode>(null);
     const [target, setTarget] = useState<any>(null);
     const [note, setNote] = useState('');
     const [busy, setBusy] = useState(false);
     const [detail, setDetail] = useState<any>(null);
+    const [selected, setSelected] = useState<number[]>([]);
     const toast = useToast();
 
     const { data, err, loading, reload } = useApi<any>(
@@ -43,7 +56,7 @@ export default function ProfileRequestsPage() {
     }, [data]);
 
     const items = useMemo(() => {
-        let list = data?.items || [];
+        let list = [...(data?.items || [])];
         const key = q.trim().toLowerCase();
         if (key) {
             list = list.filter(
@@ -58,11 +71,28 @@ export default function ProfileRequestsPage() {
         if (fieldFilter !== 'all') {
             list = list.filter((r: any) => r.field_label === fieldFilter);
         }
+        list.sort((a: any, b: any) => {
+            if (sort === 'name') {
+                return (a.student?.name || '').localeCompare(b.student?.name || '', 'vi');
+            }
+            const ta = new Date(a.created_at || 0).getTime();
+            const tb = new Date(b.created_at || 0).getTime();
+            return sort === 'oldest' ? ta - tb : tb - ta;
+        });
         return list;
-    }, [data, q, fieldFilter]);
+    }, [data, q, fieldFilter, sort]);
 
     const counts = data?.counts || {};
     const pendingN = counts.pending ?? 0;
+
+    const toggleSelect = (id: number) => {
+        setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+    };
+
+    const toggleAll = () => {
+        if (selected.length === items.length) setSelected([]);
+        else setSelected(items.map((r: any) => r.id));
+    };
 
     const openAct = (r: any, m: Mode) => {
         setTarget(r);
@@ -82,11 +112,15 @@ export default function ProfileRequestsPage() {
                 method: 'POST',
                 body: { action: mode, note: note.trim() },
             });
-            toast.ok(res.message || (mode === 'approve' ? 'Đã duyệt & cập nhật hồ sơ.' : 'Đã từ chối đề nghị.'));
+            toast.ok(
+                res.message ||
+                (mode === 'approve' ? 'Đã duyệt & cập nhật hồ sơ.' : 'Đã từ chối đề nghị.')
+            );
             setTarget(null);
             setMode(null);
             setDetail(null);
             setNote('');
+            setSelected((s) => s.filter((id) => id !== target.id));
             reload();
         } catch (e: any) {
             toast.fail(e.message);
@@ -95,14 +129,75 @@ export default function ProfileRequestsPage() {
         }
     };
 
+    const bulkApprove = async () => {
+        if (!selected.length) return;
+        if (!confirm(`Duyệt ${selected.length} đề nghị đã chọn?`)) return;
+        setBusy(true);
+        let ok = 0;
+        for (const id of selected) {
+            try {
+                await api(`profile-requests/${id}/review`, {
+                    method: 'POST',
+                    body: { action: 'approve', note: 'Duyệt hàng loạt' },
+                });
+                ok++;
+            } catch {
+                /* bỏ qua từng cái lỗi */
+            }
+        }
+        setBusy(false);
+        setSelected([]);
+        toast.ok(`Đã duyệt ${ok}/${selected.length} đề nghị.`);
+        reload();
+    };
+
+    const exportCsv = () => {
+        const rows = [
+            ['Mã HS', 'Họ tên', 'Lớp', 'Trường', 'Cũ', 'Mới', 'Lý do', 'Trạng thái', 'Gửi lúc'].join(','),
+            ...items.map((r: any) =>
+                [
+                    r.student?.code,
+                    `"${r.student?.name || ''}"`,
+                    r.student?.class,
+                    `"${r.field_label || ''}"`,
+                    `"${r.old_value || ''}"`,
+                    `"${r.new_value || ''}"`,
+                    `"${(r.reason || '').replace(/"/g, '""')}"`,
+                    r.status,
+                    r.created_at,
+                ].join(',')
+            ),
+        ].join('\n');
+        const blob = new Blob(['\ufeff' + rows], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `duyet-ho-so-${tab}-${Date.now()}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
     return (
         <div className="prq">
-            <PageHead
-                title="Duyệt hồ sơ học sinh"
-                sub="Học sinh đề nghị sửa thông tin quan trọng (ngày sinh, phụ huynh, hộ khẩu…). Giáo vụ duyệt để hệ thống cập nhật và lưu nhật ký."
-            />
+            <div className="prq-head-row">
+                <PageHead
+                    title="Duyệt hồ sơ học sinh"
+                    sub="Học sinh đề nghị sửa thông tin quan trọng (ngày sinh, phụ huynh, hộ khẩu…). Giáo vụ duyệt để hệ thống cập nhật và lưu nhật ký."
+                />
+                <div className="prq-head-actions">
+                    <button type="button" className="prq-btn ghost" onClick={exportCsv}>
+                        Xuất CSV
+                    </button>
+                    <button type="button" className="prq-btn ghost" onClick={() => reload()}>
+                        ↻ Làm mới
+                    </button>
+                    <Link href="/academic/students" className="prq-btn pri">
+                        + Hồ sơ học sinh
+                    </Link>
+                </div>
+            </div>
 
-            {/* Thống kê nhanh */}
+            {/* Thống kê */}
             <div className="prq-stats">
                 {TABS.map((t) => (
                     <button
@@ -112,6 +207,7 @@ export default function ProfileRequestsPage() {
                         onClick={() => {
                             setTab(t.key);
                             setPage(1);
+                            setSelected([]);
                         }}
                     >
                         <span className="prq-stat-n">{counts[t.key] ?? 0}</span>
@@ -120,7 +216,34 @@ export default function ProfileRequestsPage() {
                 ))}
             </div>
 
-            {/* Thanh công cụ */}
+            {/* Chức năng con */}
+            <div className="prq-features">
+                <button type="button" className="prq-feat" onClick={() => setTab('pending')}>
+                    <b>Hàng chờ</b>
+                    <span>Xử lý đề nghị mới</span>
+                </button>
+                <button
+                    type="button"
+                    className="prq-feat"
+                    onClick={() => {
+                        setTab('approved');
+                        setPage(1);
+                    }}
+                >
+                    <b>Lịch sử duyệt</b>
+                    <span>Đã cập nhật hồ sơ</span>
+                </button>
+                <button type="button" className="prq-feat" onClick={exportCsv}>
+                    <b>Báo cáo CSV</b>
+                    <span>Xuất danh sách hiện tại</span>
+                </button>
+                <Link href="/academic/students" className="prq-feat">
+                    <b>Tra cứu hồ sơ</b>
+                    <span>Mở danh sách học sinh</span>
+                </Link>
+            </div>
+
+            {/* Toolbar */}
             <div className="prq-toolbar">
                 <div className="prq-search">
                     <span className="prq-search-ico" aria-hidden>
@@ -137,7 +260,6 @@ export default function ProfileRequestsPage() {
                     className="prq-select"
                     value={fieldFilter}
                     onChange={(e) => setFieldFilter(e.target.value)}
-                    aria-label="Lọc theo trường"
                 >
                     <option value="all">Tất cả trường dữ liệu</option>
                     {fieldOptions.map((f) => (
@@ -146,9 +268,20 @@ export default function ProfileRequestsPage() {
                         </option>
                     ))}
                 </select>
-                <button type="button" className="prq-refresh" onClick={() => reload()} title="Tải lại">
-                    ↻ Làm mới
-                </button>
+                <select
+                    className="prq-select"
+                    value={sort}
+                    onChange={(e) => setSort(e.target.value as SortKey)}
+                >
+                    <option value="newest">Mới nhất</option>
+                    <option value="oldest">Cũ nhất</option>
+                    <option value="name">Theo tên HS</option>
+                </select>
+                {tab === 'pending' && selected.length > 0 && (
+                    <button type="button" className="prq-btn ok" disabled={busy} onClick={bulkApprove}>
+                        Duyệt hàng loạt ({selected.length})
+                    </button>
+                )}
                 {pendingN > 0 && tab === 'pending' && (
                     <span className="prq-hint">
                         Có <b>{pendingN}</b> đề nghị cần xử lý
@@ -156,7 +289,7 @@ export default function ProfileRequestsPage() {
                 )}
             </div>
 
-            {/* Tabs trạng thái */}
+            {/* Tabs */}
             <div className="prq-tabs" role="tablist">
                 {TABS.map((t) => (
                     <button
@@ -168,6 +301,7 @@ export default function ProfileRequestsPage() {
                         onClick={() => {
                             setTab(t.key);
                             setPage(1);
+                            setSelected([]);
                         }}
                     >
                         {t.label}
@@ -186,24 +320,52 @@ export default function ProfileRequestsPage() {
                 ) : data && data.ready === false ? (
                     <Empty text="Chưa tạo bảng hồ sơ. Hãy chạy file SQL hồ sơ học sinh." />
                 ) : !items.length ? (
-                    <Empty text={q || fieldFilter !== 'all' ? 'Không có kết quả khớp bộ lọc.' : 'Không có yêu cầu nào.'} />
+                    <Empty
+                        text={
+                            q || fieldFilter !== 'all'
+                                ? 'Không có kết quả khớp bộ lọc.'
+                                : 'Không có yêu cầu nào.'
+                        }
+                    />
                 ) : (
                     <>
+                        {tab === 'pending' && (
+                            <div className="prq-bulk-bar">
+                                <label className="prq-check">
+                                    <input
+                                        type="checkbox"
+                                        checked={selected.length === items.length && items.length > 0}
+                                        onChange={toggleAll}
+                                    />
+                                    Chọn tất cả trang này
+                                </label>
+                                <span className="prq-bulk-n">{selected.length} đã chọn</span>
+                            </div>
+                        )}
                         <ul className="prq-list">
                             {items.map((r: any) => (
                                 <li key={r.id} className="prq-item">
                                     <div className="prq-item-head">
                                         <div className="prq-who">
+                                            {tab === 'pending' && (
+                                                <input
+                                                    type="checkbox"
+                                                    className="prq-item-check"
+                                                    checked={selected.includes(r.id)}
+                                                    onChange={() => toggleSelect(r.id)}
+                                                />
+                                            )}
                                             <div className="prq-av">
                                                 {(r.student?.name || '?').charAt(0)}
                                             </div>
                                             <div>
-                                                <Link
-                                                    href={`/academic/students/${r.student?.code}`}
+                                                <button
+                                                    type="button"
                                                     className="prq-name"
+                                                    onClick={() => setDetail(r)}
                                                 >
                                                     {r.student?.name}
-                                                </Link>
+                                                </button>
                                                 <div className="prq-meta">
                                                     <span>{r.student?.code}</span>
                                                     <span>·</span>
@@ -344,8 +506,7 @@ export default function ProfileRequestsPage() {
                     <div className="prq-modal-body">
                         <p>
                             Học sinh <b>{target.student?.name}</b> ({target.student?.code} · Lớp{' '}
-                            {target.student?.class ?? '—'}) đề nghị đổi trường{' '}
-                            <b>{target.field_label}</b>.
+                            {target.student?.class ?? '—'}) đề nghị đổi <b>{target.field_label}</b>.
                         </p>
                         <div className="prq-diff compact">
                             <div className="prq-diff-box old">
@@ -373,7 +534,7 @@ export default function ProfileRequestsPage() {
                                 placeholder={
                                     mode === 'approve'
                                         ? 'VD: Đã đối chiếu với giấy tờ tại văn phòng.'
-                                        : 'VD: Vui lòng mang giấy khai sinh đến Văn phòng Giáo vụ để đối chiếu.'
+                                        : 'VD: Vui lòng mang giấy khai sinh đến Văn phòng Giáo vụ.'
                                 }
                                 rows={3}
                                 autoFocus={mode === 'reject'}
@@ -398,6 +559,12 @@ export default function ProfileRequestsPage() {
                             <button type="button" className="prq-btn ghost" onClick={() => setDetail(null)}>
                                 Đóng
                             </button>
+                            <Link
+                                href={`/academic/students/${detail.student?.code}`}
+                                className="prq-btn ghost"
+                            >
+                                Mở hồ sơ
+                            </Link>
                             {detail.status === 'pending' && (
                                 <>
                                     <button
@@ -449,6 +616,12 @@ export default function ProfileRequestsPage() {
                                 <dt>Trạng thái</dt>
                                 <dd>{detail.status}</dd>
                             </div>
+                            {detail.reviewed_by && (
+                                <div>
+                                    <dt>Người xử lý</dt>
+                                    <dd>{detail.reviewed_by}</dd>
+                                </div>
+                            )}
                         </dl>
                         <div className="prq-diff">
                             <div className="prq-diff-box old">
