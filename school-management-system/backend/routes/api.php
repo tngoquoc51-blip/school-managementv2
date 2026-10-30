@@ -13,6 +13,8 @@ use App\Http\Controllers\Api\FeePeriodController;
 use App\Http\Controllers\Api\FeeCashierController;
 use App\Http\Controllers\Api\FeeReceiptController;
 use App\Http\Controllers\Api\FeeDebtController;
+use App\Http\Controllers\Api\FeeReminderController;
+use App\Http\Controllers\Api\StudentReminderController;
 use App\Http\Middleware\FeeStaffToken;
 use App\Http\Middleware\StaffToken;
 use App\Http\Controllers\Api\StudentWalletController;
@@ -24,6 +26,8 @@ use App\Http\Controllers\Api\Admin\RoleController;
 use App\Http\Controllers\Api\Admin\SchoolYearController;
 use App\Http\Controllers\Api\Admin\AdminProfileController;
 use App\Http\Controllers\Api\Admin\AdminNotificationController;
+use App\Http\Controllers\Accountant\DebtController;
+use App\Http\Controllers\Api\Admin\BackupController;
 
 Route::get('/health', fn () => response()->json(['status' => 'ok']));
 
@@ -48,13 +52,25 @@ Route::prefix('v1/accountant')->group(function () {
     Route::post('/fees/generate-debts', [AccountantController::class, 'generateDebts']);
     Route::get('/fees/export', [AccountantController::class, 'exportFees']);
 
-    // Công nợ · phiếu thu · báo cáo · tìm HS
-    Route::get('/debts', [AccountantController::class, 'debts']);
+    // Công nợ (DebtController)
+    Route::prefix('debts')->controller(DebtController::class)->group(function () {
+        Route::get('/', 'index');
+        Route::get('options', 'options');
+        Route::get('classes', 'classes');
+        Route::post('reminders', 'bulkReminder');
+        Route::post('payments/{receiptNo}/void', 'voidPayment');
+        Route::get('{student}', 'show')->whereNumber('student');
+        Route::post('{student}/payments', 'recordPayment')->whereNumber('student');
+        Route::post('{student}/events', 'storeEvent')->whereNumber('student');
+        Route::post('{student}/extend', 'extend')->whereNumber('student');
+        Route::post('{student}/plans', 'storePlan')->whereNumber('student');
+    });
+
+    // Phiếu thu · báo cáo · tìm HS
     Route::get('/receipts', [AccountantController::class, 'receipts']);
     Route::get('/reports', [AccountantController::class, 'reports']);
     Route::get('/students/search', [AccountantController::class, 'searchStudent']);
 });
-
 // Quản trị tài khoản + vai trò
 Route::prefix('admin')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
@@ -71,6 +87,12 @@ Route::prefix('admin')->group(function () {
     Route::put('/school-years/{id}', [SchoolYearController::class, 'update']);
     Route::post('/school-years/{id}/set-current', [SchoolYearController::class, 'setCurrent']);
     Route::put('/semesters/{id}', [SchoolYearController::class, 'updateSemester']);
+    Route::get('/backups', [BackupController::class, 'index']);
+    Route::post('/backups', [BackupController::class, 'store']);
+    Route::get('/backups/{id}/download', [BackupController::class, 'download']);
+    Route::delete('/backups/{id}', [BackupController::class, 'destroy']);
+    Route::post('/backups/{id}/restore', [BackupController::class, 'restore']);
+    Route::put('/backups/settings', [BackupController::class, 'updateSettings']);
 });
 
 // Cổng học sinh cũ (Sanctum)
@@ -98,6 +120,7 @@ Route::prefix('v1/hs')->group(function () {
         Route::post('logout', [StudentApiController::class, 'logout']);
         Route::get('me', [StudentApiController::class, 'me']);
         Route::get('schedule', [StudentApiController::class, 'schedule']);
+        Route::get('classmates', [StudentApiController::class, 'classmates']);
         Route::get('exams', [StudentApiController::class, 'exams']);
         Route::get('grades', [StudentApiController::class, 'grades']);
         Route::post('change-password', [StudentApiController::class, 'changePassword']);
@@ -122,6 +145,9 @@ Route::prefix('v1/hs')->group(function () {
         Route::get('fees/payments', [StudentTuitionController::class, 'payments']);
         Route::post('fees/payments/{id}/cancel', [StudentTuitionController::class, 'cancelPayment'])->whereNumber('id');
         Route::get('fees/receipts/{id}', [StudentTuitionController::class, 'receipt'])->whereNumber('id');
+        Route::get('fees/reminders', [StudentReminderController::class, 'index']);
+        Route::post('fees/reminders/read-all', [StudentReminderController::class, 'readAll']);
+        Route::post('fees/reminders/{id}/read', [StudentReminderController::class, 'read'])->whereNumber('id');
 
         // Thông báo / badge
         Route::get('notifications/badges', [NotificationController::class, 'badges']);
@@ -244,6 +270,25 @@ Route::prefix('kt')->group(function () {
             Route::get('students/{id}', [FeeDebtController::class, 'student'])->whereNumber('id');
             Route::post('notes', [FeeDebtController::class, 'addNote'])->middleware('throttle:60,1');
             Route::post('notes/{id}/resolve', [FeeDebtController::class, 'resolve'])->whereNumber('id')->middleware('throttle:60,1');
+        });
+
+        // ----- Nhắc nợ phụ huynh -----
+        Route::prefix('reminders')->group(function () {
+            Route::get('meta', [FeeReminderController::class, 'meta']);
+            Route::get('suggestions', [FeeReminderController::class, 'suggestions']);
+            Route::get('batches', [FeeReminderController::class, 'batches']);
+            Route::get('batches/{id}', [FeeReminderController::class, 'batch'])->whereNumber('id');
+            Route::get('stats', [FeeReminderController::class, 'stats']);
+            Route::get('templates', [FeeReminderController::class, 'templates']);
+            Route::get('students/{id}', [FeeReminderController::class, 'studentHistory'])->whereNumber('id');
+            Route::post('preview', [FeeReminderController::class, 'preview']);
+            Route::post('send', [FeeReminderController::class, 'send']);
+            Route::post('settings', [FeeReminderController::class, 'saveSettings']);
+            Route::post('templates', [FeeReminderController::class, 'saveTemplate']);
+            Route::put('templates/{id}', [FeeReminderController::class, 'saveTemplate'])->whereNumber('id');
+            Route::post('templates/{id}/toggle', [FeeReminderController::class, 'toggleTemplate'])->whereNumber('id');
+            Route::post('batches/{id}/mark-sent', [FeeReminderController::class, 'markSent'])->whereNumber('id');
+            Route::post('batches/{id}/cancel', [FeeReminderController::class, 'cancel'])->whereNumber('id');
         });
     });
 });

@@ -5,8 +5,10 @@ namespace Modules\Auth\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Modules\User\Models\User;
 use Illuminate\Validation\ValidationException;
+use Modules\User\Models\User;
+use Modules\User\Models\UserLoginHistory;
+use Modules\User\Support\ActivityLogger;
 
 class AuthController extends Controller
 {
@@ -22,6 +24,11 @@ class AuthController extends Controller
                     ->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
+            // [PROFILE] ghi nhận đăng nhập sai để hiển thị trong "Thiết bị & đăng nhập"
+            if ($user) {
+                UserLoginHistory::record($user->id, $request, 'failed');
+            }
+
             throw ValidationException::withMessages([
                 'email' => ['Thông tin đăng nhập không chính xác.'],
             ]);
@@ -31,7 +38,12 @@ class AuthController extends Controller
             return response()->json(['message' => 'Tài khoản đã bị khóa'], 403);
         }
 
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $newToken = $user->createToken('auth-token');
+        $token = $newToken->plainTextToken;
+
+        // [PROFILE] lưu thiết bị/IP gắn với token + nhật ký hoạt động
+        UserLoginHistory::record($user->id, $request, 'success', $newToken->accessToken->id);
+        ActivityLogger::log($user->id, 'login', 'Đăng nhập hệ thống', $request);
 
         // Lấy tất cả vai trò của user
         $roles = $user->getRoleNames(); // Spatie

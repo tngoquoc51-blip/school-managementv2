@@ -9,6 +9,7 @@ interface Props {
     children: ReactNode;
 }
 
+/* ===== ICON (giữ nguyên bộ icon cũ, chỉ thêm vài icon cho khung mới) ===== */
 const ICONS = {
     dashboard: (
         <>
@@ -51,11 +52,7 @@ const ICONS = {
             <path d="M13.7 21a2 2 0 0 1-3.4 0" />
         </>
     ),
-    message: (
-        <>
-            <path d="M21 15a4 4 0 0 1-4 4H7l-4 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
-        </>
-    ),
+    message: <path d="M21 15a4 4 0 0 1-4 4H7l-4 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />,
     fees: (
         <>
             <circle cx="12" cy="12" r="9" />
@@ -68,10 +65,49 @@ const ICONS = {
             <path d="M16 2v4M8 2v4M3 10h18M8 14h8" />
         </>
     ),
+    /* dùng cho khung mới */
+    search: (
+        <>
+            <circle cx="11" cy="11" r="6" />
+            <path d="M21 21l-4.3-4.3" />
+        </>
+    ),
+    chevd: <path d="M6 9l6 6 6-6" />,
+    panel: (
+        <>
+            <rect x="3" y="5" width="18" height="14" rx="1.5" />
+            <path d="M9 5v14" />
+        </>
+    ),
+    menu: <path d="M4 7h16M4 12h16M4 17h16" />,
+    close: <path d="M6 6l12 12M18 6L6 18" />,
+    logout: (
+        <>
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <path d="M16 17l5-5-5-5M21 12H9" />
+        </>
+    ),
+    cal: (
+        <>
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <path d="M16 2v4M8 2v4M3 10h18" />
+        </>
+    ),
 };
 
-type NavItem = { href: string; label: string; icon: keyof typeof ICONS };
+type IconName = keyof typeof ICONS;
 
+function Icon({ name }: { name: IconName }) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            {ICONS[name]}
+        </svg>
+    );
+}
+
+type NavItem = { href: string; label: string; icon: IconName };
+
+/* Giữ nguyên toàn bộ mục menu cũ */
 const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
     {
         title: 'Tổng quan',
@@ -100,13 +136,26 @@ const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
     },
 ];
 
+const ALL_ITEMS = NAV_GROUPS.flatMap((g) => g.items.map((it) => ({ ...it, group: g.title })));
+
+/* Bỏ dấu để gõ "bang diem" vẫn tìm ra "Bảng điểm" */
+const normalize = (s: string) =>
+    s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').toLowerCase();
+
+type Child = { name?: string; className?: string; class?: string; class_name?: string };
+
 export default function ParentLayout({ children }: Props) {
     const router = useRouter();
     const pathname = usePathname();
     const [user, setUser] = useState<{ name?: string; id?: number } | null>(null);
-    const [child, setChild] = useState<{ name?: string; className?: string } | null>(null);
+    const [child, setChild] = useState<Child | null>(null);
     const [open, setOpen] = useState(false);
+    const [mini, setMini] = useState(false);
+    const [query, setQuery] = useState('');
+    const [closed, setClosed] = useState<Record<string, boolean>>({});
+    const [logoFail, setLogoFail] = useState(false);
 
+    /* ---- đăng nhập + con đang chọn (giữ nguyên logic cũ) ---- */
     useEffect(() => {
         const stored = localStorage.getItem('user');
         if (!stored) {
@@ -119,15 +168,40 @@ export default function ParentLayout({ children }: Props) {
             router.push('/login');
         }
 
-        const c = localStorage.getItem('parent_child');
-        if (c) {
+        const readChild = () => {
+            const c = localStorage.getItem('parent_child');
+            if (!c) return setChild(null);
             try {
                 setChild(JSON.parse(c));
             } catch {
                 /* ignore */
             }
-        }
+        };
+        readChild();
+        // cập nhật ngay khi trang "Chọn con" đổi con (cùng tab hoặc tab khác)
+        window.addEventListener('storage', readChild);
+        window.addEventListener('parent-child-changed', readChild);
+        return () => {
+            window.removeEventListener('storage', readChild);
+            window.removeEventListener('parent-child-changed', readChild);
+        };
     }, [router]);
+
+    useEffect(() => setOpen(false), [pathname]);
+
+    /* nhớ trạng thái thu gọn + phím Esc */
+    useEffect(() => {
+        try { setMini(localStorage.getItem('ph-mini') === '1'); } catch { /* ignore */ }
+        const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, []);
+
+    const toggleMini = () => {
+        const next = !mini;
+        setMini(next);
+        try { localStorage.setItem('ph-mini', next ? '1' : '0'); } catch { /* ignore */ }
+    };
 
     const handleLogout = () => {
         localStorage.clear();
@@ -135,79 +209,157 @@ export default function ParentLayout({ children }: Props) {
     };
 
     const yearLabel = '2025 – 2026';
-
     const activePath = useMemo(() => pathname || '', [pathname]);
+    const isActive = (href: string) => activePath === href || activePath.startsWith(href + '/');
+
+    const current = useMemo(
+        () => ALL_ITEMS.find((it) => activePath === it.href || activePath.startsWith(it.href + '/')),
+        [activePath],
+    );
+    const curGroup = current?.group;
+
+    /* Vào trang thuộc nhóm đang gập → tự mở nhóm đó */
+    useEffect(() => {
+        if (!curGroup) return;
+        setClosed((c) => (c[curGroup] ? { ...c, [curGroup]: false } : c));
+    }, [curGroup]);
+
+    /* Tìm nhanh chức năng trong menu */
+    const q = normalize(query.trim());
+    const groups = useMemo(() => {
+        if (!q) return NAV_GROUPS;
+        return NAV_GROUPS.map((g) => ({ ...g, items: g.items.filter((i) => normalize(i.label).includes(q)) })).filter((g) => g.items.length > 0);
+    }, [q]);
+
+    const isDash = !current || current.href === '/parent/dashboard';
+    const title = isDash ? 'Cổng thông tin Phụ huynh' : current!.label;
+    const desc = isDash ? 'Theo dõi học tập · chuyên cần · học phí của con' : `Cổng Phụ huynh · ${current!.group}`;
+    const initial = (user?.name || 'P').charAt(0).toUpperCase();
+    const childClass = child?.className || child?.class_name || child?.class;
 
     return (
-        <div className="ph-layout">
+        <div className={`ph-layout${mini ? ' mini' : ''}`}>
             {open && <div className="ph-overlay" onClick={() => setOpen(false)} />}
 
+            {/* ============ SIDEBAR ============ */}
             <aside className={`ph-sidebar ${open ? 'open' : ''}`}>
+                <button type="button" className="ph-close" onClick={() => setOpen(false)} aria-label="Đóng menu">
+                    <Icon name="close" />
+                </button>
+
                 <div className="ph-brand">
-                    <div className="ph-logo">TH</div>
-                    <div>
+                    {logoFail ? (
+                        <div className="ph-logo ph-logo-fb">TH</div>
+                    ) : (
+                        <img
+                            src="/images/logo-thpt-ngo-sy-lien.png"
+                            alt="Logo trường"
+                            className="ph-logo"
+                            onError={() => setLogoFail(true)}
+                        />
+                    )}
+                    <div className="ph-brand-text">
                         <strong>Cổng Phụ huynh</strong>
                         <small>Trường THPT</small>
                     </div>
-                    <button type="button" className="ph-close" onClick={() => setOpen(false)} aria-label="Đóng menu">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M6 6l12 12M18 6L6 18" />
-                        </svg>
-                    </button>
                 </div>
 
-                <nav className="ph-nav">
-                    {NAV_GROUPS.map((g) => (
-                        <div key={g.title} className="ph-nav-group">
-                            <span className="ph-nav-title">{g.title}</span>
-                            {g.items.map((item) => {
-                                const active = activePath === item.href || activePath.startsWith(item.href + '/');
-                                return (
-                                    <Link
-                                        key={item.href}
-                                        href={item.href}
-                                        className={`ph-nav-item ${active ? 'active' : ''}`}
-                                        onClick={() => setOpen(false)}
-                                    >
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                                            {ICONS[item.icon]}
-                                        </svg>
-                                        {item.label}
-                                    </Link>
-                                );
-                            })}
-                        </div>
-                    ))}
+                <div className="ph-search">
+                    <Icon name="search" />
+                    <input
+                        type="search"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="Tìm chức năng…"
+                        aria-label="Tìm chức năng"
+                    />
+                </div>
+
+                <nav className="ph-nav" aria-label="Menu phụ huynh">
+                    {groups.map((g) => {
+                        const shut = !q && !!closed[g.title];
+                        return (
+                            <div key={g.title} className="ph-nav-group">
+                                <button
+                                    type="button"
+                                    className="ph-nav-title"
+                                    aria-expanded={!shut}
+                                    onClick={() => setClosed((c) => ({ ...c, [g.title]: !c[g.title] }))}
+                                >
+                                    <span>{g.title}</span>
+                                    <span className={`ph-chev${shut ? ' shut' : ''}`}><Icon name="chevd" /></span>
+                                </button>
+
+                                <div className={`ph-nav-items${shut ? ' shut' : ''}`}>
+                                    {g.items.map((item) => {
+                                        const active = isActive(item.href);
+                                        return (
+                                            <Link
+                                                key={item.href}
+                                                href={item.href}
+                                                title={item.label}
+                                                className={`ph-nav-item ${active ? 'active' : ''}`}
+                                                aria-current={active ? 'page' : undefined}
+                                                onClick={() => setOpen(false)}
+                                            >
+                                                <span className="ph-nav-icon"><Icon name={item.icon} /></span>
+                                                <span className="ph-nav-label">{item.label}</span>
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        );
+                    })}
+                    {groups.length === 0 && <p className="ph-empty">Không tìm thấy chức năng phù hợp.</p>}
                 </nav>
 
                 <div className="ph-sidebar-foot">
                     <div className="ph-user">
-                        <span className="ph-avatar">{(user?.name || 'P').charAt(0).toUpperCase()}</span>
-                        <div>
+                        <span className="ph-avatar">{initial}</span>
+                        <div className="ph-user-t">
                             <b>{user?.name || 'Phụ huynh'}</b>
-                            <small>{child ? `Con: ${child.name}` : 'Chưa chọn con'}</small>
+                            <small>{child?.name ? `Con: ${child.name}` : 'Chưa chọn con'}</small>
                         </div>
                     </div>
-                    <button type="button" className="ph-logout" onClick={handleLogout}>
-                        Đăng xuất
+                    <button type="button" className="ph-logout" onClick={handleLogout} title="Đăng xuất">
+                        <Icon name="logout" />
+                        <span>Đăng xuất</span>
                     </button>
                 </div>
             </aside>
 
+            {/* ============ MAIN ============ */}
             <div className="ph-main">
                 <header className="ph-header">
                     <button type="button" className="ph-burger" onClick={() => setOpen(true)} aria-label="Mở menu">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M4 7h16M4 12h16M4 17h16" />
-                        </svg>
+                        <Icon name="menu" />
                     </button>
-                    <div>
-                        <h1>Cổng thông tin Phụ huynh</h1>
-                        <p>Theo dõi học tập · chuyên cần · học phí của con</p>
+                    <button
+                        type="button"
+                        className="ph-rail"
+                        onClick={toggleMini}
+                        aria-label={mini ? 'Mở rộng menu' : 'Thu gọn menu'}
+                        title={mini ? 'Mở rộng menu' : 'Thu gọn menu'}
+                    >
+                        <Icon name="panel" />
+                    </button>
+
+                    <div className="ph-title">
+                        <p>{desc}</p>
+                        <h1>{title}</h1>
                     </div>
+
                     <div className="ph-header-right">
-                        <span className="ph-badge">Năm học {yearLabel}</span>
-                        {child?.className && <span className="ph-badge sky">Lớp {child.className}</span>}
+                        <Link href="/parent/children" className="ph-kid" title="Đổi / chọn con">
+                            <span className="ph-kid-av">{(child?.name || 'C').charAt(0).toUpperCase()}</span>
+                            <span className="ph-kid-t">{child?.name ? child.name : 'Chọn con'}</span>
+                        </Link>
+                        <Link href="/parent/notifications" className="ph-bell" aria-label="Thông báo" title="Thông báo">
+                            <Icon name="notice" />
+                        </Link>
+                        <span className="ph-badge"><Icon name="cal" />Năm học {yearLabel}</span>
+                        {childClass && <span className="ph-badge sky">Lớp {childClass}</span>}
                     </div>
                 </header>
                 <div className="ph-content">{children}</div>

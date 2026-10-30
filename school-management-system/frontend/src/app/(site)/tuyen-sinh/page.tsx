@@ -1,72 +1,56 @@
 import type { Metadata } from 'next';
-import s from '@/modules/website/website.module.css';
-import AdmissionForm from '@/modules/website/components/AdmissionForm';
-import Faq from '@/modules/website/components/Faq';
+import Link from 'next/link';
+import s from '@/modules/website/site.module.css';
 import Icon from '@/modules/website/components/Icons';
-import { ADMISSION_DOCS, ADMISSION_STEPS, SCHOOL } from '@/modules/website/data/school';
+import { AdmissionForm } from '@/modules/website/components/Forms';
+import { Faq, PageHead, SectionHead } from '@/modules/website/components/Parts';
+import { ADMISSION_DATES, ADMISSION_DOCS, ADMISSION_STEPS, FAQ, SCHOOL } from '@/modules/website/data/school';
 
-export const metadata: Metadata = {
-    title: `Tuyển sinh ${SCHOOL.admissionYear} – ${SCHOOL.fullName}`,
-    description: 'Thông tin tuyển sinh lớp 10 và biểu mẫu đăng ký nhập học trực tuyến.',
-};
+export const metadata: Metadata = { title: 'Tuyển sinh', description: `Đăng ký nhập học lớp 10 năm học ${SCHOOL.admissionYear}, hồ sơ cần chuẩn bị và cách tra cứu tiến độ.` };
 
 export default function AdmissionPage() {
     return (
         <>
-            <section className={s.pageHero}>
-                <div className={s.container}>
-                    <h1 className={s.heroTitle}>Tuyển sinh năm học {SCHOOL.admissionYear}</h1>
-                    <p className={s.heroText}>
-                        Đăng ký trực tuyến để nhà trường ghi nhận thông tin, tư vấn và hẹn lịch nộp hồ sơ cho bạn.
-                    </p>
-                </div>
-            </section>
+            <PageHead title={`Tuyển sinh lớp 10, năm học ${SCHOOL.admissionYear}`} desc="Đăng ký trực tuyến trong vài phút, nhận mã hồ sơ và theo dõi tiến độ bất cứ lúc nào." trail={[['Tuyển sinh']]}>
+                <p className={s.row}><a href="#dang-ky" className={`${s.btn} ${s.btnHot} ${s.btnLg}`}>Đăng ký ngay</a><Link href="/tuyen-sinh/tra-cuu" className={`${s.btn} ${s.btnLine} ${s.btnLg}`}>Tra cứu hồ sơ</Link></p>
+            </PageHead>
 
             <section className={s.section}>
-                <div className={`${s.container} ${s.infoGrid}`}>
-                    <div className={s.infoBox}>
-                        <h2>Quy trình 3 bước</h2>
-                        <ol className={s.stepsLight}>
-                            {ADMISSION_STEPS.map((st, i) => (
-                                <li key={st.title}>
-                                    <span className={s.stepNum}>{i + 1}</span>
-                                    <div><h3>{st.title}</h3><p>{st.text}</p></div>
-                                </li>
-                            ))}
-                        </ol>
-                    </div>
+                <div className={s.container}>
+                    <SectionHead title="Quy trình bốn bước" />
+                    <ol className={s.steps}>
+                        {ADMISSION_STEPS.map((x, i) => <li key={x.title}><span>{i + 1}</span><h3>{x.title}</h3><p>{x.text}</p></li>)}
+                    </ol>
+                </div>
+            </section>
 
-                    <div className={s.infoBox}>
-                        <h2>Hồ sơ cần chuẩn bị</h2>
-                        <ul className={s.checkList}>
-                            {ADMISSION_DOCS.map((d) => (
-                                <li key={d}><Icon name="check" size={22} /><span>{d}</span></li>
-                            ))}
-                        </ul>
-                        <p className={s.formNote}>
-                            Thời gian, chỉ tiêu và hình thức xét tuyển cụ thể sẽ được nhà trường thông báo chính thức theo quy định của địa phương.
-                        </p>
+            <section className={`${s.section} ${s.sectionTint}`}>
+                <div className={`${s.container} ${s.split}`}>
+                    <div>
+                        <h2 className={s.h2}>Hồ sơ cần chuẩn bị</h2>
+                        <ul className={s.checklist}>{ADMISSION_DOCS.map((d) => <li key={d}><Icon name="check" size={18} />{d}</li>)}</ul>
+                    </div>
+                    <div>
+                        <h2 className={s.h2}>Các mốc thời gian</h2>
+                        <p className={s.muted}>Nhà trường sẽ cập nhật ngày cụ thể khi có thông báo chính thức.</p>
+                        <dl className={s.defs}>{ADMISSION_DATES.map(([d, t]) => <div key={t}><dt>{d}</dt><dd>{t}</dd></div>)}</dl>
                     </div>
                 </div>
             </section>
 
-            <section id="dang-ky" className={`${s.section} ${s.sectionSky}`}>
+            <section className={s.section} id="dang-ky">
                 <div className={`${s.container} ${s.formWrap}`}>
-                    <div className={s.sectionHead}>
-                        <h2 className={s.sectionTitle}>Đăng ký nhập học trực tuyến</h2>
-                        <p className={s.sectionDesc}>Điền thông tin bên dưới. Các mục có thể bỏ trống đã được ghi rõ.</p>
+                    <div>
+                        <h2 className={s.h2} id="dang-ky-h">Đăng ký nhập học trực tuyến</h2>
+                        <p className={s.lead}>Điền thông tin của học sinh và phụ huynh. Sau khi gửi, bạn nhận một mã hồ sơ.</p>
+                        <p className={s.muted}>Thông tin chỉ dùng để tư vấn tuyển sinh. Có thắc mắc, gọi {SCHOOL.phone} trong giờ làm việc.</p>
                     </div>
                     <AdmissionForm />
                 </div>
             </section>
 
-            <section className={s.section}>
-                <div className={`${s.container} ${s.faqWrap}`}>
-                    <div className={s.sectionHead}>
-                        <h2 className={s.sectionTitle}>Câu hỏi thường gặp</h2>
-                    </div>
-                    <Faq />
-                </div>
+            <section className={`${s.section} ${s.sectionTint}`}>
+                <div className={`${s.container} ${s.narrow}`}><SectionHead title="Câu hỏi về tuyển sinh" /><Faq items={FAQ} /></div>
             </section>
         </>
     );

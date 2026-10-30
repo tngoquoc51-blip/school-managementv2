@@ -250,6 +250,17 @@ class FeeDebtRepo
         return $o;
     }
 
+    /**
+     * Danh sách học sinh còn nợ (dùng cho module Nhắc nợ). Khóa là student_id.
+     *
+     * @param array<string,mixed> $f q, year_id, period_id, grade, class_id
+     * @return array<int,array<string,mixed>>
+     */
+    public function debtors(array $f = []): array
+    {
+        return array_filter($this->byStudent($this->invoices($f)), fn ($s) => $s['balance'] > 0);
+    }
+
     /* ================================================================== danh sách học sinh còn nợ */
 
     /**
