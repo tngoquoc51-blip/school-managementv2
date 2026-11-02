@@ -10,15 +10,20 @@ export type NewsItem = {
 };
 export type NewsList = { items: NewsItem[]; total: number; page: number; pages: number; per_page: number; categories: string[] };
 
-/** Đọc dữ liệu ở máy chủ. Lỗi mạng hoặc API chưa chạy thì trả dữ liệu dự phòng để trang vẫn hiển thị. */
-export async function load<T>(path: string, fallback: T, seconds = 30): Promise<{ data: T; live: boolean }> {
+/** Đọc dữ liệu ở máy chủ. Lỗi mạng hoặc API chưa chạy thì trả dữ liệu dự phòng để trang vẫn hiển thị.
+ Khi lỗi, trường why ghi rõ nguyên nhân (chỉ để lập trình viên đọc khi chạy chế độ dev). */
+export async function load<T>(path: string, fallback: T, seconds = 30): Promise<{ data: T; live: boolean; why?: string }> {
     try {
         const res = await fetch(`${API}/public/${path}`, { next: { revalidate: seconds }, signal: AbortSignal.timeout(3000), headers: { Accept: 'application/json' } });
-        if (!res.ok) return { data: fallback, live: false };
+        if (!res.ok) {
+            const body = (await res.text().catch(() => '')).replace(/\s+/g, ' ').slice(0, 220);
+            return { data: fallback, live: false, why: `API trả về mã ${res.status}. ${body}` };
+        }
         const json = await res.json();
         return { data: (json.data ?? json) as T, live: true };
-    } catch {
-        return { data: fallback, live: false };
+    } catch (e) {
+        const m = e instanceof Error ? `${e.name}: ${e.message}${(e as { cause?: { code?: string } }).cause?.code ? ` (${(e as { cause?: { code?: string } }).cause!.code})` : ''}` : String(e);
+        return { data: fallback, live: false, why: `Không kết nối được. ${m}` };
     }
 }
 

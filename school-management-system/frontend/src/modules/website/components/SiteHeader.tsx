@@ -17,7 +17,7 @@ export default function SiteHeader() {
     }, [path]);
 
     useEffect(() => {
-        const f = () => setStuck(window.scrollY > 8);
+        const f = () => setStuck(window.scrollY > 12);
         f();
         window.addEventListener('scroll', f, { passive: true });
         return () => window.removeEventListener('scroll', f);
@@ -33,10 +33,44 @@ export default function SiteHeader() {
         };
     }, [open]);
 
-    const on = (h: string) => path === h || path.startsWith(h + '/');
+    const on = (h: string) => {
+        if (h === '/') return path === '/';
+        return path === h || path.startsWith(h + '/');
+    };
 
     return (
         <header className={`${s.header} ${stuck ? s.headerStuck : ''}`}>
+            {/* Topbar thông tin liên hệ chuẩn website giới thiệu cao cấp */}
+            <div className={s.topbar}>
+                <div className={`${s.container} ${s.topbarIn}`}>
+                    <div className={s.topbarLeft}>
+                        <span className={s.topItem}>
+                            <Icon name="pin" size={13} />
+                            <span>{SCHOOL.addressShort}</span>
+                        </span>
+                        <span className={s.topItem}>
+                            <Icon name="clock" size={13} />
+                            <span>{SCHOOL.hours}</span>
+                        </span>
+                    </div>
+                    <div className={s.topbarRight}>
+                        <a href={`tel:${SCHOOL.hotline.replace(/\s/g, '')}`} className={s.hotlineLink}>
+                            <Icon name="phone" size={13} />
+                            <span>Hotline Tuyển sinh: <b>{SCHOOL.hotline}</b></span>
+                        </a>
+                        <a href={`mailto:${SCHOOL.email}`} className={s.topLink}>
+                            <Icon name="mail" size={13} />
+                            <span>{SCHOOL.email}</span>
+                        </a>
+                        <Link href="/tuyen-sinh/tra-cuu" className={s.searchLink}>
+                            <Icon name="search" size={13} />
+                            <span>Tra cứu hồ sơ</span>
+                        </Link>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Navbar */}
             <div className={`${s.container} ${s.headerIn}`}>
                 {/* Logo + Tên trường */}
                 <Link href="/" className={s.brand} aria-label={`${SCHOOL.name} – Trang chủ`}>
@@ -45,19 +79,22 @@ export default function SiteHeader() {
                         alt={SCHOOL.name}
                         className={s.logo}
                     />
-                    <span className={s.brandText}>
-                        <b>{SCHOOL.name}</b>
-                        <small>Học thật vững, bay thật xa</small>
-                    </span>
+                    <div className={s.brandText}>
+                        <div className={s.brandRow}>
+                            <b>{SCHOOL.name}</b>
+                            <span className={s.nationalTag}>Chuẩn QG</span>
+                        </div>
+                        <small>{SCHOOL.slogan}</small>
+                    </div>
                 </Link>
 
-                {/* Menu */}
+                {/* Menu chính */}
                 <nav className={s.nav} aria-label="Điều hướng chính">
                     {NAV.map((n) => (
                         <Link
                             key={n.href}
                             href={n.href}
-                            className={on(n.href) ? s.navOn : ''}
+                            className={`${s.navLink} ${on(n.href) ? s.navOn : ''}`}
                             aria-current={on(n.href) ? 'page' : undefined}
                         >
                             {n.label}
@@ -65,27 +102,16 @@ export default function SiteHeader() {
                     ))}
                 </nav>
 
-                {/* Bên phải: Liên hệ + Nút */}
+                {/* Các nút hành động CTA bán hàng & tuyển sinh */}
                 <div className={s.headerRight}>
-                    {/* Thông tin liên hệ */}
-                    <div className={s.contact}>
-                        <a href={`tel:${SCHOOL.phone.replace(/\s/g, '')}`}>
-                            <Icon name="phone" size={14} />
-                            {SCHOOL.phone}
-                        </a>
-                        <a href={`mailto:${SCHOOL.email}`}>
-                            <Icon name="mail" size={14} />
-                            {SCHOOL.email}
-                        </a>
-                    </div>
-
-                    {/* Nút hành động */}
                     <div className={s.headerAct}>
-                        <Link href="/he-thong" className={`${s.btn} ${s.btnLine} ${s.hideSm}`}>
-                            Cổng thông tin
+                        <Link href="/he-thong" className={`${s.btn} ${s.btnPortal}`}>
+                            <Icon name="monitor" size={16} />
+                            <span>Cổng thông tin</span>
                         </Link>
-                        <Link href="/tuyen-sinh#dang-ky" className={`${s.btn} ${s.btnHot} ${s.hideXs}`}>
-                            Đăng ký nhập học
+                        <Link href="/tuyen-sinh#dang-ky" className={`${s.btn} ${s.btnAdmission}`}>
+                            <span className={s.pulseDot}></span>
+                            <span>Đăng ký tuyển sinh</span>
                         </Link>
                         <button
                             className={s.burger}
@@ -94,45 +120,43 @@ export default function SiteHeader() {
                             aria-controls="menu-mobile"
                             onClick={() => setOpen((v) => !v)}
                         >
-                            <Icon name={open ? 'close' : 'menu'} />
+                            <Icon name={open ? 'close' : 'menu'} size={22} />
                         </button>
                     </div>
                 </div>
             </div>
 
-            {/* Menu mobile */}
+            {/* Menu cho điện thoại (Drawer Mobile) */}
             {open && (
-                <div id="menu-mobile" className={s.sheet}>
-                    <nav aria-label="Menu di động">
-                        {NAV.map((n) => (
-                            <Link
-                                key={n.href}
-                                href={n.href}
-                                className={on(n.href) ? s.navOn : ''}
-                            >
-                                {n.label}
+                <div className={s.mobileDrawer} id="menu-mobile">
+                    <div className={s.mobileIn}>
+                        <div className={s.mobileTop}>
+                            <p className={s.mobileTitle}>Danh mục điều hướng</p>
+                            <span className={s.mobilePhone}>Hotline: {SCHOOL.hotline}</span>
+                        </div>
+                        <nav className={s.mobileNav}>
+                            {NAV.map((n) => (
+                                <Link
+                                    key={n.href}
+                                    href={n.href}
+                                    className={`${s.mobileLink} ${on(n.href) ? s.mobileOn : ''}`}
+                                >
+                                    <span>{n.label}</span>
+                                    <Icon name="arrow" size={16} />
+                                </Link>
+                            ))}
+                        </nav>
+                        <div className={s.mobileBtns}>
+                            <Link href="/tuyen-sinh#dang-ky" className={`${s.btn} ${s.btnAdmission} ${s.btnFull}`}>
+                                Đăng ký tuyển sinh 2026 – 2027
                             </Link>
-                        ))}
-                    </nav>
-
-                    <div className={s.sheetAct}>
-                        <Link href="/tuyen-sinh#dang-ky" className={`${s.btn} ${s.btnHot} ${s.btnBlock}`}>
-                            Đăng ký nhập học
-                        </Link>
-                        <Link href="/he-thong" className={`${s.btn} ${s.btnLine} ${s.btnBlock}`}>
-                            Cổng thông tin
-                        </Link>
-                    </div>
-
-                    <div className={s.sheetContact}>
-                        <a href={`tel:${SCHOOL.phone.replace(/\s/g, '')}`}>
-                            <Icon name="phone" size={16} />
-                            {SCHOOL.phone}
-                        </a>
-                        <a href={`mailto:${SCHOOL.email}`}>
-                            <Icon name="mail" size={16} />
-                            {SCHOOL.email}
-                        </a>
+                            <Link href="/he-thong" className={`${s.btn} ${s.btnPortal} ${s.btnFull}`}>
+                                Vào cổng thông tin số
+                            </Link>
+                            <Link href="/tuyen-sinh/tra-cuu" className={`${s.btn} ${s.btnOutline} ${s.btnFull}`}>
+                                Tra cứu tiến độ hồ sơ
+                            </Link>
+                        </div>
                     </div>
                 </div>
             )}

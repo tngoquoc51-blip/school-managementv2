@@ -1,35 +1,137 @@
 /* ===================================================================
    SiteHeader.module.css
-   Header đầy đủ chức năng + phối màu đẹp
+   Header chuẩn nhận diện thương hiệu giáo dục cao cấp (High-End Academic)
+   Màu chủ đạo: Deep Academic Navy (#0A192F / #0F2C59) + Crimson Red (#991B1B) + Gold (#D97706)
    =================================================================== */
 
 .header {
     position: sticky;
     top: 0;
-    z-index: 50;
+    z-index: 100;
     background: #ffffff;
-    border-bottom: 1px solid #e2e8f0;
-    transition: box-shadow 0.25s ease;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .headerStuck {
-    box-shadow: 0 4px 24px -10px rgba(15, 23, 42, 0.12);
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px -2px rgba(15, 44, 89, 0.10);
 }
 
-/* ---------- Main header ---------- */
+.container {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-inline: clamp(16px, 3.5vw, 48px);
+}
+
+/* ---------- Top bar thông tin ---------- */
+.topbar {
+    background: #0a192f;
+    color: #cbd5e1;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.topbarIn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 38px;
+    gap: 16px;
+}
+
+.topbarLeft {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.topItem {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #cbd5e1;
+}
+
+.topItem svg {
+    color: #38bdf8;
+}
+
+.topbarRight {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.hotlineLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #fef08a;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.hotlineLink b {
+    color: #fde047;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.hotlineLink:hover {
+    color: #ffffff;
+}
+
+.topLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.topLink:hover {
+    color: #ffffff;
+}
+
+.searchLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 12px;
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 12.5px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.searchLink:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #ffffff;
+}
+
+/* ---------- Main Header Bar ---------- */
 .headerIn {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 24px;
-    min-height: 80px;
+    min-height: 74px;
 }
 
-/* Brand + Logo */
+/* Brand & Logo */
 .brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     flex-shrink: 0;
     text-decoration: none;
     color: inherit;
@@ -39,87 +141,102 @@
     width: 50px;
     height: 50px;
     object-fit: contain;
-    flex-shrink: 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
+    transition: transform 0.25s ease;
+}
+
+.brand:hover .logo {
+    transform: scale(1.04);
 }
 
 .brandText {
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: 2px;
 }
 
-.brandText b {
-    font-size: 1.15rem;
+.brandRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.brandRow b {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0f2c59;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+}
+
+.nationalTag {
+    font-size: 11px;
     font-weight: 700;
-    color: #0f172a;
-    line-height: 1.25;
+    color: #b45309;
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+    padding: 2px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
 .brandText small {
-    font-size: 12.5px;
+    font-size: 12px;
     color: #64748b;
+    font-weight: 500;
 }
 
-/* Navigation */
+/* Menu Điều Hướng */
 .nav {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 4px;
 }
 
-.nav a {
-    padding: 8px 13px;
-    border-radius: 999px;
-    font-weight: 500;
-    font-size: 15px;
+.navLink {
+    position: relative;
+    padding: 10px 14px;
+    font-weight: 600;
+    font-size: 14.5px;
     color: #334155;
     text-decoration: none;
-    transition: all 0.18s ease;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+    border-radius: 8px;
 }
 
-.nav a:hover {
-    background: #e0f2fe;
-    color: #0284c7;
+.navLink:hover {
+    color: #0f2c59;
+    background: #f8fafc;
 }
 
+/* Menu Đang Hoạt Động (Active State) - Thanh Lịch Chuẩn Website Danh Tiếng */
 .navOn {
-    background: #e0f2fe !important;
-    color: #0284c7 !important;
-    font-weight: 600 !important;
+    color: #0f2c59 !important;
+    font-weight: 700 !important;
+    background: transparent !important;
 }
 
-/* Right side */
+.navOn::after {
+    content: '';
+    position: absolute;
+    bottom: -16px;
+    left: 14px;
+    right: 14px;
+    height: 3px;
+    background: linear-gradient(90deg, #991b1b 0%, #c5221f 100%);
+    border-radius: 99px;
+}
+
+/* Nút bấm hành động CTA */
 .headerRight {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 12px;
     flex-shrink: 0;
 }
 
-/* Contact info */
-.contact {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    font-size: 13px;
-    color: #475569;
-    line-height: 1.3;
-}
-
-.contact a {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: #475569;
-    text-decoration: none;
-    transition: color 0.15s;
-}
-
-.contact a:hover {
-    color: #0284c7;
-}
-
-/* Actions */
 .headerAct {
     display: flex;
     align-items: center;
@@ -130,167 +247,176 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 8px;
     min-height: 40px;
-    padding: 0 18px;
+    padding: 8px 18px;
     border-radius: 999px;
-    border: 1.5px solid transparent;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 14px;
-    cursor: pointer;
     text-decoration: none;
-    transition: all 0.18s ease;
+    cursor: pointer;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     white-space: nowrap;
+    border: none;
 }
 
 .btn:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 }
 
-.btnLine {
-    background: #f0f9ff;
-    color: #0284c7;
-    border-color: #bae6fd;
+.btnPortal {
+    background: #ffffff;
+    color: #0f2c59;
+    border: 1.5px solid #0f2c59;
+    box-shadow: 0 1px 3px rgba(15, 44, 89, 0.08);
 }
 
-.btnLine:hover {
-    background: #e0f2fe;
-    border-color: #7dd3fc;
+.btnPortal:hover {
+    background: #0f2c59;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(15, 44, 89, 0.2);
 }
 
-.btnHot {
-    background: #e11d48;
-    color: #fff;
-    border-color: #e11d48;
-    box-shadow: 0 6px 16px -6px rgba(225, 29, 72, 0.4);
+.btnAdmission {
+    background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+    color: #ffffff;
+    border: 1px solid rgba(254, 240, 138, 0.35);
+    box-shadow: 0 4px 14px rgba(153, 27, 27, 0.35);
 }
 
-.btnHot:hover {
-    background: #be123c;
+.btnAdmission:hover {
+    background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+    box-shadow: 0 6px 20px rgba(153, 27, 27, 0.5);
 }
 
-.btnBlock {
-    width: 100%;
+.pulseDot {
+    width: 8px;
+    height: 8px;
+    background: #fde047;
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(253, 224, 71, 0.7);
+    animation: pulse 1.8s infinite;
 }
 
-/* Burger */
+@keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(253, 224, 71, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(253, 224, 71, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(253, 224, 71, 0); }
+}
+
+/* Nút Burger Menu Mobile */
 .burger {
     display: none;
     width: 42px;
     height: 42px;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    background: #fff;
-    place-items: center;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    color: #0f2c59;
     cursor: pointer;
-    color: #0f172a;
+    place-items: center;
+    transition: all 0.2s;
 }
 
-/* Mobile menu */
-.sheet {
-    position: absolute;
+.burger:hover {
+    background: #e2e8f0;
+}
+
+/* Drawer Menu cho điện thoại */
+.mobileDrawer {
+    position: fixed;
+    top: 0;
     left: 0;
     right: 0;
-    top: 100%;
-    height: calc(100dvh - 80px);
-    background: #fff;
-    padding: 12px 20px 32px;
-    overflow: auto;
-    border-top: 1px solid #e2e8f0;
-    box-shadow: 0 16px 40px -12px rgba(15, 23, 42, 0.12);
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    display: flex;
+    justify-content: flex-end;
 }
 
-.sheet nav {
-    display: grid;
+.mobileIn {
+    width: 85%;
+    max-width: 380px;
+    background: #ffffff;
+    height: 100%;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
 }
 
-.sheet nav a {
-    padding: 15px 4px;
-    font-size: 17px;
-    font-weight: 600;
-    border-bottom: 1px solid #f1f5f9;
-    color: #0f172a;
-    text-decoration: none;
-}
-
-.sheet nav a:hover,
-.sheet .navOn {
-    color: #0284c7;
-}
-
-.sheetAct {
-    display: grid;
-    gap: 10px;
-    margin-top: 24px;
-}
-
-.sheetContact {
-    margin-top: 20px;
-    padding-top: 16px;
-    border-top: 1px solid #f1f5f9;
-    display: grid;
-    gap: 10px;
-    font-size: 14px;
-}
-
-.sheetContact a {
-    display: inline-flex;
+.mobileTop {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 8px;
-    color: #475569;
-    text-decoration: none;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 20px;
 }
 
-/* Container */
-.container {
-    width: min(1440px, 100% - 48px);
-    margin-inline: auto;
+.mobileTitle {
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f2c59;
+    margin: 0;
+}
+
+.mobilePhone {
+    font-size: 13px;
+    color: #991b1b;
+    font-weight: 700;
+}
+
+.mobileNav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.mobileNavLink {
+    padding: 12px 16px;
+    font-size: 15.5px;
+    font-weight: 600;
+    color: #1e293b;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: all 0.2s;
+}
+
+.mobileNavLink:hover {
+    background: #f1f5f9;
+    color: #0f2c59;
+}
+
+.mobileNavOn {
+    background: #fee2e2 !important;
+    color: #991b1b !important;
+    font-weight: 700 !important;
+}
+
+.mobileActions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
 }
 
 /* Responsive */
-@media (max-width: 1200px) {
-    .contact {
-        display: none;
-    }
+@media (max-width: 1080px) {
+    .nav { display: none; }
+    .burger { display: grid; }
+    .btnAdmission { display: none; }
 }
 
-@media (max-width: 900px) {
-    .nav {
-        display: none;
-    }
-
-    .burger {
-        display: grid;
-    }
-
-    .headerIn {
-        min-height: 72px;
-    }
-
-    .hideSm {
-        display: none !important;
-    }
-}
-
-@media (max-width: 640px) {
-    .brandText small {
-        display: none;
-    }
-
-    .logo {
-        width: 44px;
-        height: 44px;
-    }
-
-    .brandText b {
-        font-size: 1.05rem;
-    }
-
-    .hideXs {
-        display: none !important;
-    }
-
-    .container {
-        width: min(1440px, 100% - 32px);
-    }
+@media (max-width: 768px) {
+    .topbar { display: none; }
+    .btnPortal { display: none; }
+    .brandRow b { font-size: 1.05rem; }
+    .brandText small { display: none; }
 }

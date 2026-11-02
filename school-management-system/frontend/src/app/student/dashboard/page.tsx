@@ -14,7 +14,7 @@ const rankOf = (n: number) => (n >= 8 ? 'Giỏi' : n >= 6.5 ? 'Khá' : n >= 5 ? 
 
 /** Tính điểm TB + học lực + rèn luyện của học kỳ gần nhất đã có điểm (năm học hiện tại). */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function pickStats(data: any): Stats | null {
+function pickStats(data: any): Stats | null {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const years: any[] = data?.years ?? [];
     const y = years.find((x) => x.is_current) ?? years[years.length - 1];

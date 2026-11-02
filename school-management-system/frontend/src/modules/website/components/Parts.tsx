@@ -4,7 +4,7 @@ import s from '../site.module.css';
 import Icon from './Icons';
 import CountUp from './CountUp';
 import { fmtDate, type NewsItem, type Overview } from '../lib/api';
-import { FAQ } from '../data/school';
+import { FAQ, SCHOOL } from '../data/school';
 
 /** Đầu trang con: đường dẫn, tiêu đề, mô tả. */
 export function PageHead({ title, desc, trail, children }: { title: string; desc?: string; trail: [string, string?][]; children?: ReactNode }) {
@@ -25,16 +25,19 @@ export function PageHead({ title, desc, trail, children }: { title: string; desc
     );
 }
 
-export function SectionHead({ title, desc, action }: { title: string; desc?: string; action?: ReactNode }) {
+export function SectionHead({ title, desc, action, center = false }: { title: string; desc?: string; action?: ReactNode; center?: boolean }) {
     return (
-        <div className={s.secHead}>
-            <div><h2>{title}</h2>{desc && <p>{desc}</p>}</div>
-            {action}
+        <div className={`${s.secHead} ${center ? s.secHeadCenter : ''}`}>
+            <div>
+                <h2>{title}</h2>
+                {desc && <p>{desc}</p>}
+            </div>
+            {action && <div className={s.secAction}>{action}</div>}
         </div>
     );
 }
 
-/** Khối ảnh bìa vẽ bằng màu, không cần ảnh thật. */
+/** Khối ảnh bìa vẽ bằng màu / hoa văn */
 export function Cover({ tone, kind }: { tone: string; kind?: string }) {
     return (
         <div className={`${s.cover} ${s['tone_' + tone] ?? s.tone_a}`} aria-hidden="true">
@@ -54,16 +57,24 @@ export function NewsCard({ n, big = false }: { n: NewsItem; big?: boolean }) {
         <article className={`${s.news} ${big ? s.newsBig : ''}`}>
             <Link href={href} className={s.newsCover} tabIndex={-1} aria-hidden="true"><Cover tone={n.tone} kind={n.kind} /></Link>
             <div className={s.newsBody}>
-                <p className={s.newsMeta}><span className={s.tag}>{n.category}</span><time dateTime={n.date}>{fmtDate(n.date)}</time></p>
+                <p className={s.newsMeta}>
+                    <span className={s.tag}>{n.category}</span>
+                    <time dateTime={n.date}>{fmtDate(n.date)}</time>
+                </p>
                 <h3><Link href={href}>{n.title}</Link></h3>
                 <p className={s.newsSum}>{n.summary}</p>
-                {n.kind === 'event' && n.event_date && <p className={s.newsWhen}><Icon name="calendar" size={16} />{fmtDate(n.event_date)}{n.event_place ? ` · ${n.event_place}` : ''}</p>}
+                {n.kind === 'event' && n.event_date && (
+                    <p className={s.newsWhen}>
+                        <Icon name="calendar" size={16} />
+                        {fmtDate(n.event_date)}{n.event_place ? ` · ${n.event_place}` : ''}
+                    </p>
+                )}
             </div>
         </article>
     );
 }
 
-/** Quy mô theo khối: dữ liệu thật từ hệ thống quản lý học sinh. */
+/** Quy mô theo khối: dữ liệu thật từ hệ thống quản lý học sinh */
 export function GradeBars({ o }: { o: Overview }) {
     const max = Math.max(1, ...o.grades.map((g) => g.students));
     return (
@@ -90,8 +101,14 @@ export function GradeBars({ o }: { o: Overview }) {
 export function Faq({ items = FAQ }: { items?: { q: string; a: string }[] }) {
     return (
         <div className={s.faq}>
-            {items.map((f) => (
-                <details key={f.q}><summary>{f.q}<Icon name="chevron" size={18} /></summary><p>{f.a}</p></details>
+            {items.map((f, idx) => (
+                <details key={f.q} open={idx === 0}>
+                    <summary>
+                        <span>{f.q}</span>
+                        <Icon name="chevron" size={18} />
+                    </summary>
+                    <p>{f.a}</p>
+                </details>
             ))}
         </div>
     );
@@ -101,13 +118,20 @@ export function AdmitBand() {
     return (
         <section className={s.band}>
             <div className={`${s.container} ${s.bandIn}`}>
-                <div>
-                    <h2>Tuyển sinh lớp 10 năm học 2027 – 2028 đang mở đăng ký</h2>
-                    <p>Điền biểu mẫu trong vài phút. Bạn nhận một mã hồ sơ để tra cứu tiến độ bất cứ lúc nào.</p>
+                <div className={s.bandText}>
+                    <span className={s.bandTag}>Tuyển sinh vào lớp 10</span>
+                    <h2>Năm học {SCHOOL.admissionYear} đang mở cổng đăng ký</h2>
+                    <p>Nhận mã hồ sơ trực tuyến chỉ trong 1 phút để được ưu tiên tư vấn chọn tổ hợp môn và nhận thông báo sớm nhất từ nhà trường.</p>
                 </div>
                 <div className={s.bandAct}>
-                    <Link href="/tuyen-sinh#dang-ky" className={`${s.btn} ${s.btnHot} ${s.btnLg}`}>Đăng ký nhập học</Link>
-                    <Link href="/tuyen-sinh/tra-cuu" className={`${s.btn} ${s.btnGhostW} ${s.btnLg}`}>Tra cứu hồ sơ</Link>
+                    <Link href="/tuyen-sinh#dang-ky" className={`${s.btn} ${s.btnHot} ${s.btnLg}`}>
+                        <span>Đăng ký xét tuyển ngay</span>
+                        <Icon name="arrow" size={18} />
+                    </Link>
+                    <a href={`tel:${SCHOOL.hotline.replace(/\s/g, '')}`} className={`${s.btn} ${s.btnGhostW} ${s.btnLg}`}>
+                        <Icon name="phone" size={18} />
+                        <span>Hotline: {SCHOOL.hotline}</span>
+                    </a>
                 </div>
             </div>
         </section>

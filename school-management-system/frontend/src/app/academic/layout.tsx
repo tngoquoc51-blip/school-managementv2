@@ -33,6 +33,9 @@ const I: Record<string, string> = {
     chevd: 'M6 9l6 6 6-6',
     bell: 'M6 9a6 6 0 0112 0c0 6 2 7 2 7H4s2-1 2-7M10 20a2 2 0 004 0',
     user: 'M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8',
+    adm: 'M9 2h6a1 1 0 011 1v2H8V3a1 1 0 011-1zM8 4H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2M9 13l2 2 4-4',
+    mail: 'M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zM22 6l-10 7L2 6',
+    news: 'M4 4h13a2 2 0 012 2v14H6a2 2 0 01-2-2zM19 8h2v10a2 2 0 01-2 2M8 8h7M8 12h7M8 16h4',
 };
 
 export const Icon = ({ n, s = 18 }: { n: string; s?: number }) => (
@@ -41,7 +44,7 @@ export const Icon = ({ n, s = 18 }: { n: string; s?: number }) => (
     </svg>
 );
 
-type Item = { href: string; t: string; i: string; badge?: boolean };
+type Item = { href: string; t: string; i: string; badge?: boolean | 'adm' | 'con' };
 
 const MENU: { g: string; items: Item[] }[] = [
     { g: 'Tổng quan', items: [{ href: '/academic/dashboard', t: 'Dashboard', i: 'dash' }] },
@@ -70,6 +73,14 @@ const MENU: { g: string; items: Item[] }[] = [
         ],
     },
     {
+        g: 'Website',
+        items: [
+            { href: '/academic/website/tuyen-sinh', t: 'Hồ sơ tuyển sinh', i: 'adm', badge: 'adm' },
+            { href: '/academic/website/lien-he', t: 'Tin nhắn liên hệ', i: 'mail', badge: 'con' },
+            { href: '/academic/website/tin-tuc', t: 'Tin tức & sự kiện', i: 'news' },
+        ],
+    },
+    {
         g: 'Hệ thống',
         items: [
             { href: '/academic/notifications', t: 'Thông báo', i: 'bell' },
@@ -92,6 +103,7 @@ export default function AcademicLayout({ children }: { children: ReactNode }) {
     const [search, setSearch] = useState('');
     const [searchOpen, setSearchOpen] = useState(false);
     const [pending, setPending] = useState(0);
+    const [web, setWeb] = useState({ adm: 0, con: 0 });
     const [year, setYear] = useState('');
 
     useEffect(() => {
@@ -107,6 +119,9 @@ export default function AcademicLayout({ children }: { children: ReactNode }) {
             .catch(() => {});
         api<any>('classes')
             .then((d) => setYear(d?.year ?? ''))
+            .catch(() => {});
+        api<any>('website/summary')
+            .then((d) => setWeb({ adm: d?.admissions?.new ?? 0, con: d?.contacts?.new ?? 0 }))
             .catch(() => {});
     }, [router, path]);
 
@@ -243,7 +258,9 @@ export default function AcademicLayout({ children }: { children: ReactNode }) {
                                                     <Icon n={it.i} s={18} />
                                                 </span>
                                                 <span className="ac-lb">{it.t}</span>
-                                                {it.badge && pending > 0 && <em>{pending}</em>}
+                                                {it.badge === true && pending > 0 && <em>{pending}</em>}
+                                                {it.badge === 'adm' && web.adm > 0 && <em>{web.adm}</em>}
+                                                {it.badge === 'con' && web.con > 0 && <em>{web.con}</em>}
                                             </Link>
                                         );
                                     })}

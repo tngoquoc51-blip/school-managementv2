@@ -1,0 +1,51 @@
+/* Dùng các biến màu của khung Cổng Giáo viên (--navy, --line, --sky-deep, ...) nên tự khớp giao diện */
+.page{display:grid;gap:calc(var(--u,16px)*1);color:var(--ink)}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.title{margin:0;font-size:calc(var(--u,16px)*1.6);font-weight:700;color:var(--navy-deep);letter-spacing:-.01em}
+.sub{margin:4px 0 0;color:var(--muted);max-width:62ch}
+.muted{color:var(--muted);font-size:.86em}
+.srOnly{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap}
+.toolbar select,.field input,.field select,.field textarea{font:inherit;color:inherit;padding:10px 12px;border:1.5px solid #b9cde0;border-radius:10px;background:#fff;width:100%}
+.toolbar select{width:auto;min-width:220px}
+.btn{font:inherit;font-weight:600;padding:9px 16px;border-radius:10px;border:1.5px solid #b9cde0;background:#fff;color:var(--navy-deep);cursor:pointer}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btnPrimary{background:var(--sky-deep);border-color:var(--sky-deep);color:#fff}
+.btnPrimary:hover:not(:disabled){background:var(--navy)}
+.btnSm{padding:5px 11px;font-size:.88em}
+.btnDanger{color:#b01e31;border-color:#f0b3bb}
+.flash{padding:11px 14px;border-radius:10px;font-weight:500}
+.flashOk{background:#dff5ef;color:#0b7566}
+.flashErr{background:#fde8eb;color:#b01e31;padding:11px 14px;border-radius:10px}
+.empty{background:#fff;border:1.5px dashed #b9cde0;border-radius:14px;padding:32px;text-align:center;display:grid;gap:8px;justify-items:center}
+.tableWrap{background:#fff;border:1px solid var(--line);border-radius:14px;overflow-x:auto}
+.table{width:100%;border-collapse:collapse;font-size:.94em}
+.table th{text-align:left;padding:12px 14px;font-size:.82em;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--line);white-space:nowrap}
+.table td{padding:12px 14px;border-bottom:1px solid #edf2f8;vertical-align:top}
+.table tr:last-child td{border-bottom:0}
+.acts{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+.tag{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.82em;font-weight:600;background:#e8edf5;color:var(--muted)}
+.tagOn,.st_graded{background:#dff5ef;color:#0b7566}
+.tagDraft,.st_missing{background:#fff0b8;color:#5c4700}
+.st_submitted{background:#e4eefc;color:#164aa5}
+.st_returned{background:#fde8eb;color:#b01e31}
+.pager{display:flex;justify-content:center;align-items:center;gap:14px;color:var(--muted)}
+.scrim{position:fixed;inset:0;z-index:80;background:rgba(8,47,73,.5);display:grid;place-items:center;padding:16px}
+.modal{background:#fff;border-radius:16px;padding:22px;width:min(620px,100%);max-height:92vh;overflow:auto;display:grid;gap:12px}
+.modal h2,.drawer h2{margin:0;font-size:1.15em;color:var(--navy-deep)}
+.field{display:grid;gap:5px;font-weight:600;font-size:.92em}
+.field input,.field select,.field textarea{font-weight:400}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.check{display:flex;gap:8px;align-items:center;font-size:.94em}
+.formActs{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(640px,100%);background:#fff;overflow:auto;padding:20px;display:grid;gap:12px;align-content:start}
+.drawerHead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.stuList{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.stu{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stuMain{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;padding:11px 14px;background:#fff;border:0;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.stuMain:disabled{cursor:default}
+.stuRight{display:flex;gap:10px;align-items:center}
+.grade{padding:12px 14px;background:#f6fbff;border-top:1px solid var(--line);display:grid;gap:10px}
+.content{white-space:pre-wrap;margin:0}
+.link{background:none;border:0;padding:0;color:var(--sky-deep);text-decoration:underline;cursor:pointer;font:inherit}
+@media (max-width:720px){.row2{grid-template-columns:1fr}}

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Be_Vietnam_Pro } from 'next/font/google';
+import api from '@/services/api';
+import { teacherPortal } from '@/services/teacherPortal';
 import '../login.css';
 
 const beVietnam = Be_Vietnam_Pro({
@@ -110,6 +112,8 @@ const IconArrow = () => (
     <svg viewBox="0 0 24 24" {...stroke} strokeWidth={2.4}><path d="M5 12h14M13 6l6 6-6 6" /></svg>
 );
 
+const SESSION_KEYS = ['token', 'user', 'roles', 'current_role'];
+
 export default function TeacherLoginPage() {
     const router = useRouter();
     const [identifier, setIdentifier] = useState('');
@@ -119,25 +123,47 @@ export default function TeacherLoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [remember, setRemember] = useState(false);
 
+    const clearSession = () =>
+        SESSION_KEYS.forEach((k) => { localStorage.removeItem(k); sessionStorage.removeItem(k); });
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
         try {
-            await new Promise((r) => setTimeout(r, 500));
+            // Nhận mã giáo viên, tên đăng nhập, hoặc email nhà trường cấp (đuôi @thpt.edu.vn)
+            const username = identifier.trim().toLowerCase().replace(/@thpt\.edu\.vn$/, '');
 
-            if (identifier.toLowerCase() === 'gv0001' && password === '123456') {
-                localStorage.setItem('token', 'demo-token');
-                localStorage.setItem('user', JSON.stringify({ name: 'Nguyễn Văn Giáo', email: identifier }));
-                localStorage.setItem('roles', JSON.stringify(['teacher']));
-                localStorage.setItem('current_role', 'teacher');
-                router.push('/teacher/dashboard');
-            } else {
-                setError('Mã giáo viên hoặc mật khẩu không đúng');
-            }
-        } catch {
-            setError('Có lỗi xảy ra, vui lòng thử lại');
+            const res: any = await api.post('/gv/login', { username, password }, { timeout: 15000 });
+            const body = res && typeof res === 'object' && 'status' in res && 'data' in res ? res.data : res;
+            const payload = body?.data ?? body;
+            const token: string | undefined = payload?.token;
+            if (!token) throw new Error('no-token');
+
+            // "Ghi nhớ đăng nhập" bật: lưu lâu dài; tắt: chỉ lưu đến khi đóng trình duyệt
+            const store = remember ? localStorage : sessionStorage;
+            clearSession();
+            store.setItem('token', token);
+
+            // Lấy hồ sơ giáo viên (tên, lớp chủ nhiệm) từ hệ thống để phân quyền menu
+            const me: any = await teacherPortal.profile();
+            const t = me?.teacher;
+            const roles = ['teacher', ...(me?.homeroom ? ['homeroom_teacher'] : [])];
+
+            store.setItem('user', JSON.stringify({ name: t?.full_name ?? payload?.staff?.name ?? 'Giáo viên', email: username, code: t?.code }));
+            store.setItem('roles', JSON.stringify(roles));
+            store.setItem('current_role', 'teacher');
+            router.push('/teacher/dashboard');
+        } catch (err: any) {
+            clearSession();
+            const status: number | undefined = err?.response?.status;
+            const msg: string | undefined = err?.response?.data?.message;
+            if (status === 429) setError('Bạn thử quá nhiều lần. Vui lòng chờ một phút rồi thử lại');
+            else if (status === 401 || status === 422) setError('Mã giáo viên hoặc mật khẩu không đúng');
+            else if (status === 403 || status === 423) setError(msg || 'Tài khoản này chưa được phép đăng nhập');
+            else if (!err?.response) setError('Không kết nối được máy chủ. Vui lòng thử lại sau ít phút');
+            else setError(msg || 'Có lỗi xảy ra, vui lòng thử lại');
         } finally {
             setLoading(false);
         }
@@ -237,7 +263,7 @@ export default function TeacherLoginPage() {
                                     type="text"
                                     value={identifier}
                                     onChange={(e) => setIdentifier(e.target.value)}
-                                    placeholder="VD: gv0001"
+                                    placeholder="VD: gv250002"
                                     autoComplete="username"
                                     required
                                     autoFocus
@@ -277,10 +303,6 @@ export default function TeacherLoginPage() {
                             {!loading && <span className="arrow"><IconArrow /></span>}
                         </button>
                     </form>
-
-                    <p className="login-help">
-                        Demo: <code>gv0001</code> / <code>123456</code>
-                    </p>
 
                     <div className="login-footer">
                         <Link href="/">← Quay lại trang chủ</Link>

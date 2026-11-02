@@ -19,7 +19,7 @@ function findToken(): string | null {
     }
     return null;
 }
-const cfg = () => {
+export const cfg = () => {
     const t = findToken();
     return t ? { headers: { Authorization: `Bearer ${t}`, Accept: 'application/json' } } : {};
 };

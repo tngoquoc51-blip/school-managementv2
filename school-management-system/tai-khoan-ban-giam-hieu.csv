@@ -1,0 +1,16 @@
+Cổng quản trị (users)	admin	Quản trị viên	super_admin	admin@thpt.edu.vn	active
+9	Cổng quản trị (users)	gv0001	Nguyễn Văn Giáo	teacher, homeroom_teacher	gv0001@thpt.edu.vn	active
+10	Cổng quản trị (users)	ph0001	Lê Văn Phụ	parent	ph0001@thpt.edu.vn	active
+11	Cổng quản trị (users)		Trần Thị Học		hoc.tran@student.thpt.vn	active
+12	Cổng quản trị (users)		Nguyễn Văn An		an.nguyen@student.thpt.vn	active
+13	Cổng quản trị (users)		Lê Thị Bình		binh.le@student.thpt.vn	active
+14	Cổng quản trị (users)		Phạm Minh Cường		cuong.pham@student.thpt.vn	active
+15	Cổng quản trị (users)		Hoàng Thị Dung		dung.hoang@student.thpt.vn	active
+16	Cổng quản trị (users)	hieutruong	Nguyễn Văn Hiệu	principal	hieutruong@thpt.edu.vn	active
+17	Cổng quản trị (users)	phohieu	Trần Thị Phó	vice_principal	phohieu@thpt.edu.vn	active
+18	Cổng quản trị (users)	giaovu	Lê Thị Giáo vụ	academic, giao_vu	tngoquoc51@gmail.com	active
+19	Cổng quản trị (users)	ketoan	Phạm Văn Kế	accountant	ketoan@thpt.edu.vn	active
+20	Cổng quản trị (users)	gv0002	Phạm Thị Lan	teacher	gv0002@thpt.edu.vn	active
+21	Cổng quản trị (users)	gv0003	Hoàng Văn Toán	teacher	gv0003@thpt.edu.vn	active
+22	Cổng quản trị (users)	gv0100	Vũ Thị Mới	teacher	gv0100@thpt.edu.vn	pending
+23	Cổng quản trị (users)	gv0099	Hoàng Văn Tạm	teacher	gv0099@thpt.edu.vn	locked

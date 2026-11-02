@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\AccountantController;
 use App\Http\Controllers\Api\Admin\UserController;
@@ -14,6 +13,9 @@ use App\Http\Controllers\Api\FeeCashierController;
 use App\Http\Controllers\Api\FeeReceiptController;
 use App\Http\Controllers\Api\FeeDebtController;
 use App\Http\Controllers\Api\FeeReminderController;
+use App\Http\Controllers\Api\PublicSiteController;
+use App\Http\Controllers\Api\GvWebsiteController;
+use App\Http\Controllers\Api\GvContactController;
 use App\Http\Controllers\Api\StudentReminderController;
 use App\Http\Middleware\FeeStaffToken;
 use App\Http\Middleware\StaffToken;
@@ -26,8 +28,21 @@ use App\Http\Controllers\Api\Admin\RoleController;
 use App\Http\Controllers\Api\Admin\SchoolYearController;
 use App\Http\Controllers\Api\Admin\AdminProfileController;
 use App\Http\Controllers\Api\Admin\AdminNotificationController;
+use App\Http\Controllers\Api\Admin\AdminDataCheckController;
 use App\Http\Controllers\Accountant\DebtController;
 use App\Http\Controllers\Api\Admin\BackupController;
+use Modules\Attendance\Controllers\AttendanceController;
+use Modules\Attendance\Controllers\StudentAttendanceController;
+use App\Http\Controllers\Api\StudentAttendancePortalController;
+use App\Http\Controllers\Api\LessonAttendanceStaffController;
+use App\Http\Controllers\Api\TeacherPortalController;
+use Modules\Homework\Controllers\HomeworkController;
+use App\Http\Controllers\Api\TeacherHomeworkPortalController;
+use App\Http\Controllers\Admin\DataExportController;
+use App\Http\Controllers\Admin\DataHubController;
+use App\Http\Controllers\Admin\DataImportController;
+use App\Http\Controllers\Admin\DataMappingController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/health', fn () => response()->json(['status' => 'ok']));
 
@@ -38,6 +53,17 @@ Route::prefix('v1')->group(function () {
     Route::post('auth/login', [AuthController::class, 'login']);
     Route::post('gv/login', [AcademicApiController::class, 'login'])->middleware('throttle:20,1');
     Route::post('kt/login', [FeePeriodController::class, 'login'])->middleware('throttle:20,1');
+});
+
+// Website công khai của trường (không cần đăng nhập)
+Route::prefix('public')->group(function () {
+    Route::get('overview', [PublicSiteController::class, 'overview']);
+    Route::get('news', [PublicSiteController::class, 'news']);
+    Route::get('events', [PublicSiteController::class, 'events']);
+    Route::get('news/{slug}', [PublicSiteController::class, 'newsOne'])->where('slug', '[a-z0-9\-]+');
+    Route::post('admissions', [PublicSiteController::class, 'admit'])->middleware('throttle:20,1');
+    Route::post('admissions/lookup', [PublicSiteController::class, 'lookup'])->middleware('throttle:20,1');
+    Route::post('contact', [PublicSiteController::class, 'contact'])->middleware('throttle:20,1');
 });
 
 // Kế toán
@@ -93,6 +119,30 @@ Route::prefix('admin')->group(function () {
     Route::delete('/backups/{id}', [BackupController::class, 'destroy']);
     Route::post('/backups/{id}/restore', [BackupController::class, 'restore']);
     Route::put('/backups/settings', [BackupController::class, 'updateSettings']);
+});
+
+Route::prefix('data-hub')->group(function () {
+    Route::get('datasets', [DataHubController::class, 'datasets']);
+    Route::get('overview', [DataHubController::class, 'overview']);
+
+    // nhập
+    Route::post('import/validate', [DataImportController::class, 'validateRows']);
+    Route::post('import/start', [DataImportController::class, 'start']);
+    Route::post('import/{batch}/chunk', [DataImportController::class, 'chunk'])->whereNumber('batch');
+    Route::post('import/{batch}/finish', [DataImportController::class, 'finish'])->whereNumber('batch');
+    Route::get('import/batches', [DataImportController::class, 'batches']);
+    Route::get('import/batches/{batch}', [DataImportController::class, 'show'])->whereNumber('batch');
+    Route::post('import/batches/{batch}/undo', [DataImportController::class, 'undo'])->whereNumber('batch');
+
+    // xuất
+    Route::get('export/rows', [DataExportController::class, 'rows']);
+    Route::post('export/log', [DataExportController::class, 'log']);
+    Route::get('export/logs', [DataExportController::class, 'logs']);
+
+    // mẫu ghép cột
+    Route::get('mappings', [DataMappingController::class, 'index']);
+    Route::post('mappings', [DataMappingController::class, 'store']);
+    Route::delete('mappings/{id}', [DataMappingController::class, 'destroy'])->whereNumber('id');
 });
 
 // Cổng học sinh cũ (Sanctum)
@@ -157,6 +207,29 @@ Route::prefix('v1/hs')->group(function () {
         Route::post('notifications/read-all', [NotificationController::class, 'readAll']);
         Route::post('notifications/{id}/read', [NotificationController::class, 'markRead'])->whereNumber('id');
 
+        Route::get('attendance', [StudentAttendancePortalController::class, 'overview']);
+        Route::get('attendance/records', [StudentAttendancePortalController::class, 'records']);
+        Route::get('attendance/leaves', [StudentAttendancePortalController::class, 'leaves']);
+        Route::post('attendance/leaves', [StudentAttendancePortalController::class, 'storeLeave'])->middleware('throttle:10,1');
+        Route::post('attendance/leaves/{id}/cancel', [StudentAttendancePortalController::class, 'cancelLeave'])->whereNumber('id');
+        Route::get('attendance/subjects', [StudentAttendancePortalController::class, 'subjects']);
+        Route::get('attendance/subjects/{id}', [StudentAttendancePortalController::class, 'subject'])->whereNumber('id');
+
+        // Bài tập
+        Route::prefix('homework')->group(function () {
+            Route::get('summary', [HomeworkController::class, 'summary']);
+            Route::get('subjects', [HomeworkController::class, 'subjects']);
+            Route::get('calendar', [HomeworkController::class, 'calendar']);
+            Route::get('files/{file}', [HomeworkController::class, 'download'])->whereNumber('file');
+
+            Route::get('/', [HomeworkController::class, 'index']);
+            Route::get('{id}', [HomeworkController::class, 'show'])->whereNumber('id');
+            Route::post('{id}/submit', [HomeworkController::class, 'submit'])->whereNumber('id')->middleware('throttle:20,1');
+            Route::put('{id}/state', [HomeworkController::class, 'saveState'])->whereNumber('id');
+            Route::get('{id}/comments', [HomeworkController::class, 'comments'])->whereNumber('id');
+            Route::post('{id}/comments', [HomeworkController::class, 'addComment'])->whereNumber('id')->middleware('throttle:20,1');
+        });
+
         // Ví học phí
         Route::get('wallet/balance', [StudentWalletController::class, 'balance']);
         Route::get('wallet/transactions', [StudentWalletController::class, 'transactions']);
@@ -197,6 +270,71 @@ Route::prefix('gv')->group(function () {
         Route::post('notifications/read-all', [GvNotificationController::class, 'readAll']);
         Route::post('notifications/{id}/read', [GvNotificationController::class, 'read'])->whereNumber('id');
         Route::delete('notifications/{id}', [GvNotificationController::class, 'destroy'])->whereNumber('id');
+
+        // ========== QUẢN LÝ WEBSITE (tuyển sinh, liên hệ, tin tức) ==========
+        Route::prefix('website')->group(function () {
+            Route::get('summary', [GvWebsiteController::class, 'summary']);
+            Route::get('admissions', [GvWebsiteController::class, 'admissions']);
+            Route::get('admissions/export', [GvWebsiteController::class, 'admissionsExport']);
+            Route::put('admissions/{id}', [GvWebsiteController::class, 'admissionUpdate'])->whereNumber('id');
+            Route::delete('admissions/{id}', [GvWebsiteController::class, 'admissionDelete'])->whereNumber('id');
+            Route::get('contacts', [GvWebsiteController::class, 'contacts']);
+            Route::put('contacts/{id}', [GvWebsiteController::class, 'contactUpdate'])->whereNumber('id');
+            Route::delete('contacts/{id}', [GvWebsiteController::class, 'contactDelete'])->whereNumber('id');
+            Route::get('news', [GvWebsiteController::class, 'news']);
+            Route::post('news', [GvWebsiteController::class, 'newsStore']);
+            Route::get('news/{id}', [GvWebsiteController::class, 'newsOne'])->whereNumber('id');
+            Route::put('news/{id}', [GvWebsiteController::class, 'newsUpdate'])->whereNumber('id');
+            Route::post('news/{id}/toggle', [GvWebsiteController::class, 'newsToggle'])->whereNumber('id');
+            Route::delete('news/{id}', [GvWebsiteController::class, 'newsDelete'])->whereNumber('id');
+
+            // Module Liên hệ & Hỗ trợ
+            Route::get('staff', [GvContactController::class, 'staff']);
+            Route::get('inbox/overview', [GvContactController::class, 'overview']);
+            Route::get('inbox/report', [GvContactController::class, 'report']);
+            Route::get('inbox/export', [GvContactController::class, 'inboxExport']);
+            Route::post('inbox/bulk', [GvContactController::class, 'bulk'])->middleware('throttle:60,1');
+            Route::get('inbox/settings', [GvContactController::class, 'settings']);
+            Route::put('inbox/settings', [GvContactController::class, 'settingsUpdate']);
+            Route::get('inbox/templates', [GvContactController::class, 'templates']);
+            Route::post('inbox/templates', [GvContactController::class, 'templateStore']);
+            Route::put('inbox/templates/{id}', [GvContactController::class, 'templateUpdate'])->whereNumber('id');
+            Route::delete('inbox/templates/{id}', [GvContactController::class, 'templateDestroy'])->whereNumber('id');
+            Route::get('inbox', [GvContactController::class, 'inbox']);
+            Route::get('inbox/{id}', [GvContactController::class, 'show'])->whereNumber('id');
+            Route::put('inbox/{id}', [GvContactController::class, 'update'])->whereNumber('id');
+            Route::post('inbox/{id}/events', [GvContactController::class, 'addEvent'])->whereNumber('id')->middleware('throttle:60,1');
+            Route::delete('inbox/{id}', [GvContactController::class, 'destroy'])->whereNumber('id');
+        });
+
+        // ========== ĐIỂM DANH TỪNG TIẾT ==========
+        Route::get('attendance/lessons', [LessonAttendanceStaffController::class, 'lessons']);
+        Route::get('attendance/roster', [LessonAttendanceStaffController::class, 'roster']);
+        Route::post('attendance/mark', [LessonAttendanceStaffController::class, 'mark'])->middleware('throttle:60,1');
+
+        // ========== CỔNG GIÁO VIÊN: lớp & môn của tôi, lớp chủ nhiệm, duyệt đơn xin nghỉ ==========
+        Route::prefix('teacher')->group(function () {
+            Route::get('me', [TeacherPortalController::class, 'profile']);
+            Route::get('assignments', [TeacherPortalController::class, 'assignments']);
+            Route::get('assignments/{id}', [TeacherPortalController::class, 'assignment'])->whereNumber('id');
+            Route::get('homeroom', [TeacherPortalController::class, 'homeroom']);
+            Route::get('homeroom/leaves', [TeacherPortalController::class, 'leaves']);
+            Route::post('homeroom/leaves/{id}/review', [TeacherPortalController::class, 'reviewLeave'])->whereNumber('id')->middleware('throttle:60,1');
+
+            // Bài tập (giáo viên giao bài, xem bài nộp, chấm điểm)
+            Route::prefix('homework')->group(function () {
+                Route::get('/', [TeacherHomeworkPortalController::class, 'hwList']);
+                Route::post('/', [TeacherHomeworkPortalController::class, 'hwStore'])->middleware('throttle:30,1');
+                Route::get('files/{file}', [TeacherHomeworkPortalController::class, 'hwDownload'])->whereNumber('file');
+                Route::post('submissions/{submissionId}/grade', [TeacherHomeworkPortalController::class, 'hwGrade'])->whereNumber('submissionId');
+                Route::get('{id}', [TeacherHomeworkPortalController::class, 'hwShow'])->whereNumber('id');
+                Route::put('{id}', [TeacherHomeworkPortalController::class, 'hwUpdate'])->whereNumber('id');
+                Route::delete('{id}', [TeacherHomeworkPortalController::class, 'hwDelete'])->whereNumber('id');
+                Route::get('{id}/submissions', [TeacherHomeworkPortalController::class, 'hwSubmissions'])->whereNumber('id');
+                Route::get('{id}/comments', [TeacherHomeworkPortalController::class, 'hwComments'])->whereNumber('id');
+                Route::post('{id}/comments', [TeacherHomeworkPortalController::class, 'hwReply'])->whereNumber('id')->middleware('throttle:30,1');
+            });
+        });
 
         // ========== HỒ SƠ CỦA TÔI ==========
         Route::put('profile/contact', [AcademicApiController::class, 'updateContact']);
@@ -314,6 +452,18 @@ foreach (['admin/profile', 'v1/admin/profile'] as $profilePrefix) {
         Route::delete('notifications/{id}', [AdminNotificationController::class, 'destroy'])->whereNumber('id');
     });
 }
+
+// ===== Admin: Kiểm tra dữ liệu =====
+foreach (['admin/checks', 'v1/admin/checks'] as $checksPrefix) {
+    Route::middleware('auth:sanctum')->prefix($checksPrefix)->group(function () {
+        Route::get('/', [AdminDataCheckController::class, 'index']);
+        Route::post('run', [AdminDataCheckController::class, 'run'])->middleware('throttle:10,1');
+        Route::get('{code}', [AdminDataCheckController::class, 'detail'])->where('code', '[a-z_]+')->middleware('throttle:60,1');
+    });
+}
+
+// ===== Admin: Nhật ký hệ thống (/admin/logs) =====
+require __DIR__ . '/system_logs.php';
 
 // ===== Tự nhận cả /api/xxx lẫn /api/v1/xxx =====
 // Dùng Route::any (mọi phương thức GET/POST/PUT/DELETE) và đặt CUỐI file. Frontend gọi thiếu hoặc thừa "/v1" thì vẫn chạy, không còn lỗi "The route ... could not be found".
