@@ -1,2 +1,4 @@
 cd D:\school-management\school-management-system
 cmd /c start.bat
+cd D:\school-management\school-management-system\frontend
+npm run dev

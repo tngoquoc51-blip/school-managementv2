@@ -16,9 +16,13 @@ use App\Http\Controllers\Api\FeeReminderController;
 use App\Http\Controllers\Api\PublicSiteController;
 use App\Http\Controllers\Api\GvWebsiteController;
 use App\Http\Controllers\Api\GvContactController;
+use App\Http\Controllers\Api\GvMonitorController;
+use App\Http\Controllers\Api\GvNoticeController;
 use App\Http\Controllers\Api\StudentReminderController;
 use App\Http\Middleware\FeeStaffToken;
 use App\Http\Middleware\StaffToken;
+use App\Http\Middleware\MonitorAccess;
+use App\Http\Middleware\NoticeAccess;
 use App\Http\Controllers\Api\StudentWalletController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Student\StudentGradeController;
@@ -31,6 +35,7 @@ use App\Http\Controllers\Api\Admin\AdminNotificationController;
 use App\Http\Controllers\Api\Admin\AdminDataCheckController;
 use App\Http\Controllers\Accountant\DebtController;
 use App\Http\Controllers\Api\Admin\BackupController;
+use App\Http\Controllers\Api\BghApprovalController;
 use Modules\Attendance\Controllers\AttendanceController;
 use Modules\Attendance\Controllers\StudentAttendanceController;
 use App\Http\Controllers\Api\StudentAttendancePortalController;
@@ -38,12 +43,19 @@ use App\Http\Controllers\Api\LessonAttendanceStaffController;
 use App\Http\Controllers\Api\TeacherPortalController;
 use Modules\Homework\Controllers\HomeworkController;
 use App\Http\Controllers\Api\TeacherHomeworkPortalController;
-use App\Http\Controllers\Admin\DataExportController;
-use App\Http\Controllers\Admin\DataHubController;
-use App\Http\Controllers\Admin\DataImportController;
-use App\Http\Controllers\Admin\DataMappingController;
+use App\Http\Controllers\Api\Admin\DataExportController;
+use App\Http\Controllers\Api\Admin\DataHubController;
+use App\Http\Controllers\Api\Admin\DataImportController;
+use App\Http\Controllers\Api\Admin\DataMappingController;
 use Illuminate\Support\Facades\Route;
-
+use Modules\Logs\Controllers\AlertController;
+use Modules\Logs\Controllers\LogController;
+use Modules\Logs\Controllers\SecurityController;
+use Modules\Logs\Controllers\SettingsController;
+use Modules\Logs\Middleware\BghAccess;
+use Modules\Academic\Controllers\ClassRoomController;
+use Modules\Academic\Controllers\SmClassController;
+use Modules\Academic\Middleware\AcademicStaff;
 Route::get('/health', fn () => response()->json(['status' => 'ok']));
 
 // Đăng nhập hệ thống (Sanctum / admin…)
@@ -64,6 +76,11 @@ Route::prefix('public')->group(function () {
     Route::post('admissions', [PublicSiteController::class, 'admit'])->middleware('throttle:20,1');
     Route::post('admissions/lookup', [PublicSiteController::class, 'lookup'])->middleware('throttle:20,1');
     Route::post('contact', [PublicSiteController::class, 'contact'])->middleware('throttle:20,1');
+    // Thông báo hệ thống (banner) – công khai
+    Route::get('announcements', [GvMonitorController::class, 'publicAnnouncements'])->middleware('throttle:120,1');
+    // Thông báo của Ban Giám hiệu cho các cổng Giáo viên / Học sinh / Phụ huynh
+    Route::get('notices', [GvNoticeController::class, 'feed'])->middleware('throttle:120,1');
+    Route::post('notices/{id}/read', [GvNoticeController::class, 'markRead'])->whereNumber('id')->middleware('throttle:60,1');
 });
 
 // Kế toán
@@ -237,6 +254,46 @@ Route::prefix('v1/hs')->group(function () {
     });
 });
 
+Route::prefix('v1/logs')->middleware(BghAccess::class)->group(function () {
+    Route::get('me', [LogController::class, 'me']);
+    Route::get('overview', [LogController::class, 'overview']);
+    Route::get('facets', [LogController::class, 'facets']);
+    Route::get('finance', [LogController::class, 'finance']);
+    Route::get('export', [LogController::class, 'export']);
+    Route::post('verify', [LogController::class, 'verify']);
+
+    Route::get('security', [SecurityController::class, 'overview']);
+    Route::get('sessions', [SecurityController::class, 'sessions']);
+    Route::post('sessions/purge-expired', [SecurityController::class, 'purgeExpired']);
+    Route::delete('sessions/{type}/{id}', [SecurityController::class, 'revoke'])->whereNumber('id');
+    Route::post('accounts/{type}/{id}/unlock', [SecurityController::class, 'unlock'])->whereNumber('id');
+
+    Route::get('alerts', [AlertController::class, 'index']);
+    Route::post('alerts/{id}/ack', [AlertController::class, 'acknowledge'])->whereNumber('id');
+    Route::post('alerts/{id}/resolve', [AlertController::class, 'resolve'])->whereNumber('id');
+    Route::get('alert-rules', [AlertController::class, 'rules']);
+    Route::put('alert-rules/{id}', [AlertController::class, 'updateRule'])->whereNumber('id');
+
+    Route::get('settings', [SettingsController::class, 'show']);
+    Route::put('settings', [SettingsController::class, 'update']);
+    Route::post('settings/purge', [SettingsController::class, 'purge']);
+    Route::post('settings/import-legacy', [SettingsController::class, 'importLegacy']);
+
+    Route::get('activities', [LogController::class, 'index']);
+    Route::get('activities/{id}', [LogController::class, 'show'])->whereNumber('id');
+});
+// ===== Phê duyệt Ban giám hiệu (controller tự nhận diện token nhân sự hoặc Sanctum) =====
+Route::prefix('gv/approvals')->controller(BghApprovalController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::get('stats', 'stats');
+    Route::get('history', 'history');
+    Route::get('report', 'report');
+    Route::get('delegations', 'delegations');
+    Route::post('delegations', 'storeDelegation')->middleware('throttle:20,1');
+    Route::post('delegations/{id}/revoke', 'revokeDelegation')->whereNumber('id');
+    Route::post('bulk', 'bulk')->middleware('throttle:20,1');
+    Route::post('{type}/{id}/decide', 'decide')->whereNumber('id')->middleware('throttle:60,1');
+});
 // ===== Khu Giáo vụ / Ban giám hiệu =====
 Route::prefix('gv')->group(function () {
     Route::post('login', [AcademicApiController::class, 'login'])->middleware('throttle:20,1');
@@ -263,6 +320,8 @@ Route::prefix('gv')->group(function () {
         Route::get('grades', [AcademicApiController::class, 'grades']);
         Route::get('promotion', [AcademicApiController::class, 'promotion']);
         Route::get('reports', [AcademicApiController::class, 'reports']);
+
+
 
         // ========== THÔNG BÁO GIÁO VỤ ==========
         Route::get('notifications', [GvNotificationController::class, 'index']);
@@ -344,6 +403,63 @@ Route::prefix('gv')->group(function () {
         Route::post('security/sessions/{id}/revoke', [AcademicApiController::class, 'revokeSession'])->whereNumber('id');
         Route::get('activity', [AcademicApiController::class, 'activity']);
     });
+});
+
+// ===== Giám sát hệ thống (Quản trị): token nhân viên thật, hoặc demo-token khi APP_ENV=local =====
+Route::prefix('gv/monitor')->middleware(MonitorAccess::class)->group(function () {
+        Route::get('overview', [GvMonitorController::class, 'overview']);
+        Route::get('checks', [GvMonitorController::class, 'checks']);
+        Route::post('checks/run', [GvMonitorController::class, 'runNow'])->middleware('throttle:30,1');
+        Route::get('logs', [GvMonitorController::class, 'logs']);
+        Route::get('logs/export', [GvMonitorController::class, 'logsExport']);
+        Route::post('logs/purge', [GvMonitorController::class, 'logsPurge']);
+        Route::get('logs/{id}', [GvMonitorController::class, 'logOne'])->whereNumber('id');
+        Route::get('app-log', [GvMonitorController::class, 'appLog']);
+        Route::post('app-log/clear', [GvMonitorController::class, 'appLogClear']);
+        Route::get('performance', [GvMonitorController::class, 'performance']);
+        Route::get('database', [GvMonitorController::class, 'database']);
+        Route::get('database/counts', [GvMonitorController::class, 'tableCount'])->middleware('throttle:10,1');
+        Route::post('database/analyze', [GvMonitorController::class, 'analyze'])->middleware('throttle:20,1');
+        Route::post('database/cleanup', [GvMonitorController::class, 'cleanup']);
+        Route::get('sessions', [GvMonitorController::class, 'sessions']);
+        Route::post('sessions/revoke-all', [GvMonitorController::class, 'revokeAll']);
+        Route::post('sessions/{type}/{id}/revoke', [GvMonitorController::class, 'revoke'])->whereNumber('id');
+        Route::get('security', [GvMonitorController::class, 'security']);
+        Route::post('accounts/{type}/{id}/unlock', [GvMonitorController::class, 'unlock'])->whereNumber('id');
+        Route::get('alerts', [GvMonitorController::class, 'alerts']);
+        Route::post('alerts/{id}', [GvMonitorController::class, 'alertAct'])->whereNumber('id');
+        Route::put('rules/{id}', [GvMonitorController::class, 'ruleUpdate'])->whereNumber('id');
+        Route::get('announcements', [GvMonitorController::class, 'announcements']);
+        Route::post('announcements', [GvMonitorController::class, 'annStore']);
+        Route::put('announcements/{id}', [GvMonitorController::class, 'annUpdate'])->whereNumber('id');
+        Route::post('announcements/{id}/toggle', [GvMonitorController::class, 'annToggle'])->whereNumber('id');
+        Route::delete('announcements/{id}', [GvMonitorController::class, 'annDestroy'])->whereNumber('id');
+        Route::get('settings', [GvMonitorController::class, 'settings']);
+        Route::put('settings', [GvMonitorController::class, 'settingsUpdate']);
+});
+
+// ===== Thông báo của Ban Giám hiệu: token nhân viên (HT / PHT / Quản trị), hoặc demo-token khi APP_ENV=local =====
+Route::prefix('gv/notices')->middleware(NoticeAccess::class)->group(function () {
+    Route::get('overview', [GvNoticeController::class, 'overview']);
+    Route::get('meta', [GvNoticeController::class, 'meta']);
+    Route::get('stats', [GvNoticeController::class, 'stats']);
+    Route::post('audience', [GvNoticeController::class, 'audiencePreview']);
+    Route::get('settings', [GvNoticeController::class, 'settingsGet']);
+    Route::put('settings', [GvNoticeController::class, 'settingsUpdate']);
+    Route::get('templates', [GvNoticeController::class, 'templates']);
+    Route::post('templates', [GvNoticeController::class, 'templateStore']);
+    Route::put('templates/{id}', [GvNoticeController::class, 'templateUpdate'])->whereNumber('id');
+    Route::delete('templates/{id}', [GvNoticeController::class, 'templateDelete'])->whereNumber('id');
+    Route::post('templates/{id}/use', [GvNoticeController::class, 'templateUse'])->whereNumber('id');
+    Route::get('/', [GvNoticeController::class, 'index']);
+    Route::post('/', [GvNoticeController::class, 'store'])->middleware('throttle:60,1');
+    Route::get('{id}', [GvNoticeController::class, 'show'])->whereNumber('id');
+    Route::put('{id}', [GvNoticeController::class, 'update'])->whereNumber('id');
+    Route::delete('{id}', [GvNoticeController::class, 'destroy'])->whereNumber('id');
+    Route::post('{id}/action', [GvNoticeController::class, 'act'])->whereNumber('id')->middleware('throttle:60,1');
+    Route::get('{id}/reads', [GvNoticeController::class, 'reads'])->whereNumber('id');
+    Route::get('{id}/unread', [GvNoticeController::class, 'unread'])->whereNumber('id');
+    Route::get('{id}/export', [GvNoticeController::class, 'export'])->whereNumber('id');
 });
 
 // ===== Khu Kế toán: Đợt thu / Kỳ thu =====
@@ -452,6 +568,39 @@ foreach (['admin/profile', 'v1/admin/profile'] as $profilePrefix) {
         Route::delete('notifications/{id}', [AdminNotificationController::class, 'destroy'])->whereNumber('id');
     });
 }
+
+// Quản lý lớp học (dữ liệu sm_*): /api/v1/academic/class-management
+Route::prefix('v1/academic/class-management')
+    ->middleware(['auth:sanctum', AcademicStaff::class])
+    ->group(function () {
+        Route::get('meta', [SmClassController::class, 'meta']);
+        Route::get('stats', [SmClassController::class, 'stats']);
+        Route::get('export', [SmClassController::class, 'export']);
+        Route::post('bulk', [SmClassController::class, 'bulk']);
+        Route::post('clone-year', [SmClassController::class, 'cloneYear']);
+
+        Route::get('/', [SmClassController::class, 'index']);
+        Route::post('/', [SmClassController::class, 'store']);
+
+        Route::where(['id' => '[0-9]+', 'studentId' => '[0-9]+'])->group(function () {
+            Route::get('{id}', [SmClassController::class, 'show']);
+            Route::put('{id}', [SmClassController::class, 'update']);
+            Route::delete('{id}', [SmClassController::class, 'destroy']);
+            Route::put('{id}/homeroom', [SmClassController::class, 'homeroom']);
+
+            Route::get('{id}/students', [SmClassController::class, 'students']);
+            Route::post('{id}/students', [SmClassController::class, 'addStudents']);
+            Route::get('{id}/students/available', [SmClassController::class, 'availableStudents']);
+            Route::post('{id}/students/transfer', [SmClassController::class, 'transfer']);
+            Route::delete('{id}/students/{studentId}', [SmClassController::class, 'removeStudent']);
+
+            Route::get('{id}/subjects', [SmClassController::class, 'subjects']);
+            Route::put('{id}/subjects', [SmClassController::class, 'saveSubjects']);
+            Route::get('{id}/timetable', [SmClassController::class, 'timetable']);
+            Route::put('{id}/timetable', [SmClassController::class, 'saveTimetable']);
+            Route::get('{id}/activity', [SmClassController::class, 'activity']);
+        });
+    });
 
 // ===== Admin: Kiểm tra dữ liệu =====
 foreach (['admin/checks', 'v1/admin/checks'] as $checksPrefix) {

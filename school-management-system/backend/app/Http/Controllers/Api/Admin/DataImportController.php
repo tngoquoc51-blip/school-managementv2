@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Api\Admin;
 
 use App\Services\DataHub\ImportService;
 use Illuminate\Http\JsonResponse;

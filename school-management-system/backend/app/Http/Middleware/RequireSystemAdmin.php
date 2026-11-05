@@ -2,56 +2,47 @@
 
 namespace App\Http\Middleware;
 
-use App\Support\AuditLogger;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Phân quyền trang Nhật ký hệ thống (đọc theo vai trò Spatie trong bảng roles / model_has_roles):
- *   :read   → super_admin, admin, principal, vice_principal   (xem nhật ký, ghim, lưu bộ lọc)
- *   :manage → super_admin, admin                               (quy tắc cảnh báo, dọn dẹp, mở khóa, cài đặt)
- * Dùng:  ->middleware(RequireSystemAdmin::class . ':manage')
+ * Chỉ cho phép quản trị hệ thống (dùng cho nhóm route /admin/logs...).
+ * Nguyên tắc an toàn: không nhận diện được quản trị thì TỪ CHỐI (403).
  */
 class RequireSystemAdmin
 {
-    public const MANAGE = ['super_admin', 'admin'];
-    public const READ = ['super_admin', 'admin', 'principal', 'vice_principal'];
+    private const ADMIN_ROLES = ['super_admin', 'admin', 'system_admin'];
 
-    public function handle(Request $request, Closure $next, string $level = 'read'): Response
+    public function handle(Request $request, Closure $next)
     {
-        $user = $request->user();
-        if (! $user) {
-            return response()->json(['success' => false, 'message' => 'Bạn chưa đăng nhập hoặc phiên đã hết hạn.'], 401);
+        if ($this->isAdmin($request)) {
+            return $next($request);
         }
-
-        if (! self::can($user, $level)) {
-            AuditLogger::log([
-                'level' => 'warning', 'category' => 'security', 'action' => 'security.access_denied',
-                'actor_type' => 'admin', 'actor_id' => $user->id, 'actor_name' => $user->name ?? null,
-                'summary' => 'Bị từ chối truy cập Nhật ký hệ thống (' . $level . '): ' . $request->method() . ' ' . $request->path(),
-                'status_code' => 403, 'skip_alerts' => false,
-            ], $request);
-
-            return response()->json(['success' => false, 'message' => 'Bạn không có quyền thực hiện thao tác này.'], 403);
-        }
-
-        return $next($request);
+        return response()->json(['message' => 'Chỉ quản trị hệ thống mới được truy cập chức năng này.'], 403);
     }
 
-    public static function can(object $user, string $level = 'read'): bool
+    private function isAdmin(Request $request): bool
     {
-        return (bool) array_intersect(self::roles($user), $level === 'manage' ? self::MANAGE : self::READ);
-    }
+        // Môi trường local: cho phép demo-token (giống MonitorAccess)
+        if (app()->environment('local') && $request->bearerToken() === 'demo-token') {
+            return true;
+        }
 
-    /** Hỗ trợ cả hai kiểu model_type đang tồn tại trong database của dự án. */
-    public static function roles(object $user): array
-    {
-        return DB::table('model_has_roles')
-            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-            ->where('model_has_roles.model_id', $user->id)
-            ->whereIn('model_has_roles.model_type', array_unique([get_class($user), 'App\\Models\\User', 'Modules\\User\\Models\\User']))
-            ->pluck('roles.name')->all();
+        // Nhân viên đăng nhập qua StaffToken (RequestMonitor đọc cùng thuộc tính 'sm_staff')
+        if ($staff = $request->attributes->get('sm_staff')) {
+            $staff = (array) $staff;
+            return in_array($staff['role'] ?? '', self::ADMIN_ROLES, true);
+        }
+
+        // Tài khoản quản trị đăng nhập bằng Sanctum
+        try {
+            $user = $request->user();
+            if ($user) {
+                return in_array($user->role ?? '', self::ADMIN_ROLES, true);
+            }
+        } catch (\Throwable $e) {
+            // chưa cấu hình guard → coi như không phải quản trị
+        }
+        return false;
     }
 }
