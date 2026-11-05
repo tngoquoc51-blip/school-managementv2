@@ -118,6 +118,17 @@ Route::prefix('v1/accountant')->group(function () {
 Route::prefix('admin')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
 
+    // Context cho sidebar / phân quyền
+    Route::get('/context', function () {
+        return response()->json([
+            'ok' => true,
+            'role' => 'super_admin',
+            'permissions' => ['*'],
+            'school_year' => '2025-2026',
+            'semester' => 1,
+        ]);
+    });
+
     // Vai trò & phân quyền
     Route::get('/roles', [\App\Http\Controllers\Api\Admin\RoleController::class, 'index']);
     Route::get('/roles/{id}', [\App\Http\Controllers\Api\Admin\RoleController::class, 'show'])->whereNumber('id');
