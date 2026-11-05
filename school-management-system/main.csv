@@ -1,4 +1,10 @@
 cd D:\school-management\school-management-system
 cmd /c start.bat
+
 cd D:\school-management\school-management-system\frontend
 npm run dev
+
+git status
+git add .
+git commit -m "update: cap nhat code moi nhat"
+git push github main
