@@ -208,10 +208,14 @@ export default function StudentLoginPage() {
 
                 <div className="login-left-content">
                     <div className="login-brand">
-                        <div className="login-logo">TH</div>
+                        <img
+                            src="/images/logo-thpt-ngo-sy-lien.png"
+                            alt="Logo THPT Ngô Sĩ Liên"
+                            style={{ width: '46px', height: '46px', objectFit: 'contain' }}
+                        />
                         <div className="login-brand-name">
-                            Trường THPT
-                            <small>Năm học 2026 – 2027</small>
+                            THPT Ngô Sĩ Liên
+                            <small>Năm học 2026 – 2027 · Chuẩn QG</small>
                         </div>
                     </div>
 
@@ -324,7 +328,9 @@ export default function StudentLoginPage() {
                     </form>
 
                     <div className="login-footer">
-                        <Link href="/">← Quay lại trang chủ</Link>
+                        <Link href="/he-thong">← Quay lại Cổng thông tin</Link>
+                        <span style={{ color: '#cbd5e1', margin: '0 8px' }}>·</span>
+                        <Link href="/">Trang chủ trường</Link>
                     </div>
                 </div>
             </main>

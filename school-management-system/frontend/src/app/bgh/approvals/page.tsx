@@ -1,8 +1,9 @@
-import ApprovalPage from '@/modules/bgh/pages/ApprovalPage';
+import type { Metadata } from 'next';
+import ApprovalsApp from '@/modules/bgh/approvals/ApprovalsApp';
 
-export const metadata = { title: 'Phê duyệt' };
+export const metadata: Metadata = { title: 'Phê duyệt – Cổng Ban giám hiệu' };
 
-// Đây là đường dẫn chính (khớp menu BGH: /bgh/approvals). BGHLayout đã bọc sẵn ở cấp trên.
+// Không bọc BGHLayout ở đây: src/app/bgh/layout.tsx (nếu có) đã bọc sẵn.
 export default function Page() {
-    return <ApprovalPage />;
+    return <ApprovalsApp />;
 }

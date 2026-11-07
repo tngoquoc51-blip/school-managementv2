@@ -1,253 +1,443 @@
 import Link from 'next/link';
 import '../home.css';
 
-/* CỔNG THÔNG TIN – http://localhost:3000/he-thong
-   (Trang chủ / nay là website giới thiệu trường. Trang này là nơi các vai trò chọn cổng đăng nhập.)
-   Chỉ: Giáo viên · Giáo vụ · Học sinh · Phụ huynh
-   KHÔNG hiện: Quản trị · Ban Giám hiệu · Kế toán */
+/* ===================================================================
+   CỔNG THÔNG TIN ĐIỆN TỬ TẬP TRUNG – TRƯỜNG THPT NGÔ SĨ LIÊN
+   http://localhost:3000/he-thong
+   Thiết kế chuẩn hệ thống giáo dục số 4.0, đồng bộ nhận diện thương hiệu.
+   =================================================================== */
 
-const roles = [
+const MAIN_PORTALS = [
     {
-        href: '/login/teacher',
-        name: 'Giáo viên',
-        note: 'Giảng dạy, chủ nhiệm và tổ trưởng',
-        tasks: ['Điểm danh', 'Sổ đầu bài', 'Nhập điểm', 'Sổ chủ nhiệm'],
-        icon: (
-            <path d="M4 5a2 2 0 0 1 2-2h13v15H6a1 1 0 0 0 0 2h13v1H6a3 3 0 0 1-3-3V5h1Zm4 2v2h8V7H8Z" />
-        ),
-    },
-    {
-        href: '/login/academic',
-        name: 'Giáo vụ',
-        note: 'Quản lý học sinh, lớp, thời khóa biểu',
-        tasks: ['Hồ sơ học sinh', 'Xếp lớp', 'Thời khóa biểu', 'Tổng kết'],
-        icon: (
-            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 3h6v4H9V3zM9 12h6M9 16h4" />
-        ),
-    },
-    {
+        key: 'student',
         href: '/login/student',
-        name: 'Học sinh',
-        note: 'Theo dõi việc học của mình',
-        tasks: ['Xem điểm', 'Thời khóa biểu', 'Nhận xét', 'Thông báo'],
+        theme: 'card-student',
+        roleBadge: 'Dành cho Học sinh',
+        name: 'Cổng Học sinh',
+        desc: 'Tra cứu kết quả học tập, thời khóa biểu, điểm danh, xem nhận xét của giáo viên và nộp học phí trực tuyến.',
+        tasks: ['Xem điểm số các môn', 'Thời khóa biểu & lịch thi', 'Sổ đầu bài & nhận xét', 'Theo dõi học phí trực tuyến'],
         icon: (
-            <path d="m12 3 10 5-10 5L2 8l10-5Zm-6 9.2 6 3 6-3V16c0 1.7-2.7 3-6 3s-6-1.3-6-3v-3.8ZM21 9.5V16h-1.5V10.3L21 9.5Z" />
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                <path d="M6 12v5c3 3 9 3 12 0v-5" />
+            </svg>
         ),
+        btnText: 'Đăng nhập Cổng Học sinh',
     },
     {
-        href: '/login/parent',
-        name: 'Phụ huynh',
-        note: 'Đồng hành cùng con',
-        tasks: ['Kết quả học tập', 'Sổ liên lạc điện tử', 'Thông báo từ trường'],
+        key: 'teacher',
+        href: '/login/teacher',
+        theme: 'card-teacher',
+        roleBadge: 'Dành cho Giáo viên',
+        name: 'Cổng Giáo viên',
+        desc: 'Điểm danh điện tử từng tiết, nhập điểm thường xuyên & định kỳ, ký sổ đầu bài và quản lý lớp chủ nhiệm.',
+        tasks: ['Điểm danh tiết học', 'Nhập điểm môn & tính ĐTB', 'Ký sổ đầu bài số', 'Sổ theo dõi chủ nhiệm'],
         icon: (
-            <path d="M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm8 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM2 19c0-2.8 2.7-5 6-5s6 2.2 6 5v1H2v-1Zm13 1v-1c0-1.5-.5-2.8-1.4-3.9.7-.2 1.4-.1 2.4-.1 3 0 6 1.7 6 4.5V20h-7Z" />
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+                <path d="M6 6h10" />
+                <path d="M6 10h10" />
+            </svg>
         ),
+        btnText: 'Đăng nhập Cổng Giáo viên',
+    },
+    {
+        key: 'parent',
+        href: '/login/parent',
+        theme: 'card-parent',
+        roleBadge: 'Dành cho Phụ huynh',
+        name: 'Cổng Phụ huynh',
+        desc: 'Sổ liên lạc điện tử 24/7, theo dõi chuyên cần, nhận thông báo kịp thời từ nhà trường và giáo viên chủ nhiệm.',
+        tasks: ['Sổ liên lạc điện tử', 'Theo dõi điểm danh hàng ngày', 'Nhận thông báo từ GVCN', 'Thanh toán học phí online'],
+        icon: (
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+        ),
+        btnText: 'Đăng nhập Cổng Phụ huynh',
+    },
+    {
+        key: 'academic',
+        href: '/login/academic',
+        theme: 'card-academic',
+        roleBadge: 'Dành cho Giáo vụ',
+        name: 'Cổng Giáo vụ & Đào tạo',
+        desc: 'Quản lý hồ sơ học sinh toàn trường, phân công chuyên môn giảng dạy, xếp thời khóa biểu và tổng kết học kỳ.',
+        tasks: ['Quản lý hồ sơ học sinh', 'Xếp lớp & phân công dạy', 'Xếp thời khóa biểu số', 'Báo cáo tổng kết TT 22'],
+        icon: (
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="18" height="18" x="3" y="3" rx="2" />
+                <path d="M3 9h18" />
+                <path d="M9 21V9" />
+            </svg>
+        ),
+        btnText: 'Đăng nhập Cổng Giáo vụ',
     },
 ];
 
-const features = [
-    ['Điểm danh', 'Ghi nhận có mặt, vắng, đi muộn theo từng tiết và từng lớp.'],
-    ['Sổ đầu bài', 'Ghi nội dung bài dạy, nhận xét tiết học và xếp loại tiết.'],
-    ['Quản lý điểm', 'Nhập điểm thường xuyên, giữa kỳ, cuối kỳ; tự tính điểm trung bình môn.'],
-    ['Thời khóa biểu', 'Xếp và xem lịch dạy, lịch học theo giáo viên, lớp và phòng.'],
-    ['Sổ liên lạc điện tử', 'Nhà trường và phụ huynh trao đổi kết quả, nhận xét và thông báo.'],
-    ['Báo cáo thống kê', 'Tổng hợp sĩ số, chuyên cần, học lực và hạnh kiểm theo kỳ, theo năm.'],
+const DIGITAL_FEATURES = [
+    {
+        title: 'Điểm danh điện tử 4.0',
+        desc: 'Ghi nhận chuyên cần từng tiết học. Tự động gửi thông báo đến sổ liên lạc của phụ huynh khi học sinh vắng hoặc đi muộn.',
+        icon: '✓',
+    },
+    {
+        title: 'Sổ đầu bài số hóa',
+        desc: 'Giáo viên ký nhận xét, đánh giá tiết học trực tiếp trên máy tính hoặc điện thoại, thay thế hoàn toàn sổ giấy truyền thống.',
+        icon: '📝',
+    },
+    {
+        title: 'Quản lý điểm Thông tư 22',
+        desc: 'Chuẩn hóa quy chế đánh giá xếp loại theo Thông tư 22/2021/TT-BGDĐT. Tự động tính điểm trung bình môn và xếp loại học tập.',
+        icon: '📊',
+    },
+    {
+        title: 'Thời khóa biểu thông minh',
+        desc: 'Tra cứu lịch học và lịch dạy theo thời gian thực. Cập nhật tức thời khi có lịch dạy thay hoặc đổi phòng bộ môn.',
+        icon: '📅',
+    },
+    {
+        title: 'Sổ liên lạc điện tử 24/7',
+        desc: 'Kênh kết nối chính thống giữa Nhà trường và Gia đình. Phụ huynh nắm bắt kết quả học tập và rèn luyện của con mọi lúc mọi nơi.',
+        icon: '💬',
+    },
+    {
+        title: 'Học phí & Hóa đơn điện tử',
+        desc: 'Minh bạch các khoản thu, hỗ trợ thanh toán học phí trực tuyến an toàn qua mã QR ngân hàng hoặc cổng thanh toán số.',
+        icon: '💳',
+    },
 ];
 
-const stats = [
-    ['12+', 'Phân hệ chức năng'],
-    ['4', 'Cổng công khai'],
-    ['TT 22', 'Đánh giá theo Thông tư 22'],
-    ['24/7', 'Truy cập mọi lúc, mọi nơi'],
-];
-
-export default function Home() {
+export default function PortalPage() {
     return (
         <div className="home-wrapper">
+            {/* 1. TOPBAR THÔNG TIN LIÊN HỆ */}
+            <div className="portal-topbar">
+                <div className="home-container portal-topbar-in">
+                    <div className="portal-topbar-left">
+                        <span className="portal-top-item">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                                <circle cx="12" cy="10" r="3" />
+                            </svg>
+                            <span>48 Ngô Sĩ Liên, TP. Bắc Giang</span>
+                        </span>
+                        <span className="portal-top-item">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12 6 12 12 16 14" />
+                            </svg>
+                            <span>Hệ thống trực tuyến 24/7</span>
+                        </span>
+                    </div>
+
+                    <div className="portal-topbar-right">
+                        <span className="portal-hotline">
+                            Hotline Kỹ thuật: <b>0988 123 456</b>
+                        </span>
+                        <Link href="/" className="portal-back-btn">
+                            ← Về Website trường
+                        </Link>
+                    </div>
+                </div>
+            </div>
+
+            {/* 2. HEADER CHÍNH */}
             <header className="home-header">
                 <div className="home-container home-header-inner">
-                    <Link href="/" className="home-logo" aria-label="Về website giới thiệu trường">
-                        <div className="home-logo-mark" aria-hidden="true">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff">
-                                <path d="m12 3 10 5-10 5L2 8l10-5Zm-6 9.2 6 3 6-3V16c0 1.7-2.7 3-6 3s-6-1.3-6-3v-3.8Z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <div className="home-logo-title">Hệ thống Quản lý</div>
-                            <div className="home-logo-sub">Trường Trung học Phổ thông</div>
+                    <Link href="/" className="home-logo" aria-label="Trường THPT Ngô Sĩ Liên - Trang chủ">
+                        <img
+                            src="/images/logo-thpt-ngo-sy-lien.png"
+                            alt="Logo THPT Ngô Sĩ Liên"
+                            className="home-logo-img"
+                        />
+                        <div className="home-logo-text">
+                            <div className="home-logo-title-row">
+                                <span className="home-logo-title">THPT Ngô Sĩ Liên</span>
+                                <span className="home-logo-tag">Chuẩn QG</span>
+                            </div>
+                            <span className="home-logo-sub">Cổng Thông Tin Quản Lý &amp; Dịch Vụ Học Đường</span>
                         </div>
                     </Link>
 
-                    <nav className="home-nav" aria-label="Điều hướng chính">
+                    <nav className="home-nav" aria-label="Điều hướng cổng thông tin">
                         <Link href="/">Website trường</Link>
-                        <a href="#vai-tro">Cổng truy cập</a>
-                        <a href="#chuc-nang">Chức năng</a>
+                        <a href="#cong-truy-cap" className="active">Cổng truy cập</a>
+                        <a href="#chuc-nang">Tính năng số hóa</a>
+                        <a href="#quan-tri">Cổng nội bộ</a>
                     </nav>
 
-                    <Link href="/login/teacher" className="home-btn home-btn-primary">
-                        Đăng nhập
-                    </Link>
+                    <div className="home-header-acts">
+                        <Link href="/" className="btn-header-site">
+                            <span>Website Giới thiệu</span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                                <path d="m9 18 6-6-6-6" />
+                            </svg>
+                        </Link>
+                    </div>
                 </div>
             </header>
 
             <main>
-                <section className="home-hero">
-                    <div className="home-container home-hero-grid">
+                {/* 3. HERO CỔNG THÔNG TIN */}
+                <section className="portal-hero">
+                    <div className="home-container portal-hero-grid">
                         <div>
-                            <h1 className="home-title">
-                                Mọi sổ sách của nhà trường, gọn trong một hệ thống
-                            </h1>
-                            <p className="home-desc">
-                                Giáo viên, giáo vụ, học sinh và phụ huynh cùng làm việc trên
-                                một nguồn dữ liệu: điểm, điểm danh, sổ đầu bài và thời khóa biểu.
-                            </p>
-                            <div className="home-hero-actions">
-                                <Link href="/login/teacher" className="home-btn home-btn-primary">
-                                    Đăng nhập hệ thống
-                                </Link>
-                                <a href="#vai-tro" className="home-btn home-btn-outline">
-                                    Chọn cổng truy cập
-                                </a>
+                            <div className="portal-badge">
+                                <span>🏛️ HỆ SINH THÁI GIÁO DỤC SỐ 4.0</span>
                             </div>
+
+                            <h1 className="home-title">
+                                Cổng Thông Tin Điện Tử &amp; Quản Trị Học Đường Tập Trung
+                            </h1>
+
+                            <p className="home-desc">
+                                Nền tảng số hóa liên thông kết nối <b>Nhà trường — Giáo viên — Học sinh — Phụ huynh</b>.
+                                Toàn bộ điểm số, điểm danh, thời khóa biểu và sổ liên lạc được đồng bộ theo đúng chuẩn
+                                <b> Thông tư 22/2021/TT-BGDĐT</b>.
+                            </p>
+
+                            <div className="portal-quick-actions">
+                                <Link href="/login/student" className="portal-act-btn act-student">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                                        <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                                    </svg>
+                                    <span>Cổng Học sinh</span>
+                                </Link>
+
+                                <Link href="/login/teacher" className="portal-act-btn act-teacher">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+                                    </svg>
+                                    <span>Cổng Giáo viên</span>
+                                </Link>
+
+                                <Link href="/login/parent" className="portal-act-btn act-parent">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                        <circle cx="9" cy="7" r="4" />
+                                    </svg>
+                                    <span>Cổng Phụ huynh</span>
+                                </Link>
+                            </div>
+
                             <p className="home-legal">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="#13305a" aria-hidden="true">
-                                    <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.200 14.500-4-4 1.400-1.400 2.600 2.600 5.600-5.600 1.400 1.400-7 7Z" />
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.5-4-4 1.4-1.4 2.6 2.6 5.6-5.6 1.4 1.4-7 7Z" />
                                 </svg>
-                                Đánh giá, xếp loại học sinh theo Thông tư 22/2021/TT-BGDĐT.
+                                <span>Bảo mật dữ liệu học đường theo tiêu chuẩn an toàn thông tin GD&amp;ĐT</span>
                             </p>
                         </div>
 
-                        <figure className="home-notebook" style={{ margin: 0 }} aria-label="Ví dụ thời khóa biểu trong ngày">
+                        {/* WIDGET THỜI KHÓA BIỂU & HỌC TẬP THỜI GIAN THỰC */}
+                        <figure className="home-notebook" aria-label="Bảng theo dõi học tập điện tử">
                             <div className="home-nb-head">
-                                <div className="home-nb-kicker">Thời khóa biểu hôm nay · Lớp 11A2 (dữ liệu mẫu)</div>
-                                <div className="home-nb-title">Sáng thứ Sáu</div>
+                                <div>
+                                    <div className="home-nb-kicker">THPT Ngô Sĩ Liên · Lớp 11A1</div>
+                                    <div className="home-nb-title">Thời khóa biểu hôm nay</div>
+                                </div>
+                                <span className="nb-badge-live">
+                                    <span className="nb-pulse"></span>
+                                    <span>Trực tuyến</span>
+                                </span>
                             </div>
+
                             <ol className="home-nb-list">
                                 <li className="home-nb-row">
                                     <span className="home-nb-period">1</span>
                                     <div className="home-nb-body">
-                                        <div className="home-nb-subject">Toán</div>
-                                        <div className="home-nb-meta">Phòng 201</div>
+                                        <div className="home-nb-subject">Toán học</div>
+                                        <div className="home-nb-meta">Thầy Hoàng Nam · Phòng 201</div>
                                     </div>
-                                    <span className="home-nb-time">7:00</span>
+                                    <span className="home-nb-time">07:00 – 07:45</span>
                                 </li>
+
                                 <li className="home-nb-row">
                                     <span className="home-nb-period">2</span>
                                     <div className="home-nb-body">
                                         <div className="home-nb-subject">Ngữ văn</div>
-                                        <div className="home-nb-meta">Phòng 201</div>
+                                        <div className="home-nb-meta">Cô Minh Tâm · Phòng 201</div>
                                     </div>
-                                    <span className="home-nb-time">7:50</span>
+                                    <span className="home-nb-time">07:50 – 08:35</span>
                                 </li>
+
                                 <li className="home-nb-row is-now">
                                     <span className="home-nb-period">3</span>
                                     <div className="home-nb-body">
                                         <div className="home-nb-subject">
-                                            Vật lí<span className="home-nb-now">Đang học</span>
+                                            <span>Vật lí</span>
+                                            <span className="home-nb-now">Tiết hiện tại</span>
                                         </div>
-                                        <div className="home-nb-meta">Phòng thí nghiệm 1</div>
+                                        <div className="home-nb-meta">Thầy Đức Thịnh · Phòng TN Lý 1</div>
                                     </div>
-                                    <span className="home-nb-time">8:55</span>
+                                    <span className="home-nb-time">08:55 – 09:40</span>
                                 </li>
+
                                 <li className="home-nb-row">
                                     <span className="home-nb-period">4</span>
                                     <div className="home-nb-body">
-                                        <div className="home-nb-subject">Tiếng Anh</div>
-                                        <div className="home-nb-meta">Phòng 203</div>
+                                        <div className="home-nb-subject">Tiếng Anh (IELTS Focus)</div>
+                                        <div className="home-nb-meta">Cô Thu Hương · Phòng Lab 2</div>
                                     </div>
-                                    <span className="home-nb-time">9:45</span>
+                                    <span className="home-nb-time">09:45 – 10:30</span>
                                 </li>
                             </ol>
-                            <figcaption className="home-nb-foot">Sĩ số 42 · Có mặt 41 · Vắng có phép 1</figcaption>
+
+                            <figcaption className="home-nb-foot">
+                                <span>Sĩ số lớp: <b>42</b> · Có mặt: <b>42/42 (100%)</b></span>
+                                <span>Điểm số mới: <b>Toán (9.0)</b></span>
+                            </figcaption>
                         </figure>
                     </div>
                 </section>
 
-                <section id="vai-tro" className="home-section home-section-white">
+                {/* 4. KHU VỰC TRỌNG TÂM: LƯỚI 4 CỔNG TRUY CẬP THEO VAI TRÒ */}
+                <section id="cong-truy-cap" className="portal-section">
                     <div className="home-container">
-                        <div className="home-section-head">
-                            <h2 className="home-section-title">Chọn cổng truy cập của bạn</h2>
-                            <p className="home-section-desc">
-                                Mỗi vai trò có giao diện và quyền hạn riêng. Bạn cần đăng nhập để vào cổng tương ứng.
+                        <div className="portal-sec-head">
+                            <span className="portal-sec-badge">HỆ THỐNG PHÂN QUYỀN TRUY CẬP</span>
+                            <h2 className="portal-sec-title">Chọn Cổng Đăng Nhập Của Bạn</h2>
+                            <p className="portal-sec-desc">
+                                Mỗi vị trí được cấp tài khoản chuyên biệt với phân quyền tương ứng.
+                                Vui lòng chọn đúng cổng vai trò để truy cập tiện ích học đường.
                             </p>
                         </div>
 
-                        <ul className="home-roles">
-                            {roles.map((r) => (
-                                <li key={r.href}>
-                                    <Link href={r.href} className="home-role">
-                                        <div className="home-role-icon" aria-hidden="true">
-                                            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                                                {r.icon}
-                                            </svg>
+                        <div className="roles-bento-grid">
+                            {MAIN_PORTALS.map((portal) => (
+                                <article key={portal.key} className={`role-bento-card ${portal.theme}`}>
+                                    <div className="role-card-accent"></div>
+
+                                    <div>
+                                        <div className="role-top-row">
+                                            <div className="role-icon-box">
+                                                {portal.icon}
+                                            </div>
+                                            <span className="role-role-badge">
+                                                {portal.roleBadge}
+                                            </span>
                                         </div>
-                                        <div>
-                                            <h3 className="home-role-name">{r.name}</h3>
-                                            <p className="home-role-note">{r.note}</p>
-                                        </div>
-                                        <ul className="home-role-tasks">
-                                            {r.tasks.map((t) => (
-                                                <li key={t}>{t}</li>
+
+                                        <h3 className="role-name">{portal.name}</h3>
+                                        <p className="role-desc">{portal.desc}</p>
+
+                                        <ul className="role-tasks-list">
+                                            {portal.tasks.map((t) => (
+                                                <li key={t} className="role-task-item">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                        <polyline points="20 6 9 17 4 12" />
+                                                    </svg>
+                                                    <span>{t}</span>
+                                                </li>
                                             ))}
                                         </ul>
-                                        <span className="home-role-go">Vào cổng</span>
+                                    </div>
+
+                                    <Link href={portal.href} className="btn-login-portal">
+                                        <span>{portal.btnText}</span>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                                            <path d="M5 12h14" />
+                                            <path d="m12 5 7 7-7 7" />
+                                        </svg>
                                     </Link>
-                                </li>
+                                </article>
                             ))}
-                        </ul>
+                        </div>
+
+                        {/* CỔNG NGHIỆP VỤ NỘI BỘ DÀNH CHO CÁN BỘ & QUẢN TRỊ */}
+                        <div id="quan-tri" className="internal-strip">
+                            <div className="internal-strip-info">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0f2c59" strokeWidth="2">
+                                    <rect width="18" height="18" x="3" y="3" rx="2" />
+                                    <path d="M7 7h10" />
+                                    <path d="M7 12h10" />
+                                    <path d="M7 17h10" />
+                                </svg>
+                                <div>
+                                    <b>Cổng Quản Trị &amp; Nghiệp Vụ Chuyên Trách:</b>
+                                    <span> Dành cho Ban Giám hiệu, Kế toán và Cán bộ Quản trị hệ thống</span>
+                                </div>
+                            </div>
+
+                            <div className="internal-strip-links">
+                                <Link href="/login/bgh" className="internal-pill-link">
+                                    <span>Cổng Ban Giám Hiệu</span>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </Link>
+
+                                <Link href="/login/accountant" className="internal-pill-link">
+                                    <span>Cổng Kế Toán / Công Nợ</span>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </Link>
+
+                                <Link href="/login/admin" className="internal-pill-link">
+                                    <span>Quản Trị Hệ Thống</span>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </Link>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
-                <section id="chuc-nang" className="home-section">
+                {/* 5. CÁC TÍNH NĂNG SỐ HÓA TIÊU BIỂU */}
+                <section id="chuc-nang" className="features-sec">
                     <div className="home-container">
-                        <div className="home-section-head">
-                            <h2 className="home-section-title">Những việc hệ thống làm thay sổ giấy</h2>
-                            <p className="home-section-desc">
-                                Các nghiệp vụ quen thuộc của trường THPT, được số hóa và liên thông với nhau.
+                        <div className="portal-sec-head">
+                            <span className="portal-sec-badge">TIỆN ÍCH GIÁO DỤC SỐ</span>
+                            <h2 className="portal-sec-title">Những Nghiệp Vụ Hệ Thống Làm Thay Sổ Giấy</h2>
+                            <p className="portal-sec-desc">
+                                Toàn bộ quy trình thủ công phức tạp được tinh gọn, minh bạch và tra cứu tức thời.
                             </p>
                         </div>
 
-                        <dl className="home-features">
-                            {features.map(([name, desc]) => (
-                                <div key={name} className="home-feature">
-                                    <dt>{name}</dt>
-                                    <dd>{desc}</dd>
+                        <div className="features-grid">
+                            {DIGITAL_FEATURES.map((f) => (
+                                <div key={f.title} className="feature-box">
+                                    <div className="feature-icon">{f.icon}</div>
+                                    <h3 className="feature-title">{f.title}</h3>
+                                    <p className="feature-text">{f.desc}</p>
                                 </div>
                             ))}
-                        </dl>
-                    </div>
-                </section>
-
-                <section className="home-stats" aria-label="Số liệu về hệ thống">
-                    <div className="home-container">
-                        <dl className="home-stats-grid">
-                            {stats.map(([num, label]) => (
-                                <div key={label} className="home-stat">
-                                    <dt>{num}</dt>
-                                    <dd>{label}</dd>
-                                </div>
-                            ))}
-                        </dl>
+                        </div>
                     </div>
                 </section>
             </main>
 
+            {/* 6. CHÂN TRANG CỔNG THÔNG TIN */}
             <footer className="home-footer">
                 <div className="home-container">
                     <div className="home-footer-grid">
-                        <div>
-                            <div className="home-footer-name">Hệ thống Quản lý Trường THPT</div>
-                            <div>Cổng dành cho Giáo viên · Giáo vụ · Học sinh · Phụ huynh</div>
+                        <div className="footer-school-brand">
+                            <div className="footer-school-name">TRƯỜNG TRUNG HỌC PHỔ THÔNG NGÔ SĨ LIÊN</div>
+                            <div className="footer-school-meta">
+                                Địa chỉ: Số 48 Đường Ngô Sĩ Liên, Phường Ngô Quyền, TP. Bắc Giang
+                            </div>
+                            <div className="footer-school-meta">
+                                Hotline Kỹ thuật &amp; Tuyển sinh: 0988 123 456 · Email: tuyensinh@thptngosylien.edu.vn
+                            </div>
                         </div>
-                        <nav className="home-footer-links" aria-label="Liên kết nhanh">
+
+                        <nav className="home-footer-links" aria-label="Liên kết chân trang">
                             <Link href="/">Website trường</Link>
-                            <Link href="/login/teacher">Đăng nhập</Link>
-                            <a href="#vai-tro">Cổng truy cập</a>
-                            <a href="#chuc-nang">Chức năng</a>
+                            <Link href="/login/student">Cổng Học sinh</Link>
+                            <Link href="/login/teacher">Cổng Giáo viên</Link>
+                            <Link href="/login/parent">Cổng Phụ huynh</Link>
+                            <Link href="/login/academic">Cổng Giáo vụ</Link>
                         </nav>
                     </div>
+
                     <p className="home-footer-copy">
-                        © {new Date().getFullYear()} Hệ thống Quản lý Trường THPT · Laravel &amp; Next.js
+                        © {new Date().getFullYear()} Cổng Thông Tin Điện Tử · Trường THPT Ngô Sĩ Liên · All rights reserved.
                     </p>
                 </div>
             </footer>

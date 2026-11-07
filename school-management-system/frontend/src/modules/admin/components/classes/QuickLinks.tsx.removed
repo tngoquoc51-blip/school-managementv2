@@ -1,0 +1,27 @@
+'use client';
+
+import Link from 'next/link';
+import { Icon } from '../ui/Icons';
+import { ADMIN_LINKS } from '../../config/links';
+
+/** Hàng chip liên kết nhanh (trang danh sách) hoặc thẻ danh sách (trang chi tiết). */
+export function QuickLinks({ variant = 'row', title = 'Liên kết hệ thống' }: { variant?: 'row' | 'list'; title?: string }) {
+  if (variant === 'list') {
+    return (
+      <div className="a-card"><div className="a-card-b" style={{ display: 'grid', gap: 8 }}>
+        <h3 style={{ margin: '0 0 4px' }}>{title}</h3>
+        {ADMIN_LINKS.map((l) => (
+          <Link key={l.href} href={l.href} className="a-btn" title={l.desc}><Icon name={l.icon} size={16} /> {l.label}</Link>
+        ))}
+      </div></div>
+    );
+  }
+  return (
+    <div className="a-links">
+      <span className="lbl">Liên kết nhanh</span>
+      {ADMIN_LINKS.map((l) => (
+        <Link key={l.href} href={l.href} className="a-link" title={l.desc}><span className="ic"><Icon name={l.icon} size={16} /></span>{l.label}</Link>
+      ))}
+    </div>
+  );
+}

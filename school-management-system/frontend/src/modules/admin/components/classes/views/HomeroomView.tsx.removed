@@ -1,0 +1,64 @@
+'use client';
+
+import { useMemo, useState } from 'react';
+import Link from 'next/link';
+import { Icon } from '../../ui/Icons';
+import { useToast } from '../../ui/Toast';
+import { classService, getErrorMessage } from '../../../services/classService';
+import type { ClassMeta, SchoolClass } from '../../../types/classes';
+
+/** Phân công giáo viên chủ nhiệm cho tất cả lớp — đổi trực tiếp trên từng dòng. */
+export function HomeroomView({ classes, meta, onChanged }: { classes: SchoolClass[]; meta: ClassMeta; onChanged: () => void }) {
+  const toast = useToast();
+  const [busy, setBusy] = useState<number | null>(null);
+  const missing = classes.filter((c) => !c.homeroom_teacher).length;
+  const taken = useMemo(() => new Map(classes.filter((c) => c.homeroom_teacher).map((c) => [c.homeroom_teacher!.id, c])), [classes]);
+  const free = meta.teachers.filter((t) => !taken.has(t.id)).length;
+
+  const change = async (c: SchoolClass, v: string) => {
+    setBusy(c.id);
+    try {
+      const r = await classService.setHomeroom(c.id, v ? +v : null);
+      toast.success('Đã cập nhật GVCN', `Lớp ${r.name}: ${r.homeroom_teacher?.full_name ?? 'chưa có GVCN'}`);
+      onChanged();
+    } catch (e) { toast.error('Không thể phân công', getErrorMessage(e)); } finally { setBusy(null); }
+  };
+
+  return (
+    <div className="a-card a-ws">
+      <div className="a-ws-h">
+        <div className="a-sp"><h3>Giáo viên chủ nhiệm</h3><span className="a-muted">Chọn giáo viên ở từng lớp, hệ thống tự lưu ngay</span></div>
+        <span className={`a-badge ${missing ? 'warn' : 'ok'}`}>{missing ? `${missing} lớp chưa có GVCN` : 'Tất cả lớp đã có GVCN'}</span>
+        <span className="a-badge info">{free} giáo viên chưa chủ nhiệm</span>
+      </div>
+      <div className="a-table-wrap">
+        <table className="a-table">
+          <thead><tr><th>Lớp</th><th>Khối</th><th>Sĩ số</th><th style={{ minWidth: 280 }}>Giáo viên chủ nhiệm</th><th /></tr></thead>
+          <tbody>
+            {classes.map((c) => (
+              <tr key={c.id}>
+                <td><span className={`a-badge pri g${c.grade}`} style={{ background: 'var(--gs)', color: 'var(--gc)' }}>{c.name}</span></td>
+                <td>Khối {c.grade}</td>
+                <td><b>{c.student_count}</b>/{c.capacity}</td>
+                <td>
+                  <div className="a-row">
+                    <select className="a-select" disabled={busy === c.id} value={c.homeroom_teacher?.id ?? ''} onChange={(e) => change(c, e.target.value)}>
+                      <option value="">— Chưa phân công —</option>
+                      {meta.teachers.map((t) => {
+                        const other = taken.get(t.id);
+                        const blocked = !!other && other.id !== c.id;
+                        return <option key={t.id} value={t.id} disabled={blocked}>{t.full_name} · {t.main_subject}{blocked ? ` (đang CN ${other!.name})` : ''}</option>;
+                      })}
+                    </select>
+                    {busy === c.id && <span className="a-spin" />}
+                  </div>
+                </td>
+                <td><Link href={`/admin/classes/${c.id}`} className="a-btn sm">Mở lớp <Icon name="back" size={14} /></Link></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

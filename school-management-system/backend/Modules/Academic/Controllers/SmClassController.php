@@ -46,7 +46,7 @@ class SmClassController extends Controller
     public function index(Request $r)
     {
         return $this->run(fn () => $this->service->list(
-            $r->only(['school_year_id', 'grade', 'status', 'q', 'homeroom', 'sort', 'dir']), paginate_limit(12)
+            $r->only(['school_year_id', 'grade', 'status', 'q', 'homeroom', 'sort', 'dir']), min(max($r->integer('per_page', 12), 1), 100)
         ));
     }
 

@@ -1,0 +1,36 @@
+'use client';
+
+import { useState } from 'react';
+import { Modal } from '../ui/Modal';
+import type { SchoolClass } from '../../types/classes';
+
+/** Chọn một lớp rồi chuyển sang giao diện chi tiết (môn học / thời khóa biểu). */
+export function ClassPickerModal({ open, onClose, classes, title, subtitle, onPick }: {
+  open: boolean; onClose: () => void; classes: SchoolClass[]; title: string; subtitle?: string; onPick: (c: SchoolClass) => void;
+}) {
+  const [grade, setGrade] = useState<number | ''>('');
+  const list = classes.filter((c) => !grade || c.grade === grade);
+
+  return (
+    <Modal open={open} onClose={onClose} size="lg" title={title} subtitle={subtitle}>
+      <div className="a-chips" style={{ width: 'fit-content', margin: '8px 0 14px' }}>
+        {[{ v: '', l: 'Tất cả' }, { v: 10, l: 'Khối 10' }, { v: 11, l: 'Khối 11' }, { v: 12, l: 'Khối 12' }].map((g) => (
+          <button key={g.l} className={`a-chip ${grade === g.v ? 'on' : ''}`} onClick={() => setGrade(g.v as any)}>{g.l}</button>
+        ))}
+      </div>
+      {list.length === 0 ? <div className="a-empty">Chưa có lớp nào trong năm học này.</div> : (
+        <div className="a-pick">
+          {list.map((c) => (
+            <button key={c.id} className={`a-pickrow g${c.grade}`} onClick={() => onPick(c)}>
+              <span className="nm">{c.name}</span>
+              <span style={{ minWidth: 0, textAlign: 'left' }}>
+                <b style={{ display: 'block', fontSize: 13.5 }}>Lớp {c.name}</b>
+                <small className="a-muted">{c.student_count} HS · {c.homeroom_teacher?.full_name ?? 'Chưa có GVCN'}</small>
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+    </Modal>
+  );
+}

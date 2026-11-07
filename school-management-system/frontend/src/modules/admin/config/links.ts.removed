@@ -1,0 +1,15 @@
+/**
+ * Liên kết nhanh từ trang Lớp học sang các trang/hệ thống khác.
+ * Nếu đường dẫn trang của bạn khác, chỉ cần sửa `href` ở đây.
+ */
+export interface QuickLink { label: string; desc: string; href: string; icon: string }
+
+export const ADMIN_LINKS: QuickLink[] = [
+  { label: 'Năm học - Học kỳ', desc: 'Thiết lập năm học, học kỳ', href: '/admin/school-year', icon: 'calendar' },
+  { label: 'Quản lý tài khoản', desc: 'Tài khoản giáo viên, học sinh', href: '/admin/users', icon: 'users' },
+  { label: 'Vai trò & Phân quyền', desc: 'Ai được quản lý lớp học', href: '/admin/roles', icon: 'layers' },
+  { label: 'Hồ sơ học sinh', desc: 'Khu Giáo vụ', href: '/academic/students', icon: 'user' },
+  { label: 'Phân công giảng dạy', desc: 'Khu Giáo vụ', href: '/academic/assignment', icon: 'book' },
+  { label: 'Quản lý điểm', desc: 'Khu Giáo vụ', href: '/academic/grades', icon: 'chart' },
+  { label: 'Xét lên lớp', desc: 'Khu Giáo vụ', href: '/academic/promotion', icon: 'swap' },
+];

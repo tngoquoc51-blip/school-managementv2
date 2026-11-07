@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\GvWebsiteController;
 use App\Http\Controllers\Api\GvContactController;
 use App\Http\Controllers\Api\GvMonitorController;
 use App\Http\Controllers\Api\GvNoticeController;
+use App\Http\Controllers\Api\GvAttendanceController;
 use App\Http\Controllers\Api\StudentReminderController;
 use App\Http\Middleware\FeeStaffToken;
 use App\Http\Middleware\StaffToken;
@@ -56,6 +57,7 @@ use Modules\Logs\Middleware\BghAccess;
 use Modules\Academic\Controllers\ClassRoomController;
 use Modules\Academic\Controllers\SmClassController;
 use Modules\Academic\Middleware\AcademicStaff;
+
 Route::get('/health', fn () => response()->json(['status' => 'ok']));
 
 // Đăng nhập hệ thống (Sanctum / admin…)
@@ -115,7 +117,7 @@ Route::prefix('v1/accountant')->group(function () {
     Route::get('/students/search', [AccountantController::class, 'searchStudent']);
 });
 // Quản trị tài khoản + vai trò
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware(['auth:sanctum', \App\Http\Middleware\AdminAccess::class])->group(function () {
     Route::get('/users', [UserController::class, 'index']);
 
     // Context cho sidebar / phân quyền
@@ -149,7 +151,7 @@ Route::prefix('admin')->group(function () {
     Route::put('/backups/settings', [BackupController::class, 'updateSettings']);
 });
 
-Route::prefix('data-hub')->group(function () {
+Route::prefix('admin/data-hub')->middleware(['auth:sanctum', \App\Http\Middleware\AdminAccess::class])->group(function () {
     Route::get('datasets', [DataHubController::class, 'datasets']);
     Route::get('overview', [DataHubController::class, 'overview']);
 
@@ -405,7 +407,27 @@ Route::prefix('gv')->group(function () {
                 Route::post('{id}/comments', [TeacherHomeworkPortalController::class, 'hwReply'])->whereNumber('id')->middleware('throttle:30,1');
             });
         });
-
+        // ========== PHÊ DUYỆT (Ban giám hiệu) ==========
+        Route::prefix('approvals')->group(function () {
+            Route::get('overview', [BghApprovalController::class, 'apOverview']);
+            Route::get('templates', [BghApprovalController::class, 'apTemplates']);
+            Route::get('types', [BghApprovalController::class, 'apTypes']);
+            Route::put('types/{code}', [BghApprovalController::class, 'apTypeUpdate'])->where('code', '[a-z_]+');
+            Route::get('delegations', [BghApprovalController::class, 'apDelegations']);
+            Route::post('delegations', [BghApprovalController::class, 'apDelegationStore']);
+            Route::delete('delegations/{id}', [BghApprovalController::class, 'apDelegationRevoke'])->whereNumber('id');
+            Route::get('staff', [BghApprovalController::class, 'apStaff']);
+            Route::post('sync', [BghApprovalController::class, 'apSync'])->middleware('throttle:30,1');
+            Route::get('report', [BghApprovalController::class, 'apReport']);
+            Route::get('export', [BghApprovalController::class, 'apExport']);
+            Route::get('mine', [BghApprovalController::class, 'apMine']);
+            Route::post('requests', [BghApprovalController::class, 'apSubmit'])->middleware('throttle:30,1');
+            Route::post('bulk', [BghApprovalController::class, 'apBulk'])->middleware('throttle:30,1');
+            Route::get('/', [BghApprovalController::class, 'apList']);
+            Route::get('{id}', [BghApprovalController::class, 'apShow'])->whereNumber('id');
+            Route::post('{id}/decide', [BghApprovalController::class, 'apDecide'])->whereNumber('id')->middleware('throttle:60,1');
+            Route::post('{id}/comment', [BghApprovalController::class, 'apComment'])->whereNumber('id')->middleware('throttle:60,1');
+        });
         // ========== HỒ SƠ CỦA TÔI ==========
         Route::put('profile/contact', [AcademicApiController::class, 'updateContact']);
         Route::post('change-password', [AcademicApiController::class, 'changePassword']);
@@ -471,6 +493,31 @@ Route::prefix('gv/notices')->middleware(NoticeAccess::class)->group(function () 
     Route::get('{id}/reads', [GvNoticeController::class, 'reads'])->whereNumber('id');
     Route::get('{id}/unread', [GvNoticeController::class, 'unread'])->whereNumber('id');
     Route::get('{id}/export', [GvNoticeController::class, 'export'])->whereNumber('id');
+});
+
+// ===== Chuyên cần của Ban Giám hiệu (/bgh/attendance): cùng quyền với Thông báo (HT / PHT / Quản trị) =====
+Route::prefix('gv/ca')->middleware(NoticeAccess::class)->group(function () {
+    Route::get('meta', [GvAttendanceController::class, 'meta']);
+    Route::get('overview', [GvAttendanceController::class, 'overview']);
+    Route::get('day', [GvAttendanceController::class, 'day']);
+    Route::post('mark', [GvAttendanceController::class, 'mark'])->middleware('throttle:60,1');
+    Route::post('day/clear', [GvAttendanceController::class, 'dayClear'])->middleware('throttle:30,1');
+    Route::get('classes', [GvAttendanceController::class, 'classesIndex']);
+    Route::get('students', [GvAttendanceController::class, 'studentsIndex']);
+    Route::get('students/lookup', [GvAttendanceController::class, 'studentLookup']);
+    Route::get('students/{id}', [GvAttendanceController::class, 'studentShow'])->whereNumber('id');
+    Route::get('leaves', [GvAttendanceController::class, 'leavesIndex']);
+    Route::post('leaves', [GvAttendanceController::class, 'leaveStore'])->middleware('throttle:60,1');
+    Route::post('leaves/{id}/action', [GvAttendanceController::class, 'leaveAction'])->whereNumber('id')->middleware('throttle:60,1');
+    Route::get('alerts', [GvAttendanceController::class, 'alerts']);
+    Route::get('cases', [GvAttendanceController::class, 'casesIndex']);
+    Route::post('cases', [GvAttendanceController::class, 'caseStore'])->middleware('throttle:60,1');
+    Route::put('cases/{id}', [GvAttendanceController::class, 'caseUpdate'])->whereNumber('id');
+    Route::get('report', [GvAttendanceController::class, 'report']);
+    Route::get('report/export', [GvAttendanceController::class, 'export']);
+    Route::get('history', [GvAttendanceController::class, 'history']);
+    Route::get('settings', [GvAttendanceController::class, 'settingsGet']);
+    Route::put('settings', [GvAttendanceController::class, 'settingsUpdate']);
 });
 
 // ===== Khu Kế toán: Đợt thu / Kỳ thu =====

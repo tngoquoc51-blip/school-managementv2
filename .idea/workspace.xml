@@ -5,8 +5,34 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="697b4476-35a9-45e0-8e56-10612acca154" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Approval/Services/ApprovalService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/GvAttendanceController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/_ca.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/_student.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/attendance.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/bao-cao/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/canh-bao/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/diem-danh/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/don-nghi/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/layout.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/lop/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/approvals/ApprovalsApp.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/approvals/DetailPane.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/approvals/Panels.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/approvals/approvals.module.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/approvals/ui.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/services/bghApproval.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/backend/Modules/Academic/Controllers/SmClassController.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Academic/Controllers/SmClassController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/backend/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/routes/api.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/classes/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/classes/[id]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/classes/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/classes/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/approvals/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/approvals/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/home.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/home.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/admin-layout.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/admin-layout.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/pages/ClassesPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/pages/ClassesPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/styles/admin.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/styles/admin.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

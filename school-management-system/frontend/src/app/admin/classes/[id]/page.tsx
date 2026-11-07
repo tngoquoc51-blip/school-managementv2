@@ -1,5 +1,5 @@
-import ClassesPage from '@/modules/admin/pages/ClassesPage';
+import ClassDetailPage from '@/modules/admin/pages/ClassDetailPage';
 
-export default function Page() {
-    return <ClassesPage />;
+export default function Page({ params }: { params: { id: string } }) {
+    return <ClassDetailPage classId={Number(params.id)} />;
 }

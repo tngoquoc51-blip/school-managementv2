@@ -1,24 +1,35 @@
-/* ===== Trang chủ - Hệ thống Quản lý Trường THPT =====
-   Ý tưởng: sổ đầu bài / vở ô li. Xanh than (màu đồng phục, bảng tên trường)
-   làm chủ đạo, đỏ phượng chỉ dùng ở đúng một chỗ: lề đỏ của vở + tiết đang học. */
+/* ===================================================================
+   home.css - CỔNG THÔNG TIN QUẢN TRỊ TRƯỜNG THPT NGÔ SĨ LIÊN
+   Thiết kế chuẩn hệ thống giáo dục số 4.0:
+   Màu chủ đạo: Deep Academic Navy (#0A192F / #0F2C59) + Royal Crimson (#991B1B) + Amber Gold (#D97706)
+   =================================================================== */
 
 .home-wrapper {
-    --navy: #13305a;
-    --navy-deep: #0c2142;
-    --phuong: #c4302b;
-    --ink: #10203a;
-    --muted: #52627a;
-    --line: #d8dfe9;
-    --bg: #f3f5f9;
+    --navy-950: #071830;
+    --navy-900: #0a192f;
+    --navy-800: #0f2c59;
+    --navy-700: #133e87;
+    --crimson: #991b1b;
+    --crimson-hover: #7f1d1d;
+    --gold: #d97706;
+    --gold-light: #fef3c7;
+    --gold-text: #b45309;
+    --emerald: #047857;
+    --sky: #0284c7;
+    --ink: #1e293b;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --bg-page: #f8fafc;
     --white: #ffffff;
-    --soft: #e8edf5;
 
     min-height: 100vh;
-    background: var(--bg);
+    background: var(--bg-page);
     color: var(--ink);
-    font-family: var(--font-sans), "Be Vietnam Pro", system-ui, sans-serif;
+    font-family: var(--font-sans), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     font-size: 16px;
     line-height: 1.6;
+    display: flex;
+    flex-direction: column;
 }
 
 .home-wrapper *,
@@ -32,30 +43,93 @@
     text-decoration: none;
 }
 
-.home-wrapper a:focus-visible,
-.home-wrapper button:focus-visible {
-    outline: 3px solid var(--navy);
-    outline-offset: 3px;
-    border-radius: 6px;
-}
-
 .home-container {
-    max-width: 1180px;
+    width: 100%;
+    max-width: 1320px;
     margin: 0 auto;
-    padding: 0 24px;
+    padding: 0 clamp(16px, 3.5vw, 40px);
 }
 
-/* ---------- Header ---------- */
+/* ===================================================================
+   1. TOPBAR & HEADER
+   =================================================================== */
+.portal-topbar {
+    background: var(--navy-900);
+    color: #cbd5e1;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.portal-topbar-in {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 38px;
+    gap: 16px;
+}
+
+.portal-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.portal-top-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #cbd5e1;
+}
+
+.portal-top-item svg {
+    color: #38bdf8;
+}
+
+.portal-topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.portal-hotline {
+    color: #fef08a;
+    font-weight: 500;
+}
+
+.portal-hotline b {
+    color: #fde047;
+    font-weight: 700;
+}
+
+.portal-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 12px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    color: #ffffff;
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.portal-back-btn:hover {
+    background: rgba(255, 255, 255, 0.24);
+}
+
 .home-header {
     position: sticky;
     top: 0;
-    z-index: 50;
-    background: var(--white);
+    z-index: 100;
+    background: #ffffff;
     border-bottom: 1px solid var(--line);
+    box-shadow: 0 2px 10px rgba(15, 44, 89, 0.04);
 }
 
 .home-header-inner {
-    height: 72px;
+    height: 76px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -65,541 +139,781 @@
 .home-logo {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
 }
 
-.home-logo-mark {
-    width: 42px;
-    height: 42px;
-    border-radius: 8px;
-    background: var(--navy);
-    display: grid;
-    place-items: center;
+.home-logo-img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
+    transition: transform 0.25s;
+}
+
+.home-logo:hover .home-logo-img {
+    transform: scale(1.05);
+}
+
+.home-logo-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.home-logo-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .home-logo-title {
-    font-family: var(--font-serif), Georgia, serif;
-    font-size: 18px;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--navy-800);
+    letter-spacing: -0.01em;
+}
+
+.home-logo-tag {
+    font-size: 11px;
     font-weight: 700;
-    line-height: 1.2;
-    color: var(--navy);
+    color: var(--gold-text);
+    background: var(--gold-light);
+    border: 1px solid #fde68a;
+    padding: 2px 7px;
+    border-radius: 6px;
+    text-transform: uppercase;
 }
 
 .home-logo-sub {
-    font-size: 13px;
+    font-size: 12.5px;
     color: var(--muted);
+    font-weight: 500;
 }
 
 .home-nav {
     display: flex;
-    gap: 28px;
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--muted);
+    align-items: center;
+    gap: 8px;
 }
 
 .home-nav a {
-    padding: 6px 0;
-    border-bottom: 2px solid transparent;
-    transition: color 0.15s, border-color 0.15s;
+    padding: 8px 14px;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #334155;
+    border-radius: 8px;
+    transition: all 0.2s;
 }
 
 .home-nav a:hover {
-    color: var(--navy);
-    border-color: var(--navy);
+    color: var(--navy-800);
+    background: #f1f5f9;
 }
 
-.home-btn {
+.home-nav a.active {
+    color: var(--navy-800);
+    font-weight: 700;
+}
+
+.home-header-acts {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-header-site {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    min-height: 44px;
-    padding: 0 22px;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 600;
-    border: 2px solid var(--navy);
-    transition: background 0.15s, color 0.15s;
-    cursor: pointer;
-}
-
-.home-wrapper .home-btn-primary {
-    background: var(--navy);
-    color: var(--white);
-}
-
-.home-wrapper .home-btn-primary:hover {
-    background: var(--navy-deep);
-    border-color: var(--navy-deep);
-}
-
-.home-wrapper .home-btn-outline {
-    background: transparent;
-    color: var(--navy);
-}
-
-.home-wrapper .home-btn-outline:hover {
-    background: var(--soft);
-}
-
-/* ---------- Hero ---------- */
-.home-hero {
-    padding: 72px 0 80px;
-}
-
-.home-hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-    gap: 64px;
-    align-items: center;
-}
-
-.home-title {
-    font-family: var(--font-serif), Georgia, serif;
-    font-size: clamp(32px, 4.4vw, 50px);
-    font-weight: 700;
-    line-height: 1.18;
-    letter-spacing: -0.01em;
-    color: var(--navy-deep);
-    margin: 0 0 22px;
-    text-wrap: balance;
-}
-
-.home-desc {
-    font-size: 18px;
-    color: var(--muted);
-    max-width: 540px;
-    margin: 0 0 32px;
-}
-
-.home-hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    margin-bottom: 28px;
-}
-
-.home-legal {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
+    gap: 7px;
+    padding: 8px 16px;
+    border-radius: 999px;
     font-size: 14px;
-    color: var(--muted);
-    max-width: 520px;
+    font-weight: 700;
+    color: var(--navy-800);
+    border: 1.5px solid var(--navy-800);
+    background: #ffffff;
+    transition: all 0.2s;
 }
 
-.home-legal svg {
-    flex: none;
-    margin-top: 3px;
+.btn-header-site:hover {
+    background: var(--navy-800);
+    color: #ffffff;
 }
 
-/* ---------- Vở ô li: thời khóa biểu ---------- */
-.home-notebook {
+/* ===================================================================
+   2. HERO PORTAL
+   ===================================================================== */
+.portal-hero {
+    padding: 60px 0 50px;
+    background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+    border-bottom: 1px solid var(--line);
     position: relative;
-    background-color: var(--white);
-    background-image: repeating-linear-gradient(
-            to bottom,
-            transparent 0,
-            transparent 35px,
-            #dfe6f1 35px,
-            #dfe6f1 36px
-    );
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    box-shadow: 0 18px 40px -22px rgba(12, 33, 66, 0.35);
-    padding: 22px 24px 18px 0;
     overflow: hidden;
 }
 
-/* lề đỏ của vở */
-.home-notebook::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 64px;
-    width: 2px;
-    background: var(--phuong);
-    opacity: 0.85;
+.portal-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(360px, 0.8fr);
+    gap: clamp(32px, 5vw, 64px);
+    align-items: center;
+}
+
+.portal-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 14px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #1d4ed8;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 18px;
+}
+
+.home-title {
+    font-size: clamp(2rem, 3.4vw, 2.9rem);
+    font-weight: 800;
+    color: var(--navy-800);
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.home-desc {
+    margin-top: 16px;
+    font-size: 16px;
+    color: #475569;
+    line-height: 1.6;
+    max-width: 58ch;
+}
+
+.portal-quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.portal-act-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border-radius: 999px;
+    font-size: 14.5px;
+    font-weight: 700;
+    transition: all 0.22s;
+    border: none;
+    cursor: pointer;
+}
+
+.portal-act-btn:hover {
+    transform: translateY(-2px);
+}
+
+.act-student {
+    background: var(--navy-800);
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(15, 44, 89, 0.25);
+}
+
+.act-student:hover {
+    background: #1e3a8a;
+    box-shadow: 0 8px 20px rgba(15, 44, 89, 0.35);
+}
+
+.act-teacher {
+    background: var(--emerald);
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(4, 120, 87, 0.25);
+}
+
+.act-teacher:hover {
+    background: #065f46;
+    box-shadow: 0 8px 20px rgba(4, 120, 87, 0.35);
+}
+
+.act-parent {
+    background: #ffffff;
+    color: var(--gold-text) !important;
+    border: 1.5px solid var(--gold);
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.1);
+}
+
+.act-parent:hover {
+    background: var(--gold);
+    color: #ffffff !important;
+}
+
+.home-legal {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 24px;
+    font-size: 13.5px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.home-legal svg {
+    color: var(--emerald);
+    flex-shrink: 0;
+}
+
+/* ---------- Thẻ điện tử học sinh mẫu (Interactive Live Card) ---------- */
+.home-notebook {
+    background: #ffffff;
+    border-radius: 22px;
+    box-shadow: 0 16px 40px -10px rgba(15, 44, 89, 0.16);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    overflow: hidden;
+    margin: 0;
 }
 
 .home-nb-head {
-    padding-left: 88px;
-    margin-bottom: 12px;
-    background: var(--white);
-    margin-left: 0;
-    padding-bottom: 8px;
+    background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-950) 100%);
+    color: #ffffff;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .home-nb-kicker {
-    font-size: 13px;
-    color: var(--muted);
+    font-size: 12.5px;
+    color: #93c5fd;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .home-nb-title {
-    font-family: var(--font-serif), Georgia, serif;
-    font-size: 21px;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-top: 2px;
+}
+
+.nb-badge-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: rgba(34, 197, 94, 0.2);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    border-radius: 999px;
+    font-size: 11.5px;
     font-weight: 700;
-    color: var(--navy-deep);
-    line-height: 1.3;
+    color: #4ade80;
+}
+
+.nb-pulse {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+    animation: livePulse 2s infinite;
+}
+
+@keyframes livePulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
 }
 
 .home-nb-list {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 8px 16px;
 }
 
 .home-nb-row {
-    display: grid;
-    grid-template-columns: 64px 1fr auto;
+    display: flex;
     align-items: center;
-    height: 72px;
-    gap: 0;
-    border-top: 1px solid #dfe6f1;
-    background: rgba(255, 255, 255, 0.82);
+    gap: 14px;
+    padding: 12px 10px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.home-nb-row:last-child {
+    border-bottom: none;
 }
 
 .home-nb-period {
-    text-align: center;
-    font-family: var(--font-serif), Georgia, serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--navy);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    color: var(--navy-800);
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.home-nb-row.is-now .home-nb-period {
+    background: #fee2e2;
+    color: var(--crimson);
 }
 
 .home-nb-body {
-    padding-left: 24px;
-    min-width: 0;
+    flex: 1;
 }
 
 .home-nb-subject {
-    font-weight: 600;
-    color: var(--ink);
-    line-height: 1.3;
-}
-
-.home-nb-meta {
-    font-size: 13.5px;
-    color: var(--muted);
-}
-
-.home-nb-time {
-    font-size: 13.5px;
-    color: var(--muted);
-    padding-right: 4px;
-    font-variant-numeric: tabular-nums;
-}
-
-.home-nb-row.is-now {
-    background: #fdf1f0;
-}
-
-.home-nb-row.is-now .home-nb-subject {
-    color: var(--phuong);
-}
-
-.home-nb-now {
-    display: inline-block;
-    margin-left: 8px;
-    padding: 1px 8px;
-    border-radius: 999px;
-    background: var(--phuong);
-    color: var(--white);
-    font-size: 12px;
-    font-weight: 600;
-    vertical-align: 1px;
-}
-
-.home-nb-foot {
-    margin: 0;
-    padding: 12px 0 0 88px;
-    font-size: 13.5px;
-    color: var(--muted);
-    border-top: 1px solid #dfe6f1;
-    background: var(--white);
-}
-
-/* ---------- Section chung ---------- */
-.home-section {
-    padding: 80px 0;
-}
-
-.home-section-white {
-    background: var(--white);
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-}
-
-.home-section-head {
-    max-width: 640px;
-    margin-bottom: 40px;
-}
-
-.home-section-title {
-    font-family: var(--font-serif), Georgia, serif;
-    font-size: clamp(26px, 3vw, 34px);
-    font-weight: 700;
-    line-height: 1.25;
-    color: var(--navy-deep);
-    margin: 0 0 10px;
-}
-
-.home-section-desc {
-    color: var(--muted);
-    margin: 0;
-    font-size: 17px;
-}
-
-/* ---------- Cổng vai trò (dạng danh bạ) ---------- */
-.home-roles {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    border-top: 2px solid var(--navy);
-}
-
-.home-role {
-    display: grid;
-    grid-template-columns: 56px minmax(200px, 1fr) minmax(0, 1.4fr) auto;
-    gap: 28px;
-    align-items: center;
-    padding: 26px 8px;
-    border-bottom: 1px solid var(--line);
-    transition: background 0.15s;
-}
-
-.home-role:hover {
-    background: var(--soft);
-}
-
-.home-role-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 10px;
-    background: var(--soft);
-    color: var(--navy);
-    display: grid;
-    place-items: center;
-}
-
-.home-role:hover .home-role-icon {
-    background: var(--navy);
-    color: var(--white);
-}
-
-.home-role-name {
-    font-family: var(--font-serif), Georgia, serif;
-    font-size: 21px;
-    font-weight: 700;
-    color: var(--navy-deep);
-    margin: 0 0 2px;
-    line-height: 1.3;
-}
-
-.home-role-note {
-    margin: 0;
     font-size: 14.5px;
-    color: var(--muted);
-}
-
-.home-role-tasks {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+    font-weight: 700;
+    color: #1e293b;
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     gap: 8px;
 }
 
-.home-role-tasks li {
-    padding: 4px 12px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    font-size: 14px;
-    background: var(--white);
+.home-nb-now {
+    font-size: 10.5px;
+    font-weight: 700;
+    background: #fee2e2;
+    color: var(--crimson);
+    border: 1px solid #fecaca;
+    padding: 1px 7px;
+    border-radius: 99px;
 }
 
-.home-role-go {
+.home-nb-meta {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 1px;
+}
+
+.home-nb-time {
+    font-size: 13px;
+    font-weight: 700;
+    color: #64748b;
+    font-variant-numeric: tabular-nums;
+}
+
+.home-nb-foot {
+    background: #f8fafc;
+    padding: 12px 20px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    color: #64748b;
     font-weight: 600;
-    color: var(--navy);
-    border-bottom: 2px solid currentColor;
-    padding-bottom: 2px;
-    white-space: nowrap;
 }
 
-/* ---------- Chức năng ---------- */
-.home-features {
+/* ===================================================================
+   3. KHU VỰC CHÍNH: LƯỚI 4 CỔNG TRUY CẬP (BENTO ROLE CARDS)
+   ===================================================================== */
+.portal-section {
+    padding: 80px 0;
+}
+
+.portal-sec-head {
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto 50px;
+}
+
+.portal-sec-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--crimson);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 12px;
+}
+
+.portal-sec-title {
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    font-weight: 800;
+    color: var(--navy-800);
+    line-height: 1.2;
+    margin: 0;
+}
+
+.portal-sec-desc {
+    margin-top: 12px;
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+.roles-bento-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.role-bento-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1.5px solid var(--line);
+    box-shadow: 0 10px 30px -8px rgba(15, 44, 89, 0.08);
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.role-bento-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px -10px rgba(15, 44, 89, 0.16);
+    border-color: #cbd5e1;
+}
+
+.role-card-accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+/* Các theme thẻ */
+.card-student .role-card-accent { background: linear-gradient(90deg, #0f2c59, #38bdf8); }
+.card-teacher .role-card-accent { background: linear-gradient(90deg, #047857, #34d399); }
+.card-parent .role-card-accent { background: linear-gradient(90deg, #d97706, #fbbf24); }
+.card-academic .role-card-accent { background: linear-gradient(90deg, #0284c7, #38bdf8); }
+
+.role-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.role-icon-box {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+}
+
+.card-student .role-icon-box { background: #eff6ff; color: #1d4ed8; }
+.card-teacher .role-icon-box { background: #ecfdf5; color: #047857; }
+.card-parent .role-icon-box { background: #fffbeb; color: #b45309; }
+.card-academic .role-icon-box { background: #f0f9ff; color: #0284c7; }
+
+.role-role-badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.card-student .role-role-badge { background: #dbeafe; color: #1e40af; }
+.card-teacher .role-role-badge { background: #d1fae5; color: #065f46; }
+.card-parent .role-role-badge { background: #fef3c7; color: #92400e; }
+.card-academic .role-role-badge { background: #e0f2fe; color: #0369a1; }
+
+.role-name {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--navy-800);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.role-desc {
+    margin-top: 6px;
+    font-size: 14.5px;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+.role-tasks-list {
+    margin: 20px 0 28px;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.role-task-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #334155;
+    background: #f8fafc;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #edf2f7;
+}
+
+.role-task-item svg {
+    color: var(--emerald);
+    flex-shrink: 0;
+}
+
+.btn-login-portal {
+    width: 100%;
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    transition: all 0.22s;
+    text-decoration: none;
+}
+
+.card-student .btn-login-portal {
+    background: var(--navy-800);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(15, 44, 89, 0.25);
+}
+
+.card-student .btn-login-portal:hover {
+    background: #1e3a8a;
+    box-shadow: 0 8px 20px rgba(15, 44, 89, 0.4);
+}
+
+.card-teacher .btn-login-portal {
+    background: var(--emerald);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(4, 120, 87, 0.25);
+}
+
+.card-teacher .btn-login-portal:hover {
+    background: #065f46;
+    box-shadow: 0 8px 20px rgba(4, 120, 87, 0.4);
+}
+
+.card-parent .btn-login-portal {
+    background: var(--gold);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(217, 119, 6, 0.25);
+}
+
+.card-parent .btn-login-portal:hover {
+    background: #b45309;
+    box-shadow: 0 8px 20px rgba(217, 119, 6, 0.4);
+}
+
+.card-academic .btn-login-portal {
+    background: var(--sky);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25);
+}
+
+.card-academic .btn-login-portal:hover {
+    background: #0369a1;
+    box-shadow: 0 8px 20px rgba(2, 132, 199, 0.4);
+}
+
+/* ===================================================================
+   4. CỔNG NGHIỆP VỤ QUẢN TRỊ NỘI BỘ (ADMIN & FINANCE STRIP)
+   ===================================================================== */
+.internal-strip {
+    margin-top: 36px;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1.5px solid var(--line);
+    padding: 20px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    box-shadow: 0 4px 16px rgba(15, 44, 89, 0.04);
+}
+
+.internal-strip-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.internal-strip-info b {
+    font-size: 15px;
+    color: var(--navy-800);
+}
+
+.internal-strip-info span {
+    font-size: 13.5px;
+    color: #64748b;
+}
+
+.internal-strip-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.internal-pill-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+    transition: all 0.2s;
+}
+
+.internal-pill-link:hover {
+    background: var(--navy-800);
+    color: #ffffff;
+    border-color: var(--navy-800);
+}
+
+/* ===================================================================
+   5. CÁC TÍNH NĂNG SỐ HÓA
+   ===================================================================== */
+.features-sec {
+    background: #ffffff;
+    padding: 80px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+
+.features-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0 48px;
-    margin: 0;
+    gap: 24px;
 }
 
-.home-feature {
-    padding: 22px 0 26px;
-    border-top: 1px solid var(--line);
+.feature-box {
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.2s;
 }
 
-.home-feature dt {
-    font-weight: 700;
-    font-size: 17px;
-    color: var(--navy-deep);
-    margin-bottom: 6px;
+.feature-box:hover {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    box-shadow: 0 10px 25px -5px rgba(15, 44, 89, 0.08);
 }
 
-.home-feature dd {
-    margin: 0;
-    color: var(--muted);
-    font-size: 15px;
-}
-
-/* ---------- Số liệu ---------- */
-.home-stats {
-    background: var(--navy);
-    color: var(--white);
-    padding: 56px 0;
-}
-
-.home-stats-grid {
+.feature-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: #eff6ff;
+    color: #1d4ed8;
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 32px;
+    place-items: center;
+    margin-bottom: 14px;
+}
+
+.feature-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--navy-800);
+    margin: 0 0 8px;
+}
+
+.feature-text {
+    font-size: 14px;
+    color: #64748b;
+    line-height: 1.5;
     margin: 0;
 }
 
-.home-stat {
-    border-left: 2px solid rgba(255, 255, 255, 0.28);
-    padding-left: 20px;
-}
-
-.home-stat dt {
-    font-family: var(--font-serif), Georgia, serif;
-    font-size: 44px;
-    font-weight: 700;
-    line-height: 1.1;
-}
-
-.home-stat dd {
-    margin: 6px 0 0;
-    font-size: 15px;
-    color: #c9d6ea;
-}
-
-/* ---------- Footer ---------- */
+/* ===================================================================
+   6. FOOTER
+   ===================================================================== */
 .home-footer {
-    background: var(--navy-deep);
-    color: #b8c6dc;
-    padding: 40px 0 32px;
-    font-size: 14.5px;
+    background: var(--navy-950);
+    color: #cbd5e1;
+    padding: 50px 0 30px;
+    margin-top: auto;
+    border-top: 3px solid var(--gold);
 }
 
 .home-footer-grid {
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
-    gap: 24px;
+    align-items: flex-start;
+    gap: 32px;
+    flex-wrap: wrap;
+    padding-bottom: 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.home-footer-name {
-    font-family: var(--font-serif), Georgia, serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--white);
-    margin-bottom: 4px;
+.footer-school-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.footer-school-name {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.footer-school-meta {
+    font-size: 13.5px;
+    color: #94a3b8;
 }
 
 .home-footer-links {
     display: flex;
-    gap: 24px;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.home-footer-links a {
+    color: #cbd5e1;
+    font-size: 14px;
+    font-weight: 600;
+    transition: color 0.2s;
 }
 
 .home-footer-links a:hover {
-    color: var(--white);
-    text-decoration: underline;
+    color: #fde047;
 }
 
 .home-footer-copy {
-    margin: 28px 0 0;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
-    font-size: 13.5px;
+    margin-top: 24px;
+    text-align: center;
+    font-size: 13px;
+    color: #64748b;
 }
 
-/* ---------- Responsive ---------- */
-@media (max-width: 1000px) {
-    .home-hero-grid {
-        grid-template-columns: 1fr;
-        gap: 48px;
-    }
-    .home-role {
-        grid-template-columns: 56px 1fr;
-        gap: 14px 20px;
-    }
-    .home-role-tasks,
-    .home-role-go {
-        grid-column: 2;
-    }
-    .home-role-go {
-        justify-self: start;
-    }
-    .home-features {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    .home-stats-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+/* Responsive */
+@media (max-width: 1024px) {
+    .portal-hero-grid { grid-template-columns: 1fr; }
+    .roles-bento-grid { grid-template-columns: 1fr; }
+    .features-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-@media (max-width: 760px) {
-    .home-nav {
-        display: none;
-    }
-}
-
-@media (max-width: 560px) {
-    .home-container {
-        padding: 0 16px;
-    }
-    .home-header-inner {
-        height: 64px;
-    }
-    .home-logo-sub {
-        display: none;
-    }
-    .home-hero {
-        padding: 44px 0 56px;
-    }
-    .home-section {
-        padding: 56px 0;
-    }
-    .home-features {
-        grid-template-columns: 1fr;
-    }
-    .home-notebook::before {
-        left: 48px;
-    }
-    .home-nb-head,
-    .home-nb-foot {
-        padding-left: 68px;
-    }
-    .home-nb-row {
-        grid-template-columns: 48px 1fr;
-        height: auto;
-        min-height: 72px;
-        padding: 8px 0;
-    }
-    .home-nb-time {
-        grid-column: 2;
-        padding-left: 24px;
-    }
-    .home-stat dt {
-        font-size: 34px;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .home-wrapper * {
-        transition: none !important;
-    }
+@media (max-width: 768px) {
+    .portal-topbar { display: none; }
+    .home-nav { display: none; }
+    .features-grid { grid-template-columns: 1fr; }
+    .role-tasks-list { grid-template-columns: 1fr; }
 }

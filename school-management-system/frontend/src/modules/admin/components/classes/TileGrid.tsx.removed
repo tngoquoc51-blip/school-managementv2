@@ -1,0 +1,30 @@
+'use client';
+
+import Link from 'next/link';
+import { Icon } from '../ui/Icons';
+
+export interface Tile {
+  key: string; title: string; desc: string; icon: string; tone?: string;
+  active?: boolean; onClick?: () => void; href?: string;
+}
+
+/** Lưới thẻ chức năng — cùng phong cách "Truy cập nhanh" của Dashboard. */
+export function TileGrid({ tiles }: { tiles: Tile[] }) {
+  return (
+    <div className="a-tiles">
+      {tiles.map((t) => {
+        const cls = `a-tile t-${t.tone ?? 'blue'} ${t.active ? 'on' : ''}`;
+        const body = (
+          <>
+            <span className="ti"><Icon name={t.icon} size={22} /></span>
+            <span style={{ minWidth: 0 }}><b>{t.title}</b><small>{t.desc}</small></span>
+            <span className="go" style={{ transform: 'rotate(180deg)' }}><Icon name="back" size={16} /></span>
+          </>
+        );
+        return t.href
+          ? <Link key={t.key} href={t.href} className={cls}>{body}</Link>
+          : <button key={t.key} type="button" className={cls} onClick={t.onClick}>{body}</button>;
+      })}
+    </div>
+  );
+}
