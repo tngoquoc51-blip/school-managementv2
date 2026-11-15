@@ -36,7 +36,7 @@ use App\Http\Controllers\Api\Admin\AdminNotificationController;
 use App\Http\Controllers\Api\Admin\AdminDataCheckController;
 use App\Http\Controllers\Accountant\DebtController;
 use App\Http\Controllers\Api\Admin\BackupController;
-use App\Http\Controllers\Api\BghApprovalController;
+use App\Http\Controllers\Api\BghApprovalHubController;
 use Modules\Attendance\Controllers\AttendanceController;
 use Modules\Attendance\Controllers\StudentAttendanceController;
 use App\Http\Controllers\Api\StudentAttendancePortalController;
@@ -53,11 +53,24 @@ use Modules\Logs\Controllers\AlertController;
 use Modules\Logs\Controllers\LogController;
 use Modules\Logs\Controllers\SecurityController;
 use Modules\Logs\Controllers\SettingsController;
-use Modules\Logs\Middleware\BghAccess;
 use Modules\Academic\Controllers\ClassRoomController;
 use Modules\Academic\Controllers\SmClassController;
+use Modules\Academic\Controllers\GradeWindowController;
 use Modules\Academic\Middleware\AcademicStaff;
-
+use App\Http\Controllers\Api\Bgh\PlanController;
+use App\Http\Controllers\Api\Bgh\PlanExtraController;
+use App\Http\Controllers\Api\Bgh\PlanTaskController;
+use App\Http\Controllers\Api\Admin\AdminSubjectController;
+use Modules\Logs\Middleware\BghAccess;
+use App\Http\Controllers\Api\TeacherAttendanceController;
+use App\Http\Controllers\Api\TeacherTimetableController;
+use Modules\Teacher\Controllers\TeacherController;
+use Modules\Subject\Controllers\AssignmentController;
+use Modules\Subject\Controllers\GroupController;
+use Modules\Subject\Controllers\InsightController;
+use Modules\Subject\Controllers\SubjectController;
+use App\Http\Controllers\Api\HomeroomAwardController;
+use App\Http\Controllers\Api\HomeroomReportController;
 Route::get('/health', fn () => response()->json(['status' => 'ok']));
 
 // Đăng nhập hệ thống (Sanctum / admin…)
@@ -116,6 +129,64 @@ Route::prefix('v1/accountant')->group(function () {
     Route::get('/reports', [AccountantController::class, 'reports']);
     Route::get('/students/search', [AccountantController::class, 'searchStudent']);
 });
+
+//    Controller tự kiểm tra token và vai trò quản trị. URL: /api/v1/admin/subjects...
+Route::prefix('admin/subjects')->controller(AdminSubjectController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::get('stats', 'stats');
+    Route::get('meta', 'meta');
+    Route::post('/', 'store')->middleware('throttle:60,1');
+    Route::get('{id}', 'show')->whereNumber('id');
+    Route::put('{id}', 'update')->whereNumber('id');
+    Route::delete('{id}', 'destroy')->whereNumber('id');
+    Route::post('{id}/toggle', 'toggle')->whereNumber('id');
+    Route::post('{id}/assign', 'assign')->whereNumber('id');
+    Route::put('{id}/assign/{csid}', 'reassign')->whereNumber('id')->whereNumber('csid');
+    Route::delete('{id}/assign/{csid}', 'unassign')->whereNumber('id')->whereNumber('csid');
+});
+// ===== Module Môn học (admin/subjects) → /api/v1/subject/... =====
+Route::prefix('v1/subject')
+    ->middleware(['auth:sanctum', \App\Http\Middleware\AdminAccess::class])
+    ->group(function () {
+        Route::get('meta', [SubjectController::class, 'meta']);
+
+        // Môn học
+        Route::get('subjects/export', [SubjectController::class, 'export']);
+        Route::post('subjects/import', [SubjectController::class, 'import']);
+        Route::post('subjects/bulk', [SubjectController::class, 'bulk']);
+        Route::post('subjects/reorder', [SubjectController::class, 'reorder']);
+        Route::post('subjects/{id}/duplicate', [SubjectController::class, 'duplicate'])->whereNumber('id');
+        Route::get('subjects', [SubjectController::class, 'index']);
+        Route::post('subjects', [SubjectController::class, 'store']);
+        Route::get('subjects/{id}', [SubjectController::class, 'show'])->whereNumber('id');
+        Route::put('subjects/{id}', [SubjectController::class, 'update'])->whereNumber('id');
+        Route::delete('subjects/{id}', [SubjectController::class, 'destroy'])->whereNumber('id');
+
+        // Tổ bộ môn
+        Route::get('groups', [GroupController::class, 'index']);
+        Route::post('groups', [GroupController::class, 'store']);
+        Route::put('groups/{id}', [GroupController::class, 'update'])->whereNumber('id');
+        Route::delete('groups/{id}', [GroupController::class, 'destroy'])->whereNumber('id');
+
+        // Phân công giảng dạy
+        Route::get('assignments', [AssignmentController::class, 'matrix']);
+        Route::put('assignments', [AssignmentController::class, 'assign']);
+        Route::post('assignments/bulk', [AssignmentController::class, 'assignMany']);
+        Route::post('assignments/auto', [AssignmentController::class, 'auto']);
+        Route::post('assignments/copy', [AssignmentController::class, 'copy']);
+        Route::delete('assignments/{id}', [AssignmentController::class, 'destroy'])->whereNumber('id');
+        Route::get('workload', [AssignmentController::class, 'workload']);
+
+        // Chương trình & hệ số điểm
+        Route::get('curriculum', [SubjectController::class, 'curriculum']);
+        Route::put('curriculum/{id}', [SubjectController::class, 'saveCurriculum'])->whereNumber('id');
+
+        // Tổng quan, kiểm tra toàn vẹn, thống kê, nhật ký
+        Route::get('overview', [InsightController::class, 'overview']);
+        Route::get('integrity', [InsightController::class, 'integrity']);
+        Route::get('analytics', [InsightController::class, 'analytics']);
+        Route::get('audit', [SubjectController::class, 'audit']);
+    });
 // Quản trị tài khoản + vai trò
 Route::prefix('admin')->middleware(['auth:sanctum', \App\Http\Middleware\AdminAccess::class])->group(function () {
     Route::get('/users', [UserController::class, 'index']);
@@ -173,6 +244,11 @@ Route::prefix('admin/data-hub')->middleware(['auth:sanctum', \App\Http\Middlewar
     Route::get('mappings', [DataMappingController::class, 'index']);
     Route::post('mappings', [DataMappingController::class, 'store']);
     Route::delete('mappings/{id}', [DataMappingController::class, 'destroy'])->whereNumber('id');
+});
+
+// ===== Dự giờ & Đánh giá giáo viên (/api/v1/evaluations/...) =====
+Route::prefix('v1/evaluations')->group(function () {
+    require base_path('Modules/Evaluations/Routes/api.php');
 });
 
 // Cổng học sinh cũ (Sanctum)
@@ -295,18 +371,21 @@ Route::prefix('v1/logs')->middleware(BghAccess::class)->group(function () {
     Route::get('activities', [LogController::class, 'index']);
     Route::get('activities/{id}', [LogController::class, 'show'])->whereNumber('id');
 });
-// ===== Phê duyệt Ban giám hiệu (controller tự nhận diện token nhân sự hoặc Sanctum) =====
-Route::prefix('gv/approvals')->controller(BghApprovalController::class)->group(function () {
-    Route::get('/', 'index');
-    Route::get('stats', 'stats');
-    Route::get('history', 'history');
-    Route::get('report', 'report');
-    Route::get('delegations', 'delegations');
-    Route::post('delegations', 'storeDelegation')->middleware('throttle:20,1');
-    Route::post('delegations/{id}/revoke', 'revokeDelegation')->whereNumber('id');
-    Route::post('bulk', 'bulk')->middleware('throttle:20,1');
-    Route::post('{type}/{id}/decide', 'decide')->whereNumber('id')->middleware('throttle:60,1');
-});
+// ===== Phê duyệt Ban giám hiệu =====
+Route::prefix('gv/approvals')
+    ->middleware(StaffToken::class)
+    ->controller(BghApprovalHubController::class)
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::get('stats', 'stats');
+        Route::get('history', 'history');
+        Route::get('report', 'report');
+        Route::get('delegations', 'delegations');
+        Route::post('delegations', 'storeDelegation')->middleware('throttle:20,1');
+        Route::post('delegations/{id}/revoke', 'revokeDelegation')->whereNumber('id');
+        Route::post('bulk', 'bulk')->middleware('throttle:20,1');
+        Route::post('{type}/{id}/decide', 'decide')->whereNumber('id')->middleware('throttle:60,1');
+    });
 // ===== Khu Giáo vụ / Ban giám hiệu =====
 Route::prefix('gv')->group(function () {
     Route::post('login', [AcademicApiController::class, 'login'])->middleware('throttle:20,1');
@@ -390,8 +469,41 @@ Route::prefix('gv')->group(function () {
             Route::get('assignments', [TeacherPortalController::class, 'assignments']);
             Route::get('assignments/{id}', [TeacherPortalController::class, 'assignment'])->whereNumber('id');
             Route::get('homeroom', [TeacherPortalController::class, 'homeroom']);
+            Route::get('homeroom/dashboard', [TeacherPortalController::class, 'dashboard']);
+            Route::get('homeroom/students/{id}', [TeacherPortalController::class, 'student'])->whereNumber('id');
             Route::get('homeroom/leaves', [TeacherPortalController::class, 'leaves']);
             Route::post('homeroom/leaves/{id}/review', [TeacherPortalController::class, 'reviewLeave'])->whereNumber('id')->middleware('throttle:60,1');
+
+ // Điểm danh từng tiết: nộp & khóa gửi về nhà trường
+            Route::prefix('att')->group(function () {
+                Route::get('overview', [TeacherAttendanceController::class, 'overview']);
+                Route::get('missing', [TeacherAttendanceController::class, 'missing']);
+                Route::get('week', [TeacherAttendanceController::class, 'week']);
+                Route::get('roster', [TeacherAttendanceController::class, 'roster']);
+                Route::post('save', [TeacherAttendanceController::class, 'save'])->middleware('throttle:60,1');
+                Route::post('submit', [TeacherAttendanceController::class, 'submit'])->middleware('throttle:60,1');
+                Route::post('reopen-request', [TeacherAttendanceController::class, 'reopenRequest'])->middleware('throttle:20,1');
+                Route::get('history', [TeacherAttendanceController::class, 'history']);
+                Route::get('stats', [TeacherAttendanceController::class, 'stats']);
+                Route::get('student/{id}', [TeacherAttendanceController::class, 'student'])->whereNumber('id');
+                Route::get('homeroom', [TeacherAttendanceController::class, 'homeroom']);
+            });
+
+ Route::prefix('tt')->group(function () {
+                Route::get('overview', [TeacherTimetableController::class, 'overview']);
+                Route::get('week', [TeacherTimetableController::class, 'week']);
+                Route::get('classes', [TeacherTimetableController::class, 'classes']);
+                Route::get('class/{id}', [TeacherTimetableController::class, 'classTable'])->whereNumber('id');
+                Route::get('load', [TeacherTimetableController::class, 'load']);
+                Route::get('suggest', [TeacherTimetableController::class, 'suggest']);
+                Route::get('notes', [TeacherTimetableController::class, 'notes']);
+                Route::post('notes', [TeacherTimetableController::class, 'noteSave'])->middleware('throttle:60,1');
+                Route::delete('notes/{id}', [TeacherTimetableController::class, 'noteDelete'])->whereNumber('id');
+                Route::get('requests', [TeacherTimetableController::class, 'requests']);
+                Route::post('requests', [TeacherTimetableController::class, 'requestCreate'])->middleware('throttle:20,1');
+                Route::post('requests/{id}/cancel', [TeacherTimetableController::class, 'requestCancel'])->whereNumber('id');
+                Route::post('requests/{id}/review', [TeacherTimetableController::class, 'requestReview'])->whereNumber('id');
+            });
 
             // Bài tập (giáo viên giao bài, xem bài nộp, chấm điểm)
             Route::prefix('homework')->group(function () {
@@ -407,26 +519,36 @@ Route::prefix('gv')->group(function () {
                 Route::post('{id}/comments', [TeacherHomeworkPortalController::class, 'hwReply'])->whereNumber('id')->middleware('throttle:30,1');
             });
         });
+
+        Route::prefix('homeroom/awards')->group(function () {
+            Route::get('overview', [HomeroomAwardController::class, 'overview']);
+            Route::get('types', [HomeroomAwardController::class, 'types']);
+            Route::get('periods', [HomeroomAwardController::class, 'periods']);
+            Route::get('students', [HomeroomAwardController::class, 'students']);
+            Route::get('nominations', [HomeroomAwardController::class, 'index']);
+            Route::post('nominations', [HomeroomAwardController::class, 'store']);
+            Route::post('nominations/{id}/submit', [HomeroomAwardController::class, 'submit'])->whereNumber('id');
+            Route::delete('nominations/{id}', [HomeroomAwardController::class, 'destroy'])->whereNumber('id');
+        });
+
         // ========== PHÊ DUYỆT (Ban giám hiệu) ==========
-        Route::prefix('approvals')->group(function () {
-            Route::get('overview', [BghApprovalController::class, 'apOverview']);
-            Route::get('templates', [BghApprovalController::class, 'apTemplates']);
-            Route::get('types', [BghApprovalController::class, 'apTypes']);
-            Route::put('types/{code}', [BghApprovalController::class, 'apTypeUpdate'])->where('code', '[a-z_]+');
-            Route::get('delegations', [BghApprovalController::class, 'apDelegations']);
-            Route::post('delegations', [BghApprovalController::class, 'apDelegationStore']);
-            Route::delete('delegations/{id}', [BghApprovalController::class, 'apDelegationRevoke'])->whereNumber('id');
-            Route::get('staff', [BghApprovalController::class, 'apStaff']);
-            Route::post('sync', [BghApprovalController::class, 'apSync'])->middleware('throttle:30,1');
-            Route::get('report', [BghApprovalController::class, 'apReport']);
-            Route::get('export', [BghApprovalController::class, 'apExport']);
-            Route::get('mine', [BghApprovalController::class, 'apMine']);
-            Route::post('requests', [BghApprovalController::class, 'apSubmit'])->middleware('throttle:30,1');
-            Route::post('bulk', [BghApprovalController::class, 'apBulk'])->middleware('throttle:30,1');
-            Route::get('/', [BghApprovalController::class, 'apList']);
-            Route::get('{id}', [BghApprovalController::class, 'apShow'])->whereNumber('id');
-            Route::post('{id}/decide', [BghApprovalController::class, 'apDecide'])->whereNumber('id')->middleware('throttle:60,1');
-            Route::post('{id}/comment', [BghApprovalController::class, 'apComment'])->whereNumber('id')->middleware('throttle:60,1');
+        Route::prefix('approvals')->middleware(StaffToken::class)->group(function () {
+            Route::get('overview', [BghApprovalHubController::class, 'overview']);
+            Route::get('templates', [BghApprovalHubController::class, 'templates']);
+            Route::get('types', [BghApprovalHubController::class, 'types']);
+            Route::put('types/{code}', [BghApprovalHubController::class, 'updateType'])->where('code', '[a-z_]+');
+            Route::get('delegations', [BghApprovalHubController::class, 'delegations']);
+            Route::post('delegations', [BghApprovalHubController::class, 'createDelegation'])->middleware('throttle:20,1');
+            Route::delete('delegations/{id}', [BghApprovalHubController::class, 'revokeDelegation'])->whereNumber('id');
+            Route::get('staff', [BghApprovalHubController::class, 'staff']);
+            Route::post('sync', [BghApprovalHubController::class, 'sync'])->middleware('throttle:30,1');
+            Route::get('report', [BghApprovalHubController::class, 'report']);
+            Route::get('export', [BghApprovalHubController::class, 'export']);
+            Route::post('bulk', [BghApprovalHubController::class, 'bulk'])->middleware('throttle:30,1');
+            Route::get('/', [BghApprovalHubController::class, 'list']);
+            Route::get('{id}', [BghApprovalHubController::class, 'show'])->whereNumber('id');
+            Route::post('{id}/decide', [BghApprovalHubController::class, 'decide'])->whereNumber('id')->middleware('throttle:60,1');
+            Route::post('{id}/comment', [BghApprovalHubController::class, 'comment'])->whereNumber('id')->middleware('throttle:60,1');
         });
         // ========== HỒ SƠ CỦA TÔI ==========
         Route::put('profile/contact', [AcademicApiController::class, 'updateContact']);
@@ -483,6 +605,8 @@ Route::prefix('gv/notices')->middleware(NoticeAccess::class)->group(function () 
     Route::post('templates', [GvNoticeController::class, 'templateStore']);
     Route::put('templates/{id}', [GvNoticeController::class, 'templateUpdate'])->whereNumber('id');
     Route::delete('templates/{id}', [GvNoticeController::class, 'templateDelete'])->whereNumber('id');
+    Route::get('lessons', [GvAttendanceController::class, 'lessonsIndex']);
+    Route::post('lessons/reopen', [GvAttendanceController::class, 'lessonReopen'])->middleware('throttle:60,1');
     Route::post('templates/{id}/use', [GvNoticeController::class, 'templateUse'])->whereNumber('id');
     Route::get('/', [GvNoticeController::class, 'index']);
     Route::post('/', [GvNoticeController::class, 'store'])->middleware('throttle:60,1');
@@ -520,7 +644,32 @@ Route::prefix('gv/ca')->middleware(NoticeAccess::class)->group(function () {
     Route::put('settings', [GvAttendanceController::class, 'settingsUpdate']);
 });
 
+// ===== Kế hoạch của Ban Giám hiệu (/bgh/plans): cùng quyền với Thông báo (HT / PHT / Quản trị) =====
+Route::prefix('gv/plans')->middleware(NoticeAccess::class)->group(function () {
+    Route::get('/', [PlanController::class, 'index']);
+    Route::get('stats', [PlanController::class, 'stats']);
+    Route::get('options', [PlanController::class, 'options']);
+    Route::post('from-template', [PlanController::class, 'fromTemplate']);
+    Route::post('/', [PlanController::class, 'store']);
+
+    // nhiệm vụ / liên kết theo id của chính nó (đặt trước các route {id})
+    Route::put('tasks/{task}', [PlanTaskController::class, 'update'])->whereNumber('task');
+    Route::delete('tasks/{task}', [PlanTaskController::class, 'destroy'])->whereNumber('task');
+    Route::delete('links/{link}', [PlanExtraController::class, 'deleteLink'])->whereNumber('link');
+
+    Route::get('{id}', [PlanController::class, 'show'])->whereNumber('id');
+    Route::put('{id}', [PlanController::class, 'update'])->whereNumber('id');
+    Route::delete('{id}', [PlanController::class, 'destroy'])->whereNumber('id');
+    Route::post('{id}/transition', [PlanController::class, 'transition'])->whereNumber('id');
+    Route::post('{id}/duplicate', [PlanController::class, 'duplicate'])->whereNumber('id');
+    Route::post('{id}/tasks', [PlanTaskController::class, 'store'])->whereNumber('id');
+    Route::post('{id}/comments', [PlanExtraController::class, 'comment'])->whereNumber('id');
+    Route::post('{id}/links', [PlanExtraController::class, 'addLink'])->whereNumber('id');
+});
+
 // ===== Khu Kế toán: Đợt thu / Kỳ thu =====
+// ===== Thi đua của Ban Giám hiệu (/bgh/rewards): /api/gv/rewards/... =====
+Route::prefix('gv/rewards')->group(base_path('Modules/Rewards/Routes/api.php'));
 Route::prefix('kt')->group(function () {
     Route::post('login', [FeePeriodController::class, 'login'])->middleware('throttle:20,1');
 
@@ -660,6 +809,24 @@ Route::prefix('v1/academic/class-management')
         });
     });
 
+ // Quản lý điểm — khóa/mở kỳ nhập điểm: /api/v1/academic/grade-windows
+ Route::prefix('v1/academic/grade-windows')
+     ->middleware(['auth:sanctum', AcademicStaff::class])
+     ->group(function () {
+         Route::get('overview', [GradeWindowController::class, 'overview']);
+         Route::post('open', [GradeWindowController::class, 'open']);
+         Route::post('close', [GradeWindowController::class, 'close']);
+         Route::post('exceptions', [GradeWindowController::class, 'addException']);
+         Route::delete('exceptions/{id}', [GradeWindowController::class, 'removeException'])->whereNumber('id');
+         Route::get('activity', [GradeWindowController::class, 'activity']);
+     });
+
+ // Prefix tự động: /api/v1/teacher
+ Route::apiResource('teachers', TeacherController::class);
+
+// Hồ sơ cá nhân giáo viên
+require __DIR__ . '/profile.php';
+
 // ===== Admin: Kiểm tra dữ liệu =====
 foreach (['admin/checks', 'v1/admin/checks'] as $checksPrefix) {
     Route::middleware('auth:sanctum')->prefix($checksPrefix)->group(function () {
@@ -671,6 +838,63 @@ foreach (['admin/checks', 'v1/admin/checks'] as $checksPrefix) {
 
 // ===== Admin: Nhật ký hệ thống (/admin/logs) =====
 require __DIR__ . '/system_logs.php';
+
+// ===== Cổng Giáo viên chủ nhiệm (frontend gọi /api/teacher/homeroom/...) =====
+Route::prefix('teacher')->middleware(StaffToken::class)->group(function () {
+    Route::get('homeroom/dashboard', [TeacherPortalController::class, 'dashboard']);
+    Route::get('homeroom/students/{id}', [TeacherPortalController::class, 'student'])->whereNumber('id');
+    Route::get('homeroom', [TeacherPortalController::class, 'homeroom']);
+    Route::get('homeroom/leaves', [TeacherPortalController::class, 'leaves']);
+    Route::post('homeroom/leaves/{id}/review', [TeacherPortalController::class, 'reviewLeave'])
+        ->whereNumber('id')
+        ->middleware('throttle:60,1');
+});
+
+// Alias thêm /api/v1/teacher/...
+Route::prefix('v1/teacher')->middleware(StaffToken::class)->group(function () {
+    Route::get('homeroom/dashboard', [TeacherPortalController::class, 'dashboard']);
+    Route::get('homeroom/students/{id}', [TeacherPortalController::class, 'student'])->whereNumber('id');
+    Route::get('homeroom', [TeacherPortalController::class, 'homeroom']);
+    Route::get('homeroom/leaves', [TeacherPortalController::class, 'leaves']);
+    Route::post('homeroom/leaves/{id}/review', [TeacherPortalController::class, 'reviewLeave'])
+        ->whereNumber('id')
+        ->middleware('throttle:60,1');
+});
+
+// ===== THÊM MỚI: Xét thi đua – Khen thưởng (GVCN) =====
+Route::prefix('v1/homeroom/awards')->group(function () {
+    Route::get('overview', [HomeroomAwardController::class, 'overview']);
+    Route::get('types', [HomeroomAwardController::class, 'types']);
+    Route::get('periods', [HomeroomAwardController::class, 'periods']);
+    Route::get('students', [HomeroomAwardController::class, 'students']);
+    Route::get('nominations', [HomeroomAwardController::class, 'index']);
+    Route::post('nominations', [HomeroomAwardController::class, 'store']);
+    Route::put('nominations/{id}', [HomeroomAwardController::class, 'update'])->whereNumber('id');
+    Route::post('nominations/{id}/submit', [HomeroomAwardController::class, 'submit'])->whereNumber('id');
+    Route::delete('nominations/{id}', [HomeroomAwardController::class, 'destroy'])->whereNumber('id');
+});
+
+// ===== THÊM MỚI: Báo cáo Lớp Chủ nhiệm (GVCN) =====
+Route::prefix('v1/homeroom/reports')->middleware(StaffToken::class)->group(function () {
+    Route::get('/',                [HomeroomReportController::class, 'index']);
+    Route::post('/',               [HomeroomReportController::class, 'store']);
+    Route::get('/alerts',          [HomeroomReportController::class, 'smartAlerts']);
+    Route::get('/class/{classId}/summary', [HomeroomReportController::class, 'classSummary'])->whereNumber('classId');
+
+    Route::get('/{id}',            [HomeroomReportController::class, 'show'])->whereNumber('id');
+    Route::put('/{id}',            [HomeroomReportController::class, 'update'])->whereNumber('id');
+    Route::post('/{id}/submit',    [HomeroomReportController::class, 'submit'])->whereNumber('id');
+    Route::get('/{id}/export/{format}', [HomeroomReportController::class, 'export'])
+        ->whereNumber('id')
+        ->where('format', 'pdf|excel');
+});
+
+// ===== THÊM MỚI: Thi đua - Khen thưởng (module Emulation) =====
+Route::prefix('v1/homeroom/emulation')->middleware(StaffToken::class)
+    ->group(base_path('Modules/Emulation/Routes/api.php'));
+
+// ===== Danh mục hệ thống (Catalog): /api/v1/catalog/... =====
+Route::prefix('v1/catalog')->group(base_path('Modules/Catalog/Routes/api.php'));
 
 // ===== Tự nhận cả /api/xxx lẫn /api/v1/xxx =====
 // Dùng Route::any (mọi phương thức GET/POST/PUT/DELETE) và đặt CUỐI file. Frontend gọi thiếu hoặc thừa "/v1" thì vẫn chạy, không còn lỗi "The route ... could not be found".

@@ -1,0 +1,54 @@
+<?php
+
+namespace Modules\Academic\Controllers;
+
+use Illuminate\Http\Request;
+use Modules\Academic\Services\BghCatalogService;
+
+class BghCatalogController extends BghController
+{
+    public function __construct(private BghCatalogService $svc) {}
+
+    public function subjects(Request $r)
+    {
+        return $this->success($this->svc->subjects($this->year($r), $this->sem($r)));
+    }
+
+    public function subject(Request $r, int $id)
+    {
+        return $this->run(fn () => $this->svc->subjectDetail($id, $this->year($r), $this->sem($r)));
+    }
+
+    public function groups(Request $r)
+    {
+        return $this->success($this->svc->groups($this->year($r), $this->sem($r)));
+    }
+
+    public function setGroupHead(Request $r, int $id)
+    {
+        $data = $r->validate(['teacher_id' => 'required|integer']);
+
+        return $this->run(function () use ($r, $id, $data) {
+            $this->svc->setGroupHead($id, (int) $data['teacher_id'], $this->actor($r));
+
+            return null;
+        }, 'Đã cập nhật tổ trưởng');
+    }
+
+    public function teachers(Request $r)
+    {
+        return $this->success($this->svc->teachers($this->year($r)));
+    }
+
+    public function teacher(Request $r, int $id)
+    {
+        return $this->run(fn () => $this->svc->teacherDetail($id, $this->year($r)));
+    }
+
+    public function reassign(Request $r, int $id)
+    {
+        $data = $r->validate(['teacher_id' => 'required|integer']);
+
+        return $this->run(fn () => $this->svc->reassign($id, (int) $data['teacher_id'], $this->actor($r)), 'Đã đổi giáo viên phụ trách');
+    }
+}

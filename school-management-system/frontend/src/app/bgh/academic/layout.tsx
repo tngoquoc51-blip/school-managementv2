@@ -1,0 +1,9 @@
+import './academic.css';
+import type { ReactNode } from 'react';
+import AcademicShell from '@/components/bgh-academic/Shell';
+
+export const metadata = { title: 'Chuyên môn – Ban Giám hiệu' };
+
+export default function AcademicLayout({ children }: { children: ReactNode }) {
+  return <AcademicShell>{children}</AcademicShell>;
+}

@@ -13,6 +13,10 @@ class LessonAttendanceStaffController extends Controller
 
     protected function staff(Request $r)
     {
+        if ($u = auth('sanctum')->user()) {   // đăng nhập bằng tài khoản `users` (Sanctum) – cổng giáo viên
+            $admin = method_exists($u, 'hasAnyRole') && $u->hasAnyRole(['super_admin', 'admin', 'principal', 'vice_principal', 'academic', 'giao_vu']);
+            return (object) ['id' => $u->id, 'role' => $admin ? 'academic' : 'teacher', 'teacher_id' => $u->teacher_id ?? null];
+        }
         foreach (['staff', 'staff_account', 'account', 'auth_staff'] as $k) {
             $o = $r->attributes->get($k);
             if (is_object($o) && isset($o->id) && ($row = DB::table('sm_staff_accounts')->find($o->id))) return $row;
@@ -31,7 +35,7 @@ class LessonAttendanceStaffController extends Controller
         $st = $this->staff($r);
         $cs = DB::table('sm_class_subjects')->find($d['class_subject_id']);
         abort_unless($cs, 404, 'Không tìm thấy lớp môn học.');
-        abort_unless(in_array($st->role, self::ADMIN_ROLES, true) || ($st->role === 'teacher' && (int) ($st->teacher_id ?? 0) === (int) $cs->teacher_id),
+        abort_unless(in_array($st->role, self::ADMIN_ROLES, true) || (in_array($st->role, ['teacher', 'homeroom_teacher'], true) && (int) ($st->teacher_id ?? 0) === (int) $cs->teacher_id),
             403, 'Bạn chỉ được điểm danh môn học và lớp do mình giảng dạy.');
         $ok = DB::table('sm_timetable')->where('class_id', $cs->class_id)->where('class_subject_id', $cs->id)
             ->where('period', $d['period'])->where('weekday', (int) date('N', strtotime($d['date'])) + 1)->exists();
@@ -45,7 +49,7 @@ class LessonAttendanceStaffController extends Controller
         $d = $r->validate(['date' => 'nullable|date', 'teacher_id' => 'nullable|integer']);
         $date = $d['date'] ?? date('Y-m-d');
         $st = $this->staff($r);
-        $tid = $st->role === 'teacher' ? (int) ($st->teacher_id ?? 0) : (int) ($d['teacher_id'] ?? 0);
+        $tid = in_array($st->role, ['teacher', 'homeroom_teacher'], true) ? (int) ($st->teacher_id ?? 0) : (int) ($d['teacher_id'] ?? 0);
         abort_unless($tid, 422, 'Tài khoản này chưa được liên kết với giáo viên nào.');
         $rows = DB::select("SELECT t.period, p.start_time, p.end_time, cs.id AS class_subject_id, c.name AS class_name, s.name AS subject,
               (SELECT COUNT(*) FROM sm_enrollments e WHERE e.class_id = c.id AND e.school_year_id = c.school_year_id) AS total,

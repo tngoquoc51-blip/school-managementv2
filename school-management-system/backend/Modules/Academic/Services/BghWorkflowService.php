@@ -1,0 +1,148 @@
+<?php
+
+namespace Modules\Academic\Services;
+
+use Illuminate\Support\Facades\DB;
+use Modules\Academic\Support\Bgh;
+
+/** Quy trình BGH: duyệt giáo án, dự giờ, phê duyệt đề xuất, thông báo. */
+class BghWorkflowService
+{
+    private const PLAN_LABEL = ['approved' => 'Đã duyệt', 'rejected' => 'Từ chối', 'revision' => 'Yêu cầu chỉnh sửa'];
+
+    // ---- Giáo án ----------------------------------------------------
+    public function lessonPlans(?string $status): array
+    {
+        $where = $status ? 'WHERE lp.status = ?' : '';
+        $items = DB::select(
+            "SELECT lp.id, lp.title, lp.week_no, lp.grade, lp.note, lp.status, lp.review_note, lp.reviewer_name, lp.submitted_at, lp.reviewed_at,
+                    t.id AS teacher_id, t.full_name AS teacher, s.name AS subject
+             FROM sm_lesson_plans lp JOIN sm_teachers t ON t.id = lp.teacher_id JOIN sm_subjects s ON s.id = lp.subject_id
+             $where ORDER BY FIELD(lp.status, 'pending', 'revision', 'rejected', 'approved'), lp.submitted_at DESC", $status ? [$status] : []);
+        $counts = ['pending' => 0, 'approved' => 0, 'rejected' => 0, 'revision' => 0];
+        foreach (DB::select('SELECT status, COUNT(*) AS n FROM sm_lesson_plans GROUP BY status') as $r) {
+            $counts[$r->status] = (int) $r->n;
+        }
+
+        return ['items' => $items, 'counts' => $counts];
+    }
+
+    public function reviewPlan(int $id, string $decision, ?string $note, array $actor): void
+    {
+        $p = DB::selectOne('SELECT lp.title, lp.status, t.full_name FROM sm_lesson_plans lp JOIN sm_teachers t ON t.id = lp.teacher_id WHERE lp.id = ?', [$id]);
+        if (! $p) {
+            throw new \DomainException('Không tìm thấy giáo án.');
+        }
+        DB::update(
+            'UPDATE sm_lesson_plans SET status = ?, review_note = ?, reviewer_id = ?, reviewer_name = ?, reviewed_at = ? WHERE id = ?',
+            [$decision, $note, $actor['id'] ?? null, $actor['name'] ?? null, date('Y-m-d H:i:s'), $id]);
+        $label = self::PLAN_LABEL[$decision];
+        Bgh::audit($actor, 'lesson_plan.review', "$label: {$p->title}");
+        Bgh::notify($actor, "Giáo án: $label", "{$p->full_name} – {$p->title}" . ($note ? " ($note)" : ''), 'academic', $decision === 'approved' ? 'normal' : 'high');
+    }
+
+    // ---- Dự giờ -----------------------------------------------------
+    public function observations(): array
+    {
+        $items = DB::select(
+            'SELECT o.id, o.observed_on, o.period, o.lesson_title, o.score, o.rating, o.strengths, o.improvements, o.observer_name,
+                    t.id AS teacher_id, t.full_name AS teacher, c.name AS class_name, s.name AS subject
+             FROM sm_class_observations o JOIN sm_teachers t ON t.id = o.teacher_id JOIN sm_classes c ON c.id = o.class_id JOIN sm_subjects s ON s.id = o.subject_id
+             ORDER BY o.observed_on DESC, o.id DESC');
+        $stats = DB::selectOne(
+            "SELECT COUNT(*) AS total, ROUND(AVG(score), 1) AS avg_score, SUM(rating = 'Tốt') AS tot, SUM(rating = 'Khá') AS kha, SUM(rating = 'Đạt') AS dat, SUM(rating = 'Chưa đạt') AS chua,
+                    SUM(observed_on >= CURDATE() - INTERVAL 30 DAY) AS last30 FROM sm_class_observations");
+
+        return ['items' => $items, 'stats' => $stats];
+    }
+
+    public function createObservation(array $d, array $actor): int
+    {
+        $t = DB::selectOne('SELECT full_name FROM sm_teachers WHERE id = ?', [$d['teacher_id']]);
+        $c = DB::selectOne('SELECT name FROM sm_classes WHERE id = ?', [$d['class_id']]);
+        if (! $t || ! $c || ! DB::selectOne('SELECT id FROM sm_subjects WHERE id = ?', [$d['subject_id']])) {
+            throw new \DomainException('Giáo viên, lớp hoặc môn học không hợp lệ.');
+        }
+        $score = round((float) $d['score'], 1);
+        DB::insert(
+            'INSERT INTO sm_class_observations (teacher_id, class_id, subject_id, observer_id, observer_name, observed_on, period, lesson_title, score, rating, strengths, improvements, created_at)
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            [$d['teacher_id'], $d['class_id'], $d['subject_id'], $actor['id'] ?? null, $actor['name'] ?? 'Ban Giám hiệu', $d['observed_on'], $d['period'],
+             $d['lesson_title'], $score, Bgh::ratingFromScore($score), $d['strengths'] ?? null, $d['improvements'] ?? null, date('Y-m-d H:i:s')]);
+        $id = (int) DB::getPdo()->lastInsertId();
+        Bgh::audit($actor, 'observation.create', "Dự giờ {$t->full_name} lớp {$c->name}: $score điểm");
+        Bgh::notify($actor, 'Kết quả dự giờ', "{$t->full_name} – lớp {$c->name}: {$score} điểm (" . Bgh::ratingFromScore($score) . ').', 'academic');
+
+        return $id;
+    }
+
+    // ---- Phê duyệt đề xuất ------------------------------------------
+    public function requests(?string $status): array
+    {
+        $where = $status ? 'WHERE status = ?' : '';
+        $items = DB::select("SELECT * FROM sm_academic_requests $where ORDER BY FIELD(status, 'pending', 'approved', 'rejected'), FIELD(priority, 'high', 'normal', 'low'), created_at DESC", $status ? [$status] : []);
+        foreach ($items as $r) {
+            $r->payload = $r->payload ? json_decode($r->payload, true) : null;
+            $r->auto_apply = $r->type === 'assignment_change' && ! empty($r->payload['class_subject_id']) && ! empty($r->payload['new_teacher_id']);
+        }
+        $counts = ['pending' => 0, 'approved' => 0, 'rejected' => 0];
+        foreach (DB::select('SELECT status, COUNT(*) AS n FROM sm_academic_requests GROUP BY status') as $r) {
+            $counts[$r->status] = (int) $r->n;
+        }
+
+        return ['items' => $items, 'counts' => $counts];
+    }
+
+    /** Phê duyệt: nếu là đề xuất đổi giáo viên có kèm dữ liệu thì áp dụng ngay vào phân công. */
+    public function decideRequest(int $id, string $decision, ?string $note, array $actor): array
+    {
+        return DB::transaction(function () use ($id, $decision, $note, $actor) {
+            $r = DB::selectOne('SELECT * FROM sm_academic_requests WHERE id = ? FOR UPDATE', [$id]);
+            if (! $r) {
+                throw new \DomainException('Không tìm thấy đề xuất.');
+            }
+            if ($r->status !== 'pending') {
+                throw new \DomainException('Đề xuất này đã được xử lý trước đó.');
+            }
+            $applied = null;
+            if ($decision === 'approved' && $r->type === 'assignment_change' && $r->payload) {
+                $pl = json_decode($r->payload, true);
+                if (! empty($pl['class_subject_id']) && ! empty($pl['new_teacher_id'])) {
+                    $applied = (new BghCatalogService())->reassign((int) $pl['class_subject_id'], (int) $pl['new_teacher_id'], $actor);
+                }
+            }
+            DB::update(
+                'UPDATE sm_academic_requests SET status = ?, decision_note = ?, decided_by = ?, decided_by_name = ?, decided_at = ? WHERE id = ?',
+                [$decision, $note, $actor['id'] ?? null, $actor['name'] ?? null, date('Y-m-d H:i:s'), $id]);
+            $label = $decision === 'approved' ? 'Đã phê duyệt' : 'Từ chối';
+            Bgh::audit($actor, 'request.decide', "$label: {$r->title}");
+            Bgh::notify($actor, "$label đề xuất", $r->title . ($note ? " – $note" : ''), 'academic', $decision === 'approved' ? 'normal' : 'high');
+
+            return ['applied' => $applied];
+        });
+    }
+
+    // ---- Thông báo ----------------------------------------------------
+    public function notifications(array $actor): array
+    {
+        $uid = (int) ($actor['id'] ?? 0);
+        $items = DB::select(
+            "SELECT n.id, n.title, n.body, n.type, n.priority, n.sender_name, n.created_at, (r.id IS NOT NULL) AS is_read
+             FROM sm_notifications n LEFT JOIN sm_notification_reads r ON r.notification_id = n.id AND r.user_id = ?
+             WHERE n.audience IN ('staff', 'all') ORDER BY n.created_at DESC, n.id DESC LIMIT 20", [$uid]);
+        $unread = 0;
+        foreach ($items as $n) {
+            $n->is_read = (bool) $n->is_read;
+            $unread += $n->is_read ? 0 : 1;
+        }
+
+        return ['items' => $items, 'unread' => $unread];
+    }
+
+    public function markRead(array $actor): void
+    {
+        DB::statement(
+            "INSERT IGNORE INTO sm_notification_reads (notification_id, user_id, read_at)
+             SELECT n.id, ?, NOW() FROM sm_notifications n WHERE n.audience IN ('staff', 'all')", [(int) ($actor['id'] ?? 0)]);
+    }
+}

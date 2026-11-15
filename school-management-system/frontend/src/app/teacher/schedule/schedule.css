@@ -1,0 +1,126 @@
+/* ===== Thời khóa biểu giáo viên (/teacher/schedule) — tiền tố ts-, dùng chung màu với attendance.css ===== */
+.ts .ta-btn.light.ts-on { background: rgba(16,185,129,.28); border-color: rgba(167,243,208,.7); }
+
+/* thẻ tiết học */
+.ts-slot { all: unset; box-sizing: border-box; display: flex; flex-direction: column; gap: 2px; width: 100%; padding: 8px 10px; border-radius: 12px; cursor: pointer; background: var(--cs); border-left: 4px solid var(--c); color: var(--ink); transition: transform .14s, box-shadow .14s; position: relative; }
+.ts-slot:hover { transform: translateY(-2px); box-shadow: 0 10px 22px -14px var(--c); }
+.ts-slot:focus-visible { outline: 3px solid rgba(2,132,199,.45); }
+.ts-slot b { font-size: 13px; font-weight: 800; color: var(--c); line-height: 1.25; }
+.ts-slot > span { font-size: 12px; color: var(--ink2); }
+.ts-slot em { font-style: normal; display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+.ts-slot em i { font-style: normal; font-size: 10.5px; font-weight: 700; padding: 1px 7px; border-radius: 999px; background: #fff; color: var(--mute); }
+.ts-slot em i.live { background: #059669; color: #fff; animation: ts-pulse 1.6s infinite; }
+.ts-slot em i.p { background: #fef3c7; color: #b45309; } .ts-slot em i.m { background: #e8ecf2; color: #475569; } .ts-slot em i.x { background: #ccfbf1; color: #0f766e; }
+.ts-slot em i.a.locked { background: #d1fae5; color: #047857; } .ts-slot em i.a.todo { background: #fff1f3; color: #be123c; } .ts-slot em i.a.ready, .ts-slot em i.a.draft { background: #e0f2fe; color: #0369a1; }
+.ts-slot.ended { opacity: .82; } .ts-slot.ongoing { box-shadow: 0 0 0 2px var(--c), 0 12px 26px -14px var(--c); }
+.ts-slot.moved { opacity: .55; } .ts-slot.moved b { text-decoration: line-through; }
+.ts-slot.extra { border-left-style: dashed; }
+.ts-slot.compact { padding: 6px 9px; }
+@keyframes ts-pulse { 50% { opacity: .55; } }
+
+/* lưới tuần */
+.ts-gridwrap { overflow-x: auto; padding-bottom: 4px; }
+.ts-grid { display: grid; grid-template-columns: 78px repeat(6, minmax(138px, 1fr)); gap: 8px; min-width: 940px; }
+.ts-dh { text-align: center; padding: 9px 6px; border-radius: 12px; background: #fff; border: 1px solid var(--line); font-weight: 800; }
+.ts-dh small { display: block; font-weight: 600; color: var(--mute); font-size: 11.5px; }
+.ts-dh.today { background: linear-gradient(135deg,#0284c7,#0ea5e9); color: #fff; border-color: transparent; } .ts-dh.today small { color: rgba(255,255,255,.85); }
+.ts-ph { display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 12px; background: var(--soft); border: 1px solid var(--line); font-weight: 800; font-size: 12.5px; padding: 6px 2px; text-align: center; }
+.ts-ph small { font-weight: 600; color: var(--mute); font-size: 11px; } .ts-ph.now { background: #d1fae5; border-color: #6ee7b7; color: #047857; }
+.ts-cell { min-height: 84px; display: flex; flex-direction: column; gap: 6px; padding: 4px; border-radius: 12px; border: 1px dashed #cfe0ee; }
+.ts-cell.today { background: rgba(224,242,254,.5); }
+.ts-cell:empty::after, .ts-cell .none { content: ""; }
+.ts-cell .none { display: grid; place-items: center; flex: 1; color: #b6c8d8; font-size: 18px; }
+
+/* danh sách theo ngày */
+.ts-days { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+.ts-day { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.ts-day.today { box-shadow: 0 0 0 2px #38bdf8; }
+.ts-day > h4 { font-size: 14px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
+.ts-row { display: grid; grid-template-columns: 54px 1fr; gap: 8px; align-items: stretch; }
+.ts-row > span { display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--soft); border-radius: 10px; font-size: 12px; font-weight: 800; } .ts-row > span small { color: var(--mute); font-weight: 600; font-size: 10.5px; }
+
+/* tổng quan */
+.ts-next { display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center; padding: 20px 22px; border-radius: 20px; color: #fff; background: linear-gradient(120deg,#082f49,#075985 55%,#0284c7); position: relative; overflow: hidden; }
+.ts-next::after { content: ""; position: absolute; right: -60px; top: -80px; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.22), transparent 70%); }
+.ts-next.live { background: linear-gradient(120deg,#064e3b,#047857 55%,#059669); }
+.ts-next.none { background: linear-gradient(120deg,#334155,#475569); }
+.ts-next .big { width: 64px; height: 64px; border-radius: 20px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35); display: grid; place-items: center; font-size: 26px; font-weight: 800; }
+.ts .ts-next small { color: rgba(255,255,255,.88); font-weight: 600; } .ts-next h2 { font-size: 22px; font-weight: 800; margin: 2px 0; } .ts-next p { opacity: .92; }
+.ts-next .acts { display: flex; gap: 8px; flex-wrap: wrap; position: relative; z-index: 1; }
+.ts-prog { height: 7px; background: rgba(255,255,255,.3); border-radius: 999px; margin-top: 10px; overflow: hidden; max-width: 340px; } .ts-prog i { display: block; height: 100%; background: #fff; border-radius: 999px; }
+.ts-tl { display: flex; flex-direction: column; gap: 10px; position: relative; }
+.ts-tl-i { display: grid; grid-template-columns: 74px 18px 1fr; gap: 10px; align-items: stretch; }
+.ts-tl-t { text-align: right; font-weight: 800; font-size: 13px; padding-top: 8px; } .ts-tl-t small { display: block; color: var(--mute); font-weight: 600; font-size: 11.5px; }
+.ts-tl-d { position: relative; } .ts-tl-d::before { content: ""; position: absolute; left: 8px; top: 0; bottom: -10px; width: 2px; background: var(--line); }
+.ts-tl-d i { position: absolute; left: 3px; top: 12px; width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 3px solid #94a3b8; }
+.ts-tl-i.ongoing .ts-tl-d i { border-color: #059669; box-shadow: 0 0 0 5px rgba(5,150,105,.2); } .ts-tl-i.upcoming .ts-tl-d i { border-color: #0284c7; }
+.ts-tl-i:last-child .ts-tl-d::before { display: none; }
+.ts-bars { display: flex; align-items: flex-end; gap: 10px; height: 150px; padding-top: 8px; }
+.ts-bars > div { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; }
+.ts-bars i { width: 100%; max-width: 46px; border-radius: 9px 9px 4px 4px; background: linear-gradient(180deg,#38bdf8,#0284c7); display: block; min-height: 4px; }
+.ts-bars .on i { background: linear-gradient(180deg,#34d399,#059669); } .ts-bars b { font-size: 13px; } .ts-bars small { font-size: 11.5px; color: var(--mute); }
+.ts-quick { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+.ts-quick a { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 14px; background: var(--soft); border: 1px solid var(--line); text-decoration: none; color: var(--ink); font-weight: 700; font-size: 13px; transition: transform .14s, border-color .14s; }
+.ts-quick a:hover { transform: translateY(-2px); border-color: #38bdf8; } .ts-quick a small { display: block; color: var(--mute); font-weight: 500; }
+.ts-quick .ic { width: 36px; height: 36px; border-radius: 11px; background: #e0f2fe; color: #0369a1; display: grid; place-items: center; flex: none; }
+
+/* ngăn chi tiết */
+.ts-dr-hero { display: flex; flex-direction: column; gap: 2px; padding: 16px 18px; border-radius: 16px; background: var(--cs); border-left: 5px solid var(--c); }
+.ts-dr-hero span { font-size: 12px; font-weight: 700; color: var(--c); } .ts-dr-hero b { font-size: 24px; font-weight: 800; } .ts-dr-hero em { font-style: normal; color: var(--ink2); }
+.ts-dr-tags { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+.ts-banner { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 12px; background: var(--cs); color: var(--c); margin-bottom: 12px; font-size: 13px; } .ts-banner small { color: var(--ink2); }
+.ts-dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; } .ts-dl div { background: var(--soft); border-radius: 12px; padding: 10px 12px; } .ts-dl dt { font-size: 11.5px; color: var(--mute); font-weight: 600; } .ts-dl dd { margin: 2px 0 0; font-weight: 800; font-size: 13px; }
+.ts-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ts-acts > * { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: #fff; font-weight: 700; font-size: 13px; color: var(--ink2); text-decoration: none; cursor: pointer; }
+.ts-acts > *:hover { border-color: #38bdf8; background: #f0f9ff; }
+.ts .ts-h4 { font-size: 13.5px; font-weight: 800; margin: 20px 0 8px; }
+.ts-reqbtn { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px; }
+.ts-reqbtn button { display: flex; align-items: center; gap: 7px; justify-content: center; padding: 9px; border-radius: 12px; border: 1px solid transparent; background: var(--cs); color: var(--c); font-weight: 700; font-size: 13px; }
+.ts-reqbtn button:hover:not(:disabled) { box-shadow: 0 6px 14px -8px var(--c); }
+.ts-notes-mini { display: flex; flex-direction: column; gap: 8px; } .ts-notes-mini li { padding: 10px 12px; border-radius: 12px; background: var(--cs); border-left: 4px solid var(--c); } .ts-notes-mini p { font-size: 12.5px; white-space: pre-wrap; margin: 3px 0; } .ts-notes-mini small { color: var(--mute); }
+
+/* hộp thoại yêu cầu / chọn tiết */
+.ts-src { display: flex; flex-direction: column; padding: 12px 14px; border-radius: 14px; background: var(--cs); border-left: 5px solid var(--c); margin-bottom: 14px; } .ts-src b { color: var(--c); } .ts-src span { font-size: 12.5px; color: var(--ink2); }
+.ts-kinds { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 14px; }
+.ts-kinds button { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; text-align: left; padding: 10px 12px; border-radius: 14px; border: 2px solid var(--line); background: #fff; color: var(--c); } .ts-kinds button small { color: var(--mute); font-size: 11.5px; }
+.ts-kinds button b { color: var(--ink); } .ts-kinds button.on { border-color: var(--c); background: var(--cs); }
+.ts-sugbox { background: var(--soft); border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; max-height: 250px; overflow: auto; } .ts-sugbox h4 { font-size: 13px; margin-bottom: 8px; }
+.ts-sugrow { display: flex; gap: 10px; align-items: center; padding: 5px 0; border-top: 1px dashed var(--line); } .ts-sugrow > span { width: 78px; font-weight: 700; font-size: 12.5px; flex: none; } .ts-sugrow > div { display: flex; flex-wrap: wrap; gap: 6px; }
+.ts-sugrow button { padding: 5px 11px; border-radius: 999px; border: 1px solid var(--line); background: #fff; font-size: 12.5px; font-weight: 600; } .ts-sugrow button.on { background: #0284c7; color: #fff; border-color: #0284c7; }
+.ts-pick-top { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; } .ts-pick-top input { border: 1px solid var(--line); border-radius: 10px; padding: 7px 10px; }
+.ts-pick { display: flex; flex-direction: column; gap: 8px; } .ts-pick button { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--cs); border-left: 5px solid var(--c); color: var(--c); }
+.ts-pick .pn { font-weight: 800; width: 52px; } .ts-pick .tx { flex: 1; display: flex; flex-direction: column; } .ts-pick .tx b { color: var(--ink); } .ts-pick .tx small { color: var(--ink2); }
+.ts-row2 { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 8px; } .ts-lbl { display: block; font-weight: 700; font-size: 12.5px; color: var(--ink2); margin-bottom: 6px; }
+.ts-colors { display: flex; gap: 6px; } .ts-colors button { width: 26px; height: 26px; border-radius: 50%; border: 3px solid #fff; background: var(--c); box-shadow: 0 0 0 1px var(--line); } .ts-colors button.on { box-shadow: 0 0 0 3px var(--c); }
+
+/* bảng lớp mini */
+.ts-mini { overflow-x: auto; } .ts-mini table { border-collapse: separate; border-spacing: 5px; width: 100%; min-width: 560px; } .ts-mini th { font-size: 12px; font-weight: 800; color: var(--ink2); padding: 4px; } .ts-mini th small { display: block; font-weight: 500; color: var(--mute); }
+.ts-mini td { vertical-align: top; min-width: 86px; } .ts-mini td div { padding: 6px 8px; border-radius: 10px; background: var(--cs); border-left: 3px solid var(--c); } .ts-mini td div.mine { box-shadow: 0 0 0 2px var(--c); }
+.ts-mini td b { display: block; font-size: 12px; color: var(--c); } .ts-mini td small { color: var(--ink2); font-size: 11px; } .ts-dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; box-shadow: 0 0 0 2px #0284c7; vertical-align: middle; }
+
+/* lớp của tôi */
+.ts-classes { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.ts-cls { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.ts-cls header { display: flex; justify-content: space-between; align-items: center; gap: 8px; } .ts-cls header h3 { font-size: 18px; font-weight: 800; }
+.ts-cls ul { display: flex; flex-direction: column; gap: 6px; } .ts-cls li { display: flex; justify-content: space-between; gap: 8px; padding: 6px 10px; border-radius: 10px; background: var(--cs); color: var(--c); font-weight: 700; font-size: 13px; border-left: 4px solid var(--c); } .ts-cls li small { color: var(--ink2); font-weight: 600; }
+.ts-cls .foot { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+
+/* khối lượng */
+.ts-heat { display: grid; gap: 6px; } .ts-heat .c { border-radius: 10px; padding: 8px 6px; text-align: center; font-size: 11.5px; min-height: 52px; display: flex; flex-direction: column; justify-content: center; }
+.ts-heat .busy { background: #e0f2fe; color: #075985; font-weight: 700; } .ts-heat .free { background: #ecfdf5; color: #047857; border: 1px dashed #6ee7b7; } .ts-heat .h { background: transparent; font-weight: 800; color: var(--ink2); min-height: 0; padding: 4px; }
+.ts-hbar { display: grid; grid-template-columns: 160px 1fr 44px; gap: 10px; align-items: center; padding: 6px 0; font-size: 13px; } .ts-hbar span { font-weight: 600; } .ts-hbar span small { display: block; color: var(--mute); font-weight: 500; }
+
+/* yêu cầu / ghi chú */
+.ts-reqs { display: flex; flex-direction: column; gap: 12px; }
+.ts-req { display: grid; grid-template-columns: 46px 1fr auto; gap: 14px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 14px 16px; }
+.ts-req .ic { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: var(--cs); color: var(--c); } .ts-req h4 { font-size: 14.5px; font-weight: 800; } .ts-req p { color: var(--ink2); font-size: 13px; margin-top: 2px; } .ts-req .meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 6px; }
+.ts-req .note { margin-top: 6px; font-size: 12.5px; padding: 6px 10px; border-radius: 10px; background: var(--soft); }
+.ts-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.ts-nc { border-radius: 16px; padding: 14px 16px; background: var(--cs); border-top: 5px solid var(--c); display: flex; flex-direction: column; gap: 6px; box-shadow: 0 10px 22px -18px var(--c); }
+.ts-nc h4 { font-size: 14.5px; font-weight: 800; color: var(--ink); } .ts-nc p { white-space: pre-wrap; font-size: 13px; color: var(--ink2); } .ts-nc .tags { display: flex; gap: 6px; flex-wrap: wrap; } .ts-nc .tags span { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: #fff; color: var(--c); }
+.ts-nc footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; color: var(--mute); font-size: 11.5px; } .ts-nc footer div { display: flex; gap: 4px; }
+.ts-nc footer button { background: #fff; border: 0; border-radius: 8px; width: 28px; height: 28px; display: grid; place-items: center; color: var(--ink2); }
+
+.ts-printhead { display: none; }
+@media (max-width: 900px) { .ts-next { grid-template-columns: 1fr; } .ts-req { grid-template-columns: 1fr; } .ts-hbar { grid-template-columns: 110px 1fr 36px; } }
+@media print { .ts-printhead { display: block; } .ts-gridwrap { overflow: visible; } .ts-grid { min-width: 0; } .ts-slot { break-inside: avoid; } }

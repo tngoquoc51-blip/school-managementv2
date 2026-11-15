@@ -1,0 +1,58 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use App\Support\AcademicRepo;
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+/**
+ * Xác thực nhân viên nhà trường (Giáo vụ / Hiệu trưởng / Phó HT / Quản trị) bằng Bearer token.
+ * Dùng:  StaffToken::class  (mọi vai trò được phép, xem AcademicRepo::ROLES)
+ */
+class StaffToken
+{
+    public function handle(Request $request, Closure $next)
+    {
+        $token = $request->bearerToken();
+        $staff = (new AcademicRepo(DB::connection()->getPdo()))->authenticate($token);
+
+        if (!$staff) {
+            return response()->json(['message' => 'Phiên đăng nhập không hợp lệ hoặc đã hết hạn.'], 401);
+        }
+
+        // Giao vien chi duoc dung cac API cua cong giao vien (khong duoc vao chuc nang Giao vu / Quan tri)
+        if (($staff['role'] ?? '') === 'teacher' && !$this->teacherAllowed($request)) {
+            return response()->json(['message' => 'Tai khoan giao vien khong co quyen truy cap chuc nang nay.'], 403);
+        }
+
+        $request->attributes->set('sm_staff', $staff);
+        $request->attributes->set('sm_staff_token', $token);
+
+        return $next($request);
+    }
+
+    /** Danh sach API cho phep voi vai tro teacher. Them dong moi o day neu cong giao vien can API khac. */
+    private function teacherAllowed(Request $request): bool
+    {
+        $method = $request->method();
+        $p = preg_replace('#^api/(v1/)?#', '', trim($request->path(), '/'));
+
+        if (preg_match('#^gv/(teacher|attendance)/#', $p)) {
+            return true;
+        }
+        if (in_array($p, ['gv/me', 'gv/logout', 'gv/change-password', 'gv/activity', 'gv/profile/contact', 'gv/security', 'gv/security/revoke-others'], true)) {
+            return true;
+        }
+        if (preg_match('#^gv/security/sessions/\d+/revoke$#', $p)) {
+            return true;
+        }
+        if (in_array($method, ['GET', 'HEAD'], true) && $p === 'gv/notifications') {
+            return true;
+        }
+        if ($method === 'POST' && preg_match('#^gv/notifications/(read-all|\d+/read)$#', $p)) {
+            return true;
+        }
+        return false;
+    }}

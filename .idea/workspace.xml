@@ -5,34 +5,355 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="697b4476-35a9-45e0-8e56-10612acca154" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Approval/Services/ApprovalService.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/GvAttendanceController.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/_ca.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/_student.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/attendance.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/bao-cao/page.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/canh-bao/page.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/diem-danh/page.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/don-nghi/page.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/layout.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/lop/page.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/page.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/approvals/ApprovalsApp.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/approvals/DetailPane.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/approvals/Panels.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/approvals/approvals.module.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/approvals/ui.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/services/bghApproval.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Academic/Controllers/BghController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Academic/Controllers/GradeWindowController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Academic/Database/Migrations/2026_11_02_000001_create_academic_bgh_tables.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Academic/Database/Migrations/2026_11_10_000030_create_grade_windows_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Academic/Repositories/GradeWindowRepository.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Academic/Services/GradeWindowService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Academic/Support/Bgh.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Controllers/AuditLogController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Controllers/CatalogController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Controllers/DepartmentController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Controllers/GroupController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Controllers/ItemController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Controllers/OverviewController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Controllers/RoomController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Controllers/SubjectController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Controllers/UserDirectoryController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Database/Migrations/2026_11_02_000001_create_catalog_tables.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Database/Seeders/CatalogSeeder.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Database/Seeders/catalog_seed.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Exceptions/CatalogException.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Models/AuditLog.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Models/CatalogGroup.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Models/CatalogItem.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Models/CatalogModel.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Models/Department.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Models/Room.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Models/Subject.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Repositories/CatalogRepository.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Repositories/DepartmentRepository.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Repositories/GroupRepository.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Repositories/ItemRepository.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Repositories/RoomRepository.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Repositories/SubjectRepository.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Requests/BulkRequest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Requests/CatalogFormRequest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Requests/DepartmentRequest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Requests/GroupRequest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Requests/ImportItemsRequest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Requests/ItemRequest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Requests/RoomRequest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Requests/SubjectRequest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Resources/AuditLogResource.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Resources/DepartmentResource.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Resources/GroupResource.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Resources/ItemResource.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Resources/RoomResource.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Resources/SubjectResource.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Routes/api.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Services/AuditService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Services/CatalogService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Services/DepartmentService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Services/GroupService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Services/ItemService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Services/OverviewService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Services/RoomService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Catalog/Services/UserDirectoryService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Emulation/Exceptions/EmuException.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Emulation/Middleware/EmulationAuth.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Emulation/Routes/api.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Emulation/Services/EmulationService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Evaluations/Controllers/ActionController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Evaluations/Controllers/ObservationController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Evaluations/Controllers/OverviewController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Evaluations/Controllers/PeriodicController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Evaluations/Controllers/PlanController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Evaluations/Controllers/RubricController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Evaluations/Controllers/SettingsController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Evaluations/Repositories/EvalRepository.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Evaluations/Routes/api.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Evaluations/Services/ScoringService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Evaluations/Support/EvalAudit.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Rewards/Controllers/AwardController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Rewards/Controllers/AwardTypeController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Rewards/Controllers/CriteriaController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Rewards/Controllers/EmulationController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Rewards/Database/Migrations/2026_11_12_000001_create_emulation_tables.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Rewards/Middleware/EmulationAccess.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Rewards/Routes/api.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Rewards/Services/EmulationLogger.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Rewards/Services/RankingService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Subject/Controllers/AssignmentController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Subject/Controllers/GroupController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Subject/Controllers/InsightController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Subject/Controllers/SubjectController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Subject/Requests/SubjectRequest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Subject/Services/AssignmentService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Subject/Services/InsightService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Subject/Services/SubjectService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Subject/Support/Audit.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Teacher/Controllers/TeacherProfileController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Teacher/Requests/UpdateTeacherInfoRequest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Teacher/Routes/profile.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Teacher/Services/TeacherProfileService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/Admin/AdminSubjectController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/Bgh/BasePlanController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/Bgh/PlanController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/Bgh/PlanExtraController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/Bgh/PlanTaskController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/HomeroomAwardController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/TeacherAttendanceController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/TeacherTimetableController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Models/AwardPeriod.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Models/AwardTitle.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/app/Services/Plans/PlanService.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/config/school_plans.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/config/subject.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/database/migrations/2026_11_05_000001_create_school_plans_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/database/migrations/2026_11_05_000002_create_school_plan_tasks_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/database/migrations/2026_11_05_000003_create_school_plan_activities_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/database/migrations/2026_11_05_000004_create_school_plan_links_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/database/seeders/SchoolPlanDemoSeeder.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/backend/routes/profile.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/categories/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/grades/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/subjects/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/academic/academic.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/academic/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/tiet-hoc/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/discipline/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/emulation/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/evaluations/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/exams/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/lesson-plans/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/observations/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/plans/_components/ConnectionPanel.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/plans/_components/Dashboard.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/plans/_components/PlanBoard.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/plans/_components/PlanDrawer.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/plans/_components/PlanForm.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/plans/_components/PlanHub.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/plans/_components/PlanList.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/plans/_components/PlanTimeline.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/plans/_components/ui.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/plans/_lib/api.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/plans/_lib/http.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/plans/_lib/toast.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/plans/_lib/types.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/plans/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/plans/plans.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/results/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/rewards/ClassDrawer.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/rewards/RewardsApp.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/rewards/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/rewards/rewards.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/rewards/ui.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/rewards/views/AwardTypes.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/rewards/views/Awards.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/rewards/views/AwardsHome.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/rewards/views/Criteria.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/rewards/views/Honor.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/rewards/views/Logs.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/rewards/views/Overview.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/rewards/views/Ranking.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/rewards/views/Scoring.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/subjects/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/teachers/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/timetable/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/awards/awards.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/awards/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/dashboard/dashboard.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/dashboard/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/layout.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/profile/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/reports/[id]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/reports/components/AcademicSection.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/reports/components/AttendanceSection.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/reports/components/ConductSection.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/reports/components/DisciplineSection.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/reports/components/ExportButtons.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/reports/components/ReportCard.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/reports/components/SmartAlert.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/reports/components/StatusBadge.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/reports/create/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/reports/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/reports/reports.module.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/homeroom/rewards/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/attendance/_lesson.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/attendance/_ta.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/attendance/attendance.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/attendance/chu-nhiem/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/attendance/layout.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/attendance/lich-su/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/attendance/lich/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/attendance/thong-ke/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/attendance/tiet/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/schedule/_tk.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/schedule/ghi-chu/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/schedule/khoi-luong/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/schedule/layout.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/schedule/lop/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/schedule/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/schedule/schedule.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/schedule/tuan/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/schedule/yeu-cau/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/components/Toast.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/components/academic/Shell.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/components/academic/TimetableMini.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/components/academic/ui.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/components/toast.module.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/homeroom-layout.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/lib/academic.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/lib/apiClient.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/CategoriesPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/catalogApi.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/categories.module.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/components/Feedback.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/components/FormDrawer.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/components/Icon.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/components/ImportDialog.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/components/ResourceManager.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/components/ui.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/constants.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/csv.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/hooks/useDebounce.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/hooks/useResourceList.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/tabs/AuditTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/tabs/DepartmentsTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/tabs/LookupsTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/tabs/OverviewTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/tabs/RolesTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/tabs/RoomsTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/tabs/SubjectsTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/tabs/UsersTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/categories/types.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/components/grades/ExceptionsModal.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/components/grades/GradeActivityLog.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/components/grades/SemesterWindowCard.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/pages/GradeWindowsPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/pages/SubjectsPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/pages/subjects.module.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/services/gradeService.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/services/subjectService.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/SubjectsPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/api.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/csv.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/subjects.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/tabs/AnalyticsTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/tabs/AssignmentTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/tabs/AuditTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/tabs/CurriculumTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/tabs/GroupsTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/tabs/ImportModal.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/tabs/IntegrityTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/tabs/ListTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/tabs/OverviewTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/tabs/SubjectDrawer.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/tabs/SubjectForm.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/tabs/WorkloadTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/tabs/shared.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/theme.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/types.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/ui/Charts.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/ui/Confirm.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/ui/Icon.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/ui/Modal.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/subjects/ui/Toast.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/types/grades.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/EvalApp.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/api.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/components/ActionDialog.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/components/ObsCreateDialog.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/components/ObservationDrawer.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/components/PlanDialog.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/components/TeacherDrawer.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/components/bits.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/components/ctx.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/evaluations.module.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/format.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/tabs/ActionsTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/tabs/ObservationsTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/tabs/OverviewTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/tabs/PeriodicTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/tabs/PlansTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/tabs/ReportsTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/tabs/RubricsTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/tabs/SettingsTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/tabs/TeachersTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/evaluations/types.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/rewards/rewardsService.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/rewards/types.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/homeroom/awards/awards.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/homeroom/awards/awardsService.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/homeroom/awards/components/ActivityTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/homeroom/awards/components/Charts.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/homeroom/awards/components/CommandPalette.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/homeroom/awards/components/CriteriaTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/homeroom/awards/components/LeaderboardTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/homeroom/awards/components/Overlay.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/homeroom/awards/components/OverviewTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/homeroom/awards/components/ProposalsTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/homeroom/awards/components/ScoringTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/homeroom/awards/components/StudentDrawer.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/homeroom/awards/components/Toast.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/homeroom/awards/components/icons.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/homeroom/awards/components/ui.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/homeroom/awards/types.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/homeroom/awards/utils.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/teacher/profile/TeacherProfileScreen.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/teacher/profile/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/teacher/profile/profile.module.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/teacher/profile/tabs/ActivityTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/teacher/profile/tabs/OverviewTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/teacher/profile/tabs/PersonalTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/teacher/profile/tabs/QualificationsTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/teacher/profile/tabs/RequestsTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/teacher/profile/tabs/SecurityTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/teacher/profile/tabs/SettingsTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/teacher/profile/tabs/TeachingTab.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/teacher/profile/types.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/teacher/profile/ui.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/services/homeroomPortal.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/services/homeroomReportService.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/services/teacherProfileService.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/school-management-system/frontend/src/types/homeroom-report.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/backend/Modules/Academic/Controllers/SmClassController.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Academic/Controllers/SmClassController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/backend/Modules/Academic/Routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Academic/Routes/api.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/backend/Modules/Logs/Middleware/AuditAll.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Logs/Middleware/AuditAll.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/backend/Modules/Teacher/Routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/Modules/Teacher/Routes/api.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/BghApprovalController.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/GvAttendanceController.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/GvAttendanceController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/LessonAttendanceStaffController.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/LessonAttendanceStaffController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/TeacherHomeworkPortalController.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/TeacherHomeworkPortalController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/TeacherPortalController.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Controllers/Api/TeacherPortalController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Http/Middleware/RequireSystemAdmin.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Middleware/RequireSystemAdmin.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Http/Middleware/StaffToken.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Http/Middleware/StaffToken.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/backend/app/Support/AcademicRepo.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/app/Support/AcademicRepo.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/backend/bootstrap/providers.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/bootstrap/providers.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/school-management-system/backend/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/backend/routes/api.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/classes/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/classes/[id]/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/classes/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/classes/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/approvals/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/approvals/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/home.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/home.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/admin-layout.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/admin-layout.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/pages/ClassesPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/pages/ClassesPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/next.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/next.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/health/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/admin/health/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/attendance/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/notices/ soan/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/notices/notices.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/notices/notices.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/notices/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/bgh/notices/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/login/bgh/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/login/bgh/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/login/teacher/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/login/teacher/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/attendance/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/attendance/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/BGHLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/BGHLayout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/HomeroomLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/layouts/HomeroomLayout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/logs/logsApi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/admin/logs/logsApi.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/approvals/ApprovalsApp.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/approvals/ApprovalsApp.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/services/approvalService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/modules/bgh/services/approvalService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/services/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/services/api.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/school-management-system/frontend/src/styles/admin.css" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/frontend/src/styles/admin.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/main.csv" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/main.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/tai-khoan- giao-vien-bo-mon.csv" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/tai-khoan- giao-vien-bo-mon.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/school-management-system/tai-khoan-giao-vien-chu-nhiem.csv" beforeDir="false" afterPath="$PROJECT_DIR$/school-management-system/tai-khoan-giao-vien-chu-nhiem.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,6 +436,17 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
@@ -140,8 +472,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/school-management-system/frontend/src/app/teacher/attendance/page.tsx</url>
-          <line>21</line>
+          <line>56</line>
           <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/school-management-system/frontend/src/modules/teacher/profile/TeacherProfileScreen.tsx</url>
+          <line>157</line>
+          <option name="timeStamp" value="6" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

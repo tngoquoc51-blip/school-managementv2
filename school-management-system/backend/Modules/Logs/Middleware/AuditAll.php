@@ -46,6 +46,9 @@ class AuditAll
         }
 
         $code = $response->getStatusCode();
+        if (preg_match('#^evaluations(/|$)#', $path) && $code < 400) {
+            return; // module Dự giờ & Đánh giá tự ghi nhật ký nghiệp vụ chi tiết (EvalAudit) — không ghi trùng
+        }
         $write = in_array($r->method(), ['POST', 'PUT', 'PATCH', 'DELETE'], true);
         $isLogin = $r->isMethod('POST') && preg_match('#^(auth|gv|kt|hs)/login$#', $path);
 
@@ -131,7 +134,7 @@ class AuditAll
         if ($has('#(^|/)(grades|exams)(/|$)#')) return 'exam';
         if ($has('#(^|/)reports(/|$)#')) return 'report';
         if ($has('#^gv/students|^hs/(profile|change-password)|profile-requests#')) return 'student';
-        if ($has('#^gv/teacher|homework#')) return 'teacher';
+        if ($has('#^gv/teacher|homework|^evaluations#')) return 'teacher';
         if ($has('#^gv/(classes|assignments|timetable|promotion)#')) return 'academic';
         if ($has('#security|^admin/roles|^admin/users#')) return 'security';
         return 'system';

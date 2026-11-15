@@ -1,0 +1,89 @@
+<?php
+
+namespace Modules\Academic\Services;
+
+use Illuminate\Support\Facades\DB;
+use Modules\Academic\Support\Bgh;
+
+/** Kỳ thi & lịch thi theo khối / môn. */
+class BghExamScheduleService
+{
+    public function periods(int $year): array
+    {
+        return DB::select(
+            'SELECT p.id, p.code, p.name, p.semester, p.grade, p.start_date, p.end_date,
+                (SELECT COUNT(*) FROM sm_exam_schedules es WHERE es.exam_period_id = p.id) AS schedule_count,
+                (SELECT COUNT(DISTINCT es.grade) FROM sm_exam_schedules es WHERE es.exam_period_id = p.id) AS grade_count
+             FROM sm_exam_periods p WHERE p.school_year_id = ? ORDER BY p.start_date', [$year]);
+    }
+
+    public function schedule(int $periodId): array
+    {
+        $period = DB::selectOne('SELECT id, code, name, semester, start_date, end_date FROM sm_exam_periods WHERE id = ?', [$periodId]);
+        if (! $period) {
+            throw new \DomainException('Không tìm thấy kỳ thi.');
+        }
+        $rows = DB::select(
+            'SELECT es.id, es.grade, es.subject_id, s.name AS subject, s.code, es.exam_date, es.start_time, es.duration_minutes, es.exam_format,
+                    TIME_FORMAT(ADDTIME(es.start_time, SEC_TO_TIME(es.duration_minutes * 60)), "%H:%i:%s") AS end_time
+             FROM sm_exam_schedules es JOIN sm_subjects s ON s.id = es.subject_id
+             WHERE es.exam_period_id = ? ORDER BY es.exam_date, es.start_time, es.grade', [$periodId]);
+
+        // Phát hiện trùng giờ trong cùng một khối.
+        $conflicts = [];
+        foreach ($rows as $i => $a) {
+            foreach (array_slice($rows, $i + 1) as $b) {
+                if ($a->grade === $b->grade && $a->exam_date === $b->exam_date && $a->start_time < $b->end_time && $b->start_time < $a->end_time) {
+                    $conflicts[] = ['ids' => [$a->id, $b->id], 'text' => "Khối {$a->grade}: {$a->subject} và {$b->subject} trùng giờ ngày {$a->exam_date}"];
+                }
+            }
+        }
+
+        return ['period' => $period, 'items' => $rows, 'conflicts' => $conflicts];
+    }
+
+    public function save(int $periodId, array $d, array $actor): array
+    {
+        $p = DB::selectOne('SELECT id, name, start_date, end_date FROM sm_exam_periods WHERE id = ?', [$periodId]);
+        if (! $p) {
+            throw new \DomainException('Không tìm thấy kỳ thi.');
+        }
+        if ($d['exam_date'] < $p->start_date || $d['exam_date'] > $p->end_date) {
+            throw new \DomainException("Ngày thi phải nằm trong kỳ thi ({$p->start_date} → {$p->end_date}).");
+        }
+        $subject = DB::selectOne('SELECT name FROM sm_subjects WHERE id = ?', [$d['subject_id']]);
+        if (! $subject) {
+            throw new \DomainException('Môn thi không tồn tại.');
+        }
+
+        $overlap = DB::selectOne(
+            'SELECT s.name FROM sm_exam_schedules es JOIN sm_subjects s ON s.id = es.subject_id
+             WHERE es.exam_period_id = ? AND es.grade = ? AND es.exam_date = ? AND es.subject_id <> ?
+               AND es.start_time < ADDTIME(?, SEC_TO_TIME(? * 60)) AND ? < ADDTIME(es.start_time, SEC_TO_TIME(es.duration_minutes * 60)) LIMIT 1',
+            [$periodId, $d['grade'], $d['exam_date'], $d['subject_id'], $d['start_time'], $d['duration_minutes'], $d['start_time']]);
+        if ($overlap) {
+            throw new \DomainException("Khối {$d['grade']} đã có môn {$overlap->name} trùng khung giờ này.");
+        }
+
+        DB::statement(
+            'INSERT INTO sm_exam_schedules (exam_period_id, grade, subject_id, exam_date, start_time, duration_minutes, exam_format)
+             VALUES (?, ?, ?, ?, ?, ?, ?)
+             ON DUPLICATE KEY UPDATE exam_date = VALUES(exam_date), start_time = VALUES(start_time), duration_minutes = VALUES(duration_minutes), exam_format = VALUES(exam_format)',
+            [$periodId, $d['grade'], $d['subject_id'], $d['exam_date'], $d['start_time'], $d['duration_minutes'], $d['exam_format']]);
+        Bgh::audit($actor, 'exam.schedule_save', "{$p->name}: khối {$d['grade']} – {$subject->name} ngày {$d['exam_date']}");
+
+        return $this->schedule($periodId);
+    }
+
+    public function delete(int $id, array $actor): int
+    {
+        $row = DB::selectOne('SELECT es.exam_period_id, es.grade, s.name FROM sm_exam_schedules es JOIN sm_subjects s ON s.id = es.subject_id WHERE es.id = ?', [$id]);
+        if (! $row) {
+            throw new \DomainException('Không tìm thấy lịch thi.');
+        }
+        DB::delete('DELETE FROM sm_exam_schedules WHERE id = ?', [$id]);
+        Bgh::audit($actor, 'exam.schedule_delete', "Xóa lịch thi khối {$row->grade} – {$row->name}");
+
+        return (int) $row->exam_period_id;
+    }
+}

@@ -1,0 +1,1585 @@
+{
+    "groups": [
+        {
+            "code": "grade_level",
+            "name": "Khối lớp",
+            "icon": "layers",
+            "color": "#4f46e5",
+            "is_system": 1,
+            "description": "Các khối lớp của trường THPT. Giá trị = số khối.",
+            "items": [
+                {
+                    "name": "Khối 10",
+                    "short_name": "10",
+                    "value": "10",
+                    "code": "K01",
+                    "sort_order": 1
+                },
+                {
+                    "name": "Khối 11",
+                    "short_name": "11",
+                    "value": "11",
+                    "code": "K02",
+                    "sort_order": 2
+                },
+                {
+                    "name": "Khối 12",
+                    "short_name": "12",
+                    "value": "12",
+                    "code": "K03",
+                    "sort_order": 3
+                }
+            ]
+        },
+        {
+            "code": "student_status",
+            "name": "Trạng thái học sinh",
+            "icon": "users",
+            "color": "#0ea5e9",
+            "is_system": 1,
+            "description": "Tình trạng học tập của học sinh trong hồ sơ.",
+            "items": [
+                {
+                    "code": "DANG_HOC",
+                    "name": "Đang học",
+                    "color": "#10b981",
+                    "sort_order": 1
+                },
+                {
+                    "code": "BAO_LUU",
+                    "name": "Bảo lưu",
+                    "color": "#f59e0b",
+                    "sort_order": 2
+                },
+                {
+                    "code": "CHUYEN_TRUONG",
+                    "name": "Chuyển trường",
+                    "color": "#6366f1",
+                    "sort_order": 3
+                },
+                {
+                    "code": "THOI_HOC",
+                    "name": "Thôi học",
+                    "color": "#ef4444",
+                    "sort_order": 4
+                },
+                {
+                    "code": "TOT_NGHIEP",
+                    "name": "Tốt nghiệp",
+                    "color": "#0ea5e9",
+                    "sort_order": 5
+                }
+            ]
+        },
+        {
+            "code": "exam_type",
+            "name": "Loại điểm / bài kiểm tra",
+            "icon": "clipboard",
+            "color": "#8b5cf6",
+            "is_system": 1,
+            "description": "Loại đánh giá và hệ số theo Thông tư 22/2021/TT-BGDĐT. Giá trị = hệ số.",
+            "items": [
+                {
+                    "code": "TX",
+                    "name": "Đánh giá thường xuyên",
+                    "short_name": "TX",
+                    "value": "1",
+                    "sort_order": 1
+                },
+                {
+                    "code": "GK",
+                    "name": "Đánh giá giữa kì",
+                    "short_name": "GK",
+                    "value": "2",
+                    "sort_order": 2
+                },
+                {
+                    "code": "CK",
+                    "name": "Đánh giá cuối kì",
+                    "short_name": "CK",
+                    "value": "3",
+                    "sort_order": 3
+                }
+            ]
+        },
+        {
+            "code": "academic_rating",
+            "name": "Mức đánh giá học tập",
+            "icon": "award",
+            "color": "#10b981",
+            "is_system": 1,
+            "description": "Kết quả học tập theo 4 mức (Thông tư 22/2021).",
+            "items": [
+                {
+                    "code": "TOT",
+                    "name": "Tốt",
+                    "color": "#10b981",
+                    "sort_order": 1
+                },
+                {
+                    "code": "KHA",
+                    "name": "Khá",
+                    "color": "#3b82f6",
+                    "sort_order": 2
+                },
+                {
+                    "code": "DAT",
+                    "name": "Đạt",
+                    "color": "#f59e0b",
+                    "sort_order": 3
+                },
+                {
+                    "code": "CHUA_DAT",
+                    "name": "Chưa đạt",
+                    "color": "#ef4444",
+                    "sort_order": 4
+                }
+            ]
+        },
+        {
+            "code": "conduct_rating",
+            "name": "Mức đánh giá rèn luyện",
+            "icon": "shield",
+            "color": "#14b8a6",
+            "is_system": 1,
+            "description": "Kết quả rèn luyện theo 4 mức (Thông tư 22/2021).",
+            "items": [
+                {
+                    "code": "TOT",
+                    "name": "Tốt",
+                    "color": "#10b981",
+                    "sort_order": 1
+                },
+                {
+                    "code": "KHA",
+                    "name": "Khá",
+                    "color": "#3b82f6",
+                    "sort_order": 2
+                },
+                {
+                    "code": "DAT",
+                    "name": "Đạt",
+                    "color": "#f59e0b",
+                    "sort_order": 3
+                },
+                {
+                    "code": "CHUA_DAT",
+                    "name": "Chưa đạt",
+                    "color": "#ef4444",
+                    "sort_order": 4
+                }
+            ]
+        },
+        {
+            "code": "absence_reason",
+            "name": "Lý do vắng mặt",
+            "icon": "calendar",
+            "color": "#f59e0b",
+            "is_system": 0,
+            "description": "Lý do nghỉ học dùng khi điểm danh.",
+            "items": [
+                {
+                    "name": "Có phép",
+                    "code": "VM01",
+                    "sort_order": 1
+                },
+                {
+                    "name": "Không phép",
+                    "code": "VM02",
+                    "sort_order": 2
+                },
+                {
+                    "name": "Ốm đau",
+                    "code": "VM03",
+                    "sort_order": 3
+                },
+                {
+                    "name": "Việc gia đình",
+                    "code": "VM04",
+                    "sort_order": 4
+                },
+                {
+                    "name": "Tham gia cuộc thi",
+                    "code": "VM05",
+                    "sort_order": 5
+                },
+                {
+                    "name": "Thiên tai, dịch bệnh",
+                    "code": "VM06",
+                    "sort_order": 6
+                }
+            ]
+        },
+        {
+            "code": "reward_type",
+            "name": "Hình thức khen thưởng",
+            "icon": "star",
+            "color": "#eab308",
+            "is_system": 0,
+            "description": "Các hình thức khen thưởng học sinh.",
+            "items": [
+                {
+                    "name": "Học sinh Xuất sắc",
+                    "code": "KT01",
+                    "sort_order": 1
+                },
+                {
+                    "name": "Học sinh Giỏi",
+                    "code": "KT02",
+                    "sort_order": 2
+                },
+                {
+                    "name": "Giấy khen cấp trường",
+                    "code": "KT03",
+                    "sort_order": 3
+                },
+                {
+                    "name": "Giấy khen cấp sở",
+                    "code": "KT04",
+                    "sort_order": 4
+                },
+                {
+                    "name": "Khen thưởng đột xuất",
+                    "code": "KT05",
+                    "sort_order": 5
+                },
+                {
+                    "name": "Học sinh tiêu biểu",
+                    "code": "KT06",
+                    "sort_order": 6
+                }
+            ]
+        },
+        {
+            "code": "discipline_type",
+            "name": "Hình thức kỷ luật",
+            "icon": "alert",
+            "color": "#ef4444",
+            "is_system": 0,
+            "description": "Các hình thức kỷ luật học sinh.",
+            "items": [
+                {
+                    "name": "Nhắc nhở",
+                    "code": "KL01",
+                    "sort_order": 1
+                },
+                {
+                    "name": "Khiển trách",
+                    "code": "KL02",
+                    "sort_order": 2
+                },
+                {
+                    "name": "Cảnh cáo",
+                    "code": "KL03",
+                    "sort_order": 3
+                },
+                {
+                    "name": "Đình chỉ học tập có thời hạn",
+                    "code": "KL04",
+                    "sort_order": 4
+                },
+                {
+                    "name": "Buộc thôi học",
+                    "code": "KL05",
+                    "sort_order": 5
+                }
+            ]
+        },
+        {
+            "code": "fee_type",
+            "name": "Loại khoản thu",
+            "icon": "wallet",
+            "color": "#22c55e",
+            "is_system": 0,
+            "description": "Danh mục khoản thu đầu năm và trong năm học.",
+            "items": [
+                {
+                    "name": "Học phí",
+                    "code": "TH01",
+                    "sort_order": 1
+                },
+                {
+                    "name": "Bảo hiểm y tế",
+                    "code": "TH02",
+                    "sort_order": 2
+                },
+                {
+                    "name": "Bảo hiểm thân thể",
+                    "code": "TH03",
+                    "sort_order": 3
+                },
+                {
+                    "name": "Quỹ phụ huynh",
+                    "code": "TH04",
+                    "sort_order": 4
+                },
+                {
+                    "name": "Đồng phục",
+                    "code": "TH05",
+                    "sort_order": 5
+                },
+                {
+                    "name": "Học 2 buổi/ngày",
+                    "code": "TH06",
+                    "sort_order": 6
+                },
+                {
+                    "name": "Tiền ăn bán trú",
+                    "code": "TH07",
+                    "sort_order": 7
+                },
+                {
+                    "name": "Học phẩm",
+                    "code": "TH08",
+                    "sort_order": 8
+                }
+            ]
+        },
+        {
+            "code": "priority_group",
+            "name": "Đối tượng chính sách",
+            "icon": "heart",
+            "color": "#ec4899",
+            "is_system": 0,
+            "description": "Diện chính sách, miễn giảm học phí.",
+            "items": [
+                {
+                    "name": "Con liệt sĩ",
+                    "code": "CS01",
+                    "sort_order": 1
+                },
+                {
+                    "name": "Con thương binh",
+                    "code": "CS02",
+                    "sort_order": 2
+                },
+                {
+                    "name": "Con bệnh binh",
+                    "code": "CS03",
+                    "sort_order": 3
+                },
+                {
+                    "name": "Con người có công với cách mạng",
+                    "code": "CS04",
+                    "sort_order": 4
+                },
+                {
+                    "name": "Hộ nghèo",
+                    "code": "CS05",
+                    "sort_order": 5
+                },
+                {
+                    "name": "Hộ cận nghèo",
+                    "code": "CS06",
+                    "sort_order": 6
+                },
+                {
+                    "name": "Mồ côi cha mẹ",
+                    "code": "CS07",
+                    "sort_order": 7
+                },
+                {
+                    "name": "Học sinh khuyết tật",
+                    "code": "CS08",
+                    "sort_order": 8
+                },
+                {
+                    "name": "Dân tộc thiểu số vùng khó khăn",
+                    "code": "CS09",
+                    "sort_order": 9
+                }
+            ]
+        },
+        {
+            "code": "school_shift",
+            "name": "Buổi học",
+            "icon": "clock",
+            "color": "#f97316",
+            "is_system": 0,
+            "description": "Ca học trong ngày.",
+            "items": [
+                {
+                    "code": "SANG",
+                    "name": "Buổi sáng",
+                    "sort_order": 1
+                },
+                {
+                    "code": "CHIEU",
+                    "name": "Buổi chiều",
+                    "sort_order": 2
+                }
+            ]
+        },
+        {
+            "code": "foreign_language",
+            "name": "Ngoại ngữ",
+            "icon": "globe",
+            "color": "#06b6d4",
+            "is_system": 0,
+            "description": "Các ngoại ngữ nhà trường giảng dạy.",
+            "items": [
+                {
+                    "name": "Tiếng Anh",
+                    "code": "NN01",
+                    "sort_order": 1
+                },
+                {
+                    "name": "Tiếng Pháp",
+                    "code": "NN02",
+                    "sort_order": 2
+                },
+                {
+                    "name": "Tiếng Nga",
+                    "code": "NN03",
+                    "sort_order": 3
+                },
+                {
+                    "name": "Tiếng Đức",
+                    "code": "NN04",
+                    "sort_order": 4
+                },
+                {
+                    "name": "Tiếng Nhật",
+                    "code": "NN05",
+                    "sort_order": 5
+                },
+                {
+                    "name": "Tiếng Trung Quốc",
+                    "code": "NN06",
+                    "sort_order": 6
+                },
+                {
+                    "name": "Tiếng Hàn Quốc",
+                    "code": "NN07",
+                    "sort_order": 7
+                }
+            ]
+        },
+        {
+            "code": "staff_position",
+            "name": "Chức vụ cán bộ",
+            "icon": "briefcase",
+            "color": "#6366f1",
+            "is_system": 0,
+            "description": "Chức vụ của cán bộ, giáo viên, nhân viên.",
+            "items": [
+                {
+                    "name": "Hiệu trưởng",
+                    "code": "CV01",
+                    "sort_order": 1
+                },
+                {
+                    "name": "Phó hiệu trưởng",
+                    "code": "CV02",
+                    "sort_order": 2
+                },
+                {
+                    "name": "Tổ trưởng chuyên môn",
+                    "code": "CV03",
+                    "sort_order": 3
+                },
+                {
+                    "name": "Tổ phó chuyên môn",
+                    "code": "CV04",
+                    "sort_order": 4
+                },
+                {
+                    "name": "Giáo viên chủ nhiệm",
+                    "code": "CV05",
+                    "sort_order": 5
+                },
+                {
+                    "name": "Giáo viên bộ môn",
+                    "code": "CV06",
+                    "sort_order": 6
+                },
+                {
+                    "name": "Kế toán",
+                    "code": "CV07",
+                    "sort_order": 7
+                },
+                {
+                    "name": "Thủ quỹ",
+                    "code": "CV08",
+                    "sort_order": 8
+                },
+                {
+                    "name": "Thư viện",
+                    "code": "CV09",
+                    "sort_order": 9
+                },
+                {
+                    "name": "Y tế học đường",
+                    "code": "CV10",
+                    "sort_order": 10
+                },
+                {
+                    "name": "Văn thư",
+                    "code": "CV11",
+                    "sort_order": 11
+                },
+                {
+                    "name": "Bảo vệ",
+                    "code": "CV12",
+                    "sort_order": 12
+                }
+            ]
+        },
+        {
+            "code": "degree",
+            "name": "Trình độ chuyên môn",
+            "icon": "book",
+            "color": "#8b5cf6",
+            "is_system": 0,
+            "description": "Trình độ đào tạo của giáo viên.",
+            "items": [
+                {
+                    "name": "Cao đẳng",
+                    "code": "TD01",
+                    "sort_order": 1
+                },
+                {
+                    "name": "Đại học",
+                    "code": "TD02",
+                    "sort_order": 2
+                },
+                {
+                    "name": "Thạc sĩ",
+                    "code": "TD03",
+                    "sort_order": 3
+                },
+                {
+                    "name": "Tiến sĩ",
+                    "code": "TD04",
+                    "sort_order": 4
+                }
+            ]
+        },
+        {
+            "code": "religion",
+            "name": "Tôn giáo",
+            "icon": "sun",
+            "color": "#a855f7",
+            "is_system": 0,
+            "description": "Danh mục tôn giáo dùng trong hồ sơ học sinh.",
+            "items": [
+                {
+                    "name": "Không",
+                    "code": "TG01",
+                    "sort_order": 1
+                },
+                {
+                    "name": "Phật giáo",
+                    "code": "TG02",
+                    "sort_order": 2
+                },
+                {
+                    "name": "Công giáo",
+                    "code": "TG03",
+                    "sort_order": 3
+                },
+                {
+                    "name": "Tin lành",
+                    "code": "TG04",
+                    "sort_order": 4
+                },
+                {
+                    "name": "Cao Đài",
+                    "code": "TG05",
+                    "sort_order": 5
+                },
+                {
+                    "name": "Hòa Hảo",
+                    "code": "TG06",
+                    "sort_order": 6
+                },
+                {
+                    "name": "Hồi giáo",
+                    "code": "TG07",
+                    "sort_order": 7
+                },
+                {
+                    "name": "Khác",
+                    "code": "TG08",
+                    "sort_order": 8
+                }
+            ]
+        },
+        {
+            "code": "ethnicity",
+            "name": "Dân tộc",
+            "icon": "flag",
+            "color": "#dc2626",
+            "is_system": 0,
+            "description": "54 dân tộc Việt Nam (mã nội bộ DT01–DT54, có thể đổi theo quy định địa phương).",
+            "items": [
+                {
+                    "name": "Kinh",
+                    "code": "DT01",
+                    "sort_order": 1
+                },
+                {
+                    "name": "Tày",
+                    "code": "DT02",
+                    "sort_order": 2
+                },
+                {
+                    "name": "Thái",
+                    "code": "DT03",
+                    "sort_order": 3
+                },
+                {
+                    "name": "Hoa",
+                    "code": "DT04",
+                    "sort_order": 4
+                },
+                {
+                    "name": "Khơ-me",
+                    "code": "DT05",
+                    "sort_order": 5
+                },
+                {
+                    "name": "Mường",
+                    "code": "DT06",
+                    "sort_order": 6
+                },
+                {
+                    "name": "Nùng",
+                    "code": "DT07",
+                    "sort_order": 7
+                },
+                {
+                    "name": "H'Mông",
+                    "code": "DT08",
+                    "sort_order": 8
+                },
+                {
+                    "name": "Dao",
+                    "code": "DT09",
+                    "sort_order": 9
+                },
+                {
+                    "name": "Gia-rai",
+                    "code": "DT10",
+                    "sort_order": 10
+                },
+                {
+                    "name": "Ngái",
+                    "code": "DT11",
+                    "sort_order": 11
+                },
+                {
+                    "name": "Ê-đê",
+                    "code": "DT12",
+                    "sort_order": 12
+                },
+                {
+                    "name": "Ba na",
+                    "code": "DT13",
+                    "sort_order": 13
+                },
+                {
+                    "name": "Xơ-Đăng",
+                    "code": "DT14",
+                    "sort_order": 14
+                },
+                {
+                    "name": "Sán Chay",
+                    "code": "DT15",
+                    "sort_order": 15
+                },
+                {
+                    "name": "Cơ-ho",
+                    "code": "DT16",
+                    "sort_order": 16
+                },
+                {
+                    "name": "Chăm",
+                    "code": "DT17",
+                    "sort_order": 17
+                },
+                {
+                    "name": "Sán Dìu",
+                    "code": "DT18",
+                    "sort_order": 18
+                },
+                {
+                    "name": "Hrê",
+                    "code": "DT19",
+                    "sort_order": 19
+                },
+                {
+                    "name": "Mnông",
+                    "code": "DT20",
+                    "sort_order": 20
+                },
+                {
+                    "name": "Ra-glai",
+                    "code": "DT21",
+                    "sort_order": 21
+                },
+                {
+                    "name": "Xtiêng",
+                    "code": "DT22",
+                    "sort_order": 22
+                },
+                {
+                    "name": "Bru-Vân Kiều",
+                    "code": "DT23",
+                    "sort_order": 23
+                },
+                {
+                    "name": "Thổ",
+                    "code": "DT24",
+                    "sort_order": 24
+                },
+                {
+                    "name": "Giáy",
+                    "code": "DT25",
+                    "sort_order": 25
+                },
+                {
+                    "name": "Cơ-tu",
+                    "code": "DT26",
+                    "sort_order": 26
+                },
+                {
+                    "name": "Gié Triêng",
+                    "code": "DT27",
+                    "sort_order": 27
+                },
+                {
+                    "name": "Mạ",
+                    "code": "DT28",
+                    "sort_order": 28
+                },
+                {
+                    "name": "Khơ-mú",
+                    "code": "DT29",
+                    "sort_order": 29
+                },
+                {
+                    "name": "Co",
+                    "code": "DT30",
+                    "sort_order": 30
+                },
+                {
+                    "name": "Tà-ôi",
+                    "code": "DT31",
+                    "sort_order": 31
+                },
+                {
+                    "name": "Chơ-ro",
+                    "code": "DT32",
+                    "sort_order": 32
+                },
+                {
+                    "name": "Kháng",
+                    "code": "DT33",
+                    "sort_order": 33
+                },
+                {
+                    "name": "Xinh-mun",
+                    "code": "DT34",
+                    "sort_order": 34
+                },
+                {
+                    "name": "Hà Nhì",
+                    "code": "DT35",
+                    "sort_order": 35
+                },
+                {
+                    "name": "Chu-ru",
+                    "code": "DT36",
+                    "sort_order": 36
+                },
+                {
+                    "name": "Lào",
+                    "code": "DT37",
+                    "sort_order": 37
+                },
+                {
+                    "name": "La Chí",
+                    "code": "DT38",
+                    "sort_order": 38
+                },
+                {
+                    "name": "La Ha",
+                    "code": "DT39",
+                    "sort_order": 39
+                },
+                {
+                    "name": "Phù Lá",
+                    "code": "DT40",
+                    "sort_order": 40
+                },
+                {
+                    "name": "La Hủ",
+                    "code": "DT41",
+                    "sort_order": 41
+                },
+                {
+                    "name": "Lự",
+                    "code": "DT42",
+                    "sort_order": 42
+                },
+                {
+                    "name": "Lô Lô",
+                    "code": "DT43",
+                    "sort_order": 43
+                },
+                {
+                    "name": "Chứt",
+                    "code": "DT44",
+                    "sort_order": 44
+                },
+                {
+                    "name": "Mảng",
+                    "code": "DT45",
+                    "sort_order": 45
+                },
+                {
+                    "name": "Pà Thẻn",
+                    "code": "DT46",
+                    "sort_order": 46
+                },
+                {
+                    "name": "Cơ Lao",
+                    "code": "DT47",
+                    "sort_order": 47
+                },
+                {
+                    "name": "Cống",
+                    "code": "DT48",
+                    "sort_order": 48
+                },
+                {
+                    "name": "Bố Y",
+                    "code": "DT49",
+                    "sort_order": 49
+                },
+                {
+                    "name": "Si La",
+                    "code": "DT50",
+                    "sort_order": 50
+                },
+                {
+                    "name": "Pu Péo",
+                    "code": "DT51",
+                    "sort_order": 51
+                },
+                {
+                    "name": "Brâu",
+                    "code": "DT52",
+                    "sort_order": 52
+                },
+                {
+                    "name": "Ơ Đu",
+                    "code": "DT53",
+                    "sort_order": 53
+                },
+                {
+                    "name": "Rơ Măm",
+                    "code": "DT54",
+                    "sort_order": 54
+                }
+            ]
+        }
+    ],
+    "departments": [
+        {
+            "code": "TOAN_TIN",
+            "name": "Tổ Toán – Tin học",
+            "description": "Môn Toán, Tin học"
+        },
+        {
+            "code": "NGU_VAN",
+            "name": "Tổ Ngữ văn",
+            "description": "Môn Ngữ văn"
+        },
+        {
+            "code": "NGOAI_NGU",
+            "name": "Tổ Ngoại ngữ",
+            "description": "Ngoại ngữ 1, ngoại ngữ 2"
+        },
+        {
+            "code": "LY_CN",
+            "name": "Tổ Vật lí – Công nghệ",
+            "description": "Môn Vật lí, Công nghệ"
+        },
+        {
+            "code": "HOA_SINH",
+            "name": "Tổ Hóa học – Sinh học",
+            "description": "Môn Hóa học, Sinh học"
+        },
+        {
+            "code": "SU_DIA_GDCD",
+            "name": "Tổ Lịch sử – Địa lí – GDKT&PL",
+            "description": "Lịch sử, Địa lí, Giáo dục kinh tế và pháp luật"
+        },
+        {
+            "code": "TD_QPAN",
+            "name": "Tổ Thể dục – QP&AN",
+            "description": "Giáo dục thể chất, Giáo dục quốc phòng và an ninh"
+        },
+        {
+            "code": "NGHE_THUAT",
+            "name": "Tổ Nghệ thuật – Hoạt động trải nghiệm",
+            "description": "Âm nhạc, Mĩ thuật, Hoạt động trải nghiệm, hướng nghiệp"
+        }
+    ],
+    "subjects": [
+        {
+            "code": "TOAN",
+            "name": "Toán",
+            "short_name": "Toán",
+            "subject_group": "math_tech",
+            "department": "TOAN_TIN",
+            "periods_per_week": 3,
+            "coefficient": 2,
+            "kind": "required",
+            "grading_type": "score",
+            "applicable_grades": [
+                10,
+                11,
+                12
+            ],
+            "color": "#4f46e5",
+            "sort_order": 1,
+            "description": null
+        },
+        {
+            "code": "VAN",
+            "name": "Ngữ văn",
+            "short_name": "Văn",
+            "subject_group": "language",
+            "department": "NGU_VAN",
+            "periods_per_week": 3,
+            "coefficient": 2,
+            "kind": "required",
+            "grading_type": "score",
+            "applicable_grades": [
+                10,
+                11,
+                12
+            ],
+            "color": "#ec4899",
+            "sort_order": 2,
+            "description": null
+        },
+        {
+            "code": "NN1",
+            "name": "Ngoại ngữ 1 (Tiếng Anh)",
+            "short_name": "Anh",
+            "subject_group": "language",
+            "department": "NGOAI_NGU",
+            "periods_per_week": 3,
+            "coefficient": 1,
+            "kind": "required",
+            "grading_type": "score",
+            "applicable_grades": [
+                10,
+                11,
+                12
+            ],
+            "color": "#06b6d4",
+            "sort_order": 3,
+            "description": null
+        },
+        {
+            "code": "SU",
+            "name": "Lịch sử",
+            "short_name": "Sử",
+            "subject_group": "social",
+            "department": "SU_DIA_GDCD",
+            "periods_per_week": 1.5,
+            "coefficient": 1,
+            "kind": "required",
+            "grading_type": "score",
+            "applicable_grades": [
+                10,
+                11,
+                12
+            ],
+            "color": "#b45309",
+            "sort_order": 4,
+            "description": null
+        },
+        {
+            "code": "DIA",
+            "name": "Địa lí",
+            "short_name": "Địa",
+            "subject_group": "social",
+            "department": "SU_DIA_GDCD",
+            "periods_per_week": 1.5,
+            "coefficient": 1,
+            "kind": "elective",
+            "grading_type": "score",
+            "applicable_grades": [
+                10,
+                11,
+                12
+            ],
+            "color": "#16a34a",
+            "sort_order": 5,
+            "description": null
+        },
+        {
+            "code": "GDKTPL",
+            "name": "Giáo dục kinh tế và pháp luật",
+            "short_name": "GDKT&PL",
+            "subject_group": "social",
+            "department": "SU_DIA_GDCD",
+            "periods_per_week": 1.5,
+            "coefficient": 1,
+            "kind": "elective",
+            "grading_type": "score",
+            "applicable_grades": [
+                10,
+                11,
+                12
+            ],
+            "color": "#0d9488",
+            "sort_order": 6,
+            "description": null
+        },
+        {
+            "code": "LY",
+            "name": "Vật lí",
+            "short_name": "Lí",
+            "subject_group": "natural",
+            "department": "LY_CN",
+            "periods_per_week": 2,
+            "coefficient": 1,
+            "kind": "elective",
+            "grading_type": "score",
+            "applicable_grades": [
+                10,
+                11,
+                12
+            ],
+            "color": "#2563eb",
+            "sort_order": 7,
+            "description": null
+        },
+        {
+            "code": "HOA",
+            "name": "Hóa học",
+            "short_name": "Hóa",
+            "subject_group": "natural",
+            "department": "HOA_SINH",
+            "periods_per_week": 2,
+            "coefficient": 1,
+            "kind": "elective",
+            "grading_type": "score",
+            "applicable_grades": [
+                10,
+                11,
+                12
+            ],
+            "color": "#9333ea",
+            "sort_order": 8,
+            "description": null
+        },
+        {
+            "code": "SINH",
+            "name": "Sinh học",
+            "short_name": "Sinh",
+            "subject_group": "natural",
+            "department": "HOA_SINH",
+            "periods_per_week": 2,
+            "coefficient": 1,
+            "kind": "elective",
+            "grading_type": "score",
+            "applicable_grades": [
+                10,
+                11,
+                12
+            ],
+            "color": "#65a30d",
+            "sort_order": 9,
+            "description": null
+        },
+        {
+            "code": "CN",
+            "name": "Công nghệ",
+            "short_name": "CN",
+            "subject_group": "math_tech",
+            "department": "LY_CN",
+            "periods_per_week": 2,
+            "coefficient": 1,
+            "kind": "elective",
+            "grading_type": "score",
+            "applicable_grades": [
+                10,
+                11,
+                12
+            ],
+            "color": "#475569",
+            "sort_order": 10,
+            "description": null
+        },
+        {
+            "code": "TIN",
+            "name": "Tin học",
+            "short_name": "Tin",
+            "subject_group": "math_tech",
+            "department": "TOAN_TIN",
+            "periods_per_week": 2,
+            "coefficient": 1,
+            "kind": "elective",
+            "grading_type": "score",
+            "applicable_grades": [
+                10,
+                11,
+                12
+            ],
+            "color": "#0891b2",
+            "sort_order": 11,
+            "description": null
+        },
+        {
+            "code": "GDTC",
+            "name": "Giáo dục thể chất",
+            "short_name": "GDTC",
+            "subject_group": "skill",
+            "department": "TD_QPAN",
+            "periods_per_week": 2,
+            "coefficient": 1,
+            "kind": "required",
+            "grading_type": "score",
+            "applicable_grades": [
+                10,
+                11,
+                12
+            ],
+            "color": "#ea580c",
+            "sort_order": 12,
+            "description": null
+        },
+        {
+            "code": "GDQPAN",
+            "name": "Giáo dục quốc phòng và an ninh",
+            "short_name": "GDQP-AN",
+            "subject_group": "skill",
+            "department": "TD_QPAN",
+            "periods_per_week": 1,
+            "coefficient": 1,
+            "kind": "required",
+            "grading_type": "score",
+            "applicable_grades": [
+                10,
+                11,
+                12
+            ],
+            "color": "#15803d",
+            "sort_order": 13,
+            "description": null
+        },
+        {
+            "code": "AMNHAC",
+            "name": "Âm nhạc",
+            "short_name": "Nhạc",
+            "subject_group": "art",
+            "department": "NGHE_THUAT",
+            "periods_per_week": 1,
+            "coefficient": 1,
+            "kind": "elective",
+            "grading_type": "score",
+            "applicable_grades": [
+                10,
+                11,
+                12
+            ],
+            "color": "#db2777",
+            "sort_order": 14,
+            "description": null
+        },
+        {
+            "code": "MITHUAT",
+            "name": "Mĩ thuật",
+            "short_name": "Mĩ thuật",
+            "subject_group": "art",
+            "department": "NGHE_THUAT",
+            "periods_per_week": 1,
+            "coefficient": 1,
+            "kind": "elective",
+            "grading_type": "score",
+            "applicable_grades": [
+                10,
+                11,
+                12
+            ],
+            "color": "#d97706",
+            "sort_order": 15,
+            "description": null
+        },
+        {
+            "code": "HDTN",
+            "name": "Hoạt động trải nghiệm, hướng nghiệp",
+            "short_name": "HĐTN-HN",
+            "subject_group": "skill",
+            "department": "NGHE_THUAT",
+            "periods_per_week": 3,
+            "coefficient": 0,
+            "kind": "required",
+            "grading_type": "comment",
+            "applicable_grades": [
+                10,
+                11,
+                12
+            ],
+            "color": "#7c3aed",
+            "sort_order": 16,
+            "description": null
+        },
+        {
+            "code": "GDDP",
+            "name": "Nội dung giáo dục của địa phương",
+            "short_name": "GDĐP",
+            "subject_group": "skill",
+            "department": "NGHE_THUAT",
+            "periods_per_week": 1,
+            "coefficient": 0,
+            "kind": "required",
+            "grading_type": "comment",
+            "applicable_grades": [
+                10,
+                11,
+                12
+            ],
+            "color": "#0284c7",
+            "sort_order": 17,
+            "description": null
+        },
+        {
+            "code": "NN2",
+            "name": "Ngoại ngữ 2",
+            "short_name": "NN2",
+            "subject_group": "language",
+            "department": "NGOAI_NGU",
+            "periods_per_week": 2,
+            "coefficient": 1,
+            "kind": "elective",
+            "grading_type": "score",
+            "applicable_grades": [
+                10,
+                11,
+                12
+            ],
+            "color": "#0ea5e9",
+            "sort_order": 18,
+            "description": null
+        }
+    ],
+    "rooms": [
+        {
+            "code": "P101",
+            "name": "Phòng 101",
+            "room_type": "classroom",
+            "building": "Nhà A",
+            "floor": 1,
+            "capacity": 45,
+            "facilities": "Máy chiếu, bảng từ, quạt/điều hòa",
+            "status": "available",
+            "sort_order": 1
+        },
+        {
+            "code": "P102",
+            "name": "Phòng 102",
+            "room_type": "classroom",
+            "building": "Nhà A",
+            "floor": 1,
+            "capacity": 45,
+            "facilities": "Máy chiếu, bảng từ, quạt/điều hòa",
+            "status": "available",
+            "sort_order": 2
+        },
+        {
+            "code": "P103",
+            "name": "Phòng 103",
+            "room_type": "classroom",
+            "building": "Nhà A",
+            "floor": 1,
+            "capacity": 45,
+            "facilities": "Máy chiếu, bảng từ, quạt/điều hòa",
+            "status": "available",
+            "sort_order": 3
+        },
+        {
+            "code": "P104",
+            "name": "Phòng 104",
+            "room_type": "classroom",
+            "building": "Nhà A",
+            "floor": 1,
+            "capacity": 45,
+            "facilities": "Máy chiếu, bảng từ, quạt/điều hòa",
+            "status": "available",
+            "sort_order": 4
+        },
+        {
+            "code": "P105",
+            "name": "Phòng 105",
+            "room_type": "classroom",
+            "building": "Nhà A",
+            "floor": 1,
+            "capacity": 45,
+            "facilities": "Máy chiếu, bảng từ, quạt/điều hòa",
+            "status": "available",
+            "sort_order": 5
+        },
+        {
+            "code": "P106",
+            "name": "Phòng 106",
+            "room_type": "classroom",
+            "building": "Nhà A",
+            "floor": 1,
+            "capacity": 45,
+            "facilities": "Máy chiếu, bảng từ, quạt/điều hòa",
+            "status": "available",
+            "sort_order": 6
+        },
+        {
+            "code": "P201",
+            "name": "Phòng 201",
+            "room_type": "classroom",
+            "building": "Nhà A",
+            "floor": 2,
+            "capacity": 45,
+            "facilities": "Máy chiếu, bảng từ, quạt/điều hòa",
+            "status": "available",
+            "sort_order": 7
+        },
+        {
+            "code": "P202",
+            "name": "Phòng 202",
+            "room_type": "classroom",
+            "building": "Nhà A",
+            "floor": 2,
+            "capacity": 45,
+            "facilities": "Máy chiếu, bảng từ, quạt/điều hòa",
+            "status": "available",
+            "sort_order": 8
+        },
+        {
+            "code": "P203",
+            "name": "Phòng 203",
+            "room_type": "classroom",
+            "building": "Nhà A",
+            "floor": 2,
+            "capacity": 45,
+            "facilities": "Máy chiếu, bảng từ, quạt/điều hòa",
+            "status": "available",
+            "sort_order": 9
+        },
+        {
+            "code": "P204",
+            "name": "Phòng 204",
+            "room_type": "classroom",
+            "building": "Nhà A",
+            "floor": 2,
+            "capacity": 45,
+            "facilities": "Máy chiếu, bảng từ, quạt/điều hòa",
+            "status": "available",
+            "sort_order": 10
+        },
+        {
+            "code": "P205",
+            "name": "Phòng 205",
+            "room_type": "classroom",
+            "building": "Nhà A",
+            "floor": 2,
+            "capacity": 45,
+            "facilities": "Máy chiếu, bảng từ, quạt/điều hòa",
+            "status": "available",
+            "sort_order": 11
+        },
+        {
+            "code": "P206",
+            "name": "Phòng 206",
+            "room_type": "classroom",
+            "building": "Nhà A",
+            "floor": 2,
+            "capacity": 45,
+            "facilities": "Máy chiếu, bảng từ, quạt/điều hòa",
+            "status": "available",
+            "sort_order": 12
+        },
+        {
+            "code": "P301",
+            "name": "Phòng 301",
+            "room_type": "classroom",
+            "building": "Nhà A",
+            "floor": 3,
+            "capacity": 45,
+            "facilities": "Máy chiếu, bảng từ, quạt/điều hòa",
+            "status": "available",
+            "sort_order": 13
+        },
+        {
+            "code": "P302",
+            "name": "Phòng 302",
+            "room_type": "classroom",
+            "building": "Nhà A",
+            "floor": 3,
+            "capacity": 45,
+            "facilities": "Máy chiếu, bảng từ, quạt/điều hòa",
+            "status": "available",
+            "sort_order": 14
+        },
+        {
+            "code": "P303",
+            "name": "Phòng 303",
+            "room_type": "classroom",
+            "building": "Nhà A",
+            "floor": 3,
+            "capacity": 45,
+            "facilities": "Máy chiếu, bảng từ, quạt/điều hòa",
+            "status": "available",
+            "sort_order": 15
+        },
+        {
+            "code": "P304",
+            "name": "Phòng 304",
+            "room_type": "classroom",
+            "building": "Nhà A",
+            "floor": 3,
+            "capacity": 45,
+            "facilities": "Máy chiếu, bảng từ, quạt/điều hòa",
+            "status": "available",
+            "sort_order": 16
+        },
+        {
+            "code": "P305",
+            "name": "Phòng 305",
+            "room_type": "classroom",
+            "building": "Nhà A",
+            "floor": 3,
+            "capacity": 45,
+            "facilities": "Máy chiếu, bảng từ, quạt/điều hòa",
+            "status": "available",
+            "sort_order": 17
+        },
+        {
+            "code": "P306",
+            "name": "Phòng 306",
+            "room_type": "classroom",
+            "building": "Nhà A",
+            "floor": 3,
+            "capacity": 45,
+            "facilities": "Máy chiếu, bảng từ, quạt/điều hòa",
+            "status": "available",
+            "sort_order": 18
+        },
+        {
+            "code": "PTN_LY",
+            "name": "Phòng thí nghiệm Vật lí",
+            "room_type": "lab_physics",
+            "building": "Nhà B",
+            "floor": 1,
+            "capacity": 45,
+            "facilities": "Bộ thí nghiệm cơ – nhiệt – điện – quang",
+            "status": "available",
+            "sort_order": 19
+        },
+        {
+            "code": "PTN_HOA",
+            "name": "Phòng thí nghiệm Hóa học",
+            "room_type": "lab_chemistry",
+            "building": "Nhà B",
+            "floor": 1,
+            "capacity": 45,
+            "facilities": "Tủ hút, hóa chất, dụng cụ thủy tinh",
+            "status": "available",
+            "sort_order": 20
+        },
+        {
+            "code": "PTN_SINH",
+            "name": "Phòng thí nghiệm Sinh học",
+            "room_type": "lab_biology",
+            "building": "Nhà B",
+            "floor": 2,
+            "capacity": 45,
+            "facilities": "Kính hiển vi, mô hình, tiêu bản",
+            "status": "available",
+            "sort_order": 21
+        },
+        {
+            "code": "TIN_1",
+            "name": "Phòng Tin học 1",
+            "room_type": "computer",
+            "building": "Nhà B",
+            "floor": 2,
+            "capacity": 40,
+            "facilities": "40 máy tính, máy chiếu",
+            "status": "available",
+            "sort_order": 22
+        },
+        {
+            "code": "TIN_2",
+            "name": "Phòng Tin học 2",
+            "room_type": "computer",
+            "building": "Nhà B",
+            "floor": 2,
+            "capacity": 40,
+            "facilities": "40 máy tính, máy chiếu",
+            "status": "available",
+            "sort_order": 23
+        },
+        {
+            "code": "AMNHAC",
+            "name": "Phòng Âm nhạc",
+            "room_type": "music",
+            "building": "Nhà C",
+            "floor": 1,
+            "capacity": 45,
+            "facilities": "Đàn organ, hệ thống âm thanh",
+            "status": "available",
+            "sort_order": 24
+        },
+        {
+            "code": "MITHUAT",
+            "name": "Phòng Mĩ thuật",
+            "room_type": "art",
+            "building": "Nhà C",
+            "floor": 1,
+            "capacity": 45,
+            "facilities": "Giá vẽ, bàn vẽ",
+            "status": "available",
+            "sort_order": 25
+        },
+        {
+            "code": "THUVIEN",
+            "name": "Thư viện",
+            "room_type": "library",
+            "building": "Nhà C",
+            "floor": 2,
+            "capacity": 80,
+            "facilities": "Kho sách, phòng đọc, máy tính tra cứu",
+            "status": "available",
+            "sort_order": 26
+        },
+        {
+            "code": "HOITRUONG",
+            "name": "Hội trường",
+            "room_type": "hall",
+            "building": "Nhà C",
+            "floor": 1,
+            "capacity": 400,
+            "facilities": "Sân khấu, âm thanh, ánh sáng",
+            "status": "available",
+            "sort_order": 27
+        },
+        {
+            "code": "NHATHECHAT",
+            "name": "Nhà thể chất đa năng",
+            "room_type": "gym",
+            "building": "Khu thể thao",
+            "floor": 1,
+            "capacity": 120,
+            "facilities": "Sân cầu lông, bóng chuyền, bóng rổ",
+            "status": "available",
+            "sort_order": 28
+        }
+    ]
+}

@@ -228,7 +228,7 @@ class AcademicRepo
         }
         $a = $this->one('SELECT a.id, a.username, a.full_name, a.role FROM sm_staff_tokens t JOIN sm_staff_accounts a ON a.id = t.staff_id
                           WHERE t.token_hash = ? AND t.expires_at > ? AND a.status = ?', [hash('sha256', $bearer), $this->ts($this->now()), 'active']);
-        return $a && isset(self::ROLES[$a['role']]) ? $this->staffView($a) : null;
+        return $a && (isset(self::ROLES[$a['role']]) || in_array($a['role'], ['teacher', 'homeroom_teacher'], true)) ? $this->staffView($a) : null;
     }
 
     public function logout(string $bearer): void

@@ -1,0 +1,78 @@
+<?php
+
+namespace Modules\Academic\Controllers;
+
+use Illuminate\Http\Request;
+use Modules\Academic\Services\WorkflowService;
+
+class WorkflowController extends BghController
+{
+    public function __construct(private WorkflowService $svc) {}
+
+    public function lessonPlans(Request $r)
+    {
+        $status = $r->input('status');
+
+        return $this->success($this->svc->lessonPlans(in_array($status, ['pending', 'approved', 'rejected', 'revision'], true) ? $status : null));
+    }
+
+    public function reviewPlan(Request $r, int $id)
+    {
+        $d = $r->validate([
+            'decision' => 'required|in:approved,rejected,revision',
+            'note' => 'nullable|string|max:500|required_if:decision,rejected,revision',
+        ], ['note.required_if' => 'Vui lòng nhập nhận xét khi từ chối hoặc yêu cầu chỉnh sửa.']);
+
+        return $this->run(function () use ($r, $id, $d) {
+            $this->svc->reviewPlan($id, $d['decision'], $d['note'] ?? null, $this->actor($r));
+
+            return null;
+        }, 'Đã ghi nhận kết quả duyệt giáo án');
+    }
+
+    public function observations()
+    {
+        return $this->success($this->svc->observations());
+    }
+
+    public function createObservation(Request $r)
+    {
+        $d = $r->validate([
+            'teacher_id' => 'required|integer', 'class_id' => 'required|integer', 'subject_id' => 'required|integer',
+            'observed_on' => 'required|date_format:Y-m-d', 'period' => 'required|integer|between:1,5',
+            'lesson_title' => 'required|string|max:180', 'score' => 'required|numeric|between:0,10',
+            'strengths' => 'nullable|string|max:2000', 'improvements' => 'nullable|string|max:2000',
+        ]);
+
+        return $this->run(fn () => ['id' => $this->svc->createObservation($d, $this->actor($r))], 'Đã lưu phiếu dự giờ', 201);
+    }
+
+    public function requests(Request $r)
+    {
+        $status = $r->input('status');
+
+        return $this->success($this->svc->requests(in_array($status, ['pending', 'approved', 'rejected'], true) ? $status : null));
+    }
+
+    public function decide(Request $r, int $id)
+    {
+        $d = $r->validate([
+            'decision' => 'required|in:approved,rejected',
+            'note' => 'nullable|string|max:500|required_if:decision,rejected',
+        ], ['note.required_if' => 'Vui lòng nhập lý do từ chối.']);
+
+        return $this->run(fn () => $this->svc->decideRequest($id, $d['decision'], $d['note'] ?? null, $this->actor($r)), 'Đã xử lý đề xuất');
+    }
+
+    public function notifications(Request $r)
+    {
+        return $this->success($this->svc->notifications($this->actor($r)));
+    }
+
+    public function markRead(Request $r)
+    {
+        $this->svc->markRead($this->actor($r));
+
+        return $this->success(null, 'Đã đánh dấu đã đọc');
+    }
+}

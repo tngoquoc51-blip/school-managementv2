@@ -11,6 +11,7 @@ const NAV = [
     { href: '/bgh/attendance/diem-danh', label: 'Điểm danh', icon: 'checks' },
     { href: '/bgh/attendance/lop', label: 'Theo lớp', icon: 'school' },
     { href: '/bgh/attendance/hoc-sinh', label: 'Học sinh', icon: 'user' },
+    { href: '/bgh/attendance/tiet-hoc', label: 'Tiết học GV', icon: 'book', badge: 'lessons' },
     { href: '/bgh/attendance/don-nghi', label: 'Đơn nghỉ', icon: 'doc', badge: 'leaves' },
     { href: '/bgh/attendance/canh-bao', label: 'Cảnh báo', icon: 'alert', badge: 'alerts' },
     { href: '/bgh/attendance/bao-cao', label: 'Báo cáo', icon: 'stats' },
@@ -22,7 +23,7 @@ export default function AttendanceLayout({ children }: { children: React.ReactNo
     const [ready, setReady] = useState(false);
     const [staff, setStaff] = useState<Staff | null>(null);
     const [meta, setMeta] = useState<Meta | null>(null);
-    const [badge, setBadge] = useState({ leaves: 0, alerts: 0 });
+    const [badge, setBadge] = useState({ leaves: 0, alerts: 0, lessons: 0 });
     const [version, setVersion] = useState(0);
     const [toastMsg, setToastMsg] = useState<{ m: string; k: 'ok' | 'err' } | null>(null);
     const tt = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -43,8 +44,8 @@ export default function AttendanceLayout({ children }: { children: React.ReactNo
     const refresh = useCallback(() => setVersion((v) => v + 1), []);
 
     const loadBadge = useCallback(() => {
-        Promise.all([ca<unknown[]>('leaves?status=pending&per=5'), ca<unknown[]>('alerts?filter=high')])
-            .then(([l, a]) => setBadge({ leaves: l.counts?.pending ?? 0, alerts: a.counts?.high ?? 0 }))
+        Promise.all([ca<unknown[]>('leaves?status=pending&per=5'), ca<unknown[]>('alerts?filter=high'), ca<{ requests: number }>('lessons?light=1').catch(() => null)])
+            .then(([l, a, t]) => setBadge({ leaves: l.counts?.pending ?? 0, alerts: a.counts?.high ?? 0, lessons: (t?.data as { requests?: number } | undefined)?.requests ?? 0 }))
             .catch(() => { /* bỏ qua, trang con sẽ báo lỗi */ });
     }, []);
     useEffect(() => {
@@ -81,7 +82,7 @@ export default function AttendanceLayout({ children }: { children: React.ReactNo
                     </div>
                     <nav className="ca-nav" aria-label="Chuyên cần">
                         {NAV.map((n) => {
-                            const b = n.badge ? badge[n.badge as 'leaves' | 'alerts'] : 0;
+                            const b = n.badge ? badge[n.badge as 'leaves' | 'alerts' | 'lessons'] : 0;
                             return (
                                 <Link key={n.href} href={n.href} className={isActive(n.href) ? 'on' : ''}>
                                     <Ico n={n.icon} size={16} />{n.label}

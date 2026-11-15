@@ -28,23 +28,73 @@ export default function BghLoginPage() {
         setError('');
 
         try {
-            await new Promise((r) => setTimeout(r, 500)); // TODO: thay bằng gọi API đăng nhập
+            // username: hieutruong@thpt.edu.vn → hieutruong
+            const raw = identifier.trim();
+            const username = raw.toLowerCase().replace(/@thpt\.edu\.vn$/i, '');
 
-            const id = identifier.trim().toLowerCase();
-            if ((id === 'hieutruong@thpt.edu.vn' || id === 'phoht@thpt.edu.vn') && password === '123456') {
-                localStorage.setItem('token', 'demo-token');
-                localStorage.setItem('user', JSON.stringify({
-                    name: id.includes('hieutruong') ? 'Hiệu trưởng' : 'Phó Hiệu trưởng',
-                    email: identifier,
-                }));
-                localStorage.setItem('roles', JSON.stringify(['principal']));
-                localStorage.setItem('current_role', 'principal');
-                router.push('/bgh/dashboard');
-            } else {
-                setError('Email hoặc mật khẩu không đúng');
+            const API = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
+
+            const res = await fetch(`${API}/gv/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            const json = await res.json().catch(() => ({} as any));
+
+            if (!res.ok) {
+                if (res.status === 423) {
+                    setError('Tài khoản đang bị khóa. Liên hệ quản trị.');
+                } else if (res.status === 401 || res.status === 422) {
+                    setError(json.message || 'Email hoặc mật khẩu không đúng');
+                } else {
+                    setError(json.message || 'Đăng nhập thất bại');
+                }
+                return;
             }
+
+            const payload = json.data ?? json;
+            const token: string | undefined = payload.token;
+            if (!token) {
+                setError('Máy chủ không trả về phiên đăng nhập');
+                return;
+            }
+
+            const staff = payload.staff ?? {};
+            const role = String(staff.role || 'principal').toLowerCase();
+
+            // Chỉ BGH được vào cổng này
+            if (!['principal', 'vice_principal', 'bgh'].includes(role)) {
+                setError('Tài khoản này không thuộc Ban Giám hiệu');
+                return;
+            }
+
+            const store = remember ? localStorage : sessionStorage;
+            ['token', 'user', 'roles', 'current_role'].forEach((k) => {
+                localStorage.removeItem(k);
+                sessionStorage.removeItem(k);
+            });
+
+// BGH: luôn localStorage để layout / API đọc được
+            localStorage.setItem('token', token);
+            localStorage.setItem(
+                'user',
+                JSON.stringify({
+                    name: staff.full_name || staff.name || 'Ban Giám hiệu',
+                    email: raw,
+                    username: staff.username || username,
+                    role,
+                }),
+            );
+            localStorage.setItem('roles', JSON.stringify([role]));
+            localStorage.setItem('current_role', 'bgh');
+
+            router.push('/bgh/dashboard');
         } catch {
-            setError('Có lỗi xảy ra, vui lòng thử lại');
+            setError('Không kết nối được máy chủ. Kiểm tra API đang chạy.');
         } finally {
             setLoading(false);
         }

@@ -26,7 +26,7 @@ class TeacherHomeworkPortalController extends LessonAttendanceStaffController
     private function hwCtx(Request $r): array
     {
         $st = $this->staff($r);
-        abort_unless($st->role === 'teacher' && (int) ($st->teacher_id ?? 0) > 0, 403, 'Tài khoản này chưa được liên kết với giáo viên.');
+        abort_unless(in_array($st->role, ['teacher', 'homeroom_teacher'], true) && (int) ($st->teacher_id ?? 0) > 0, 403, 'Tài khoản này chưa được liên kết với giáo viên.');
         $tid = (int) $st->teacher_id;
         $year = DB::table('sm_school_years')->where('is_current', 1)->value('id');
         abort_unless($year, 404, 'Chưa có năm học hiện tại.');

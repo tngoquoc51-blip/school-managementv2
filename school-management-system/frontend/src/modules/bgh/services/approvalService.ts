@@ -1,10 +1,9 @@
 /* Gọi API bằng fetch + token nhân sự (StaffToken). Không phụ thuộc services/api.ts. */
 
 // Nếu trang đăng nhập BGH lưu token dưới tên khác, điền đúng tên key vào đây (xem Application → Local Storage trong DevTools).
-const TOKEN_KEY = '';
+const TOKEN_KEY = 'token';
 
-const BASE = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api/v1').replace(/\/$/, '');
-
+const BASE = (process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:8000/api').replace(/\/$/, '');
 export type ApType = 'profile' | 'leave' | 'dispute';
 export type ApStatus = 'pending' | 'approved' | 'rejected';
 export interface Approval { type: ApType; id: number; student_id: number; student_name: string; student_code: string; title: string; detail: string; status: ApStatus; note: string | null; created_at: string }

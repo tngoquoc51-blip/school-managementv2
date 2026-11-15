@@ -481,6 +481,74 @@ class GvAttendanceController extends Controller
         return response()->json(['message' => "$lab đơn nghỉ thành công." . ($fixed ? " Đã chuyển $fixed lượt vắng thành có phép." : '')]);
     }
 
+    // ---------- Tiết học giáo viên đã nộp / chưa nộp (dữ liệu từ cổng giáo viên) ----------
+    public function lessonsIndex(Request $r)
+    {
+        $d = $this->db();
+        if ($r->boolean('light')) {   // chỉ đếm yêu cầu mở khóa để hiện huy hiệu trên thanh tab
+            $n = 0; try { $n = (int) ($d->selectOne('SELECT COUNT(*) n FROM sm_att_submissions WHERE reopen_requested_at IS NOT NULL AND status = \'submitted\'')->n ?? 0); } catch (\Throwable $e) { /* chưa chạy SQL */ }
+            return response()->json(['data' => ['requests' => $n]]);
+        }
+        $date = $this->validDate($r->query('date')) ?? $this->today();
+        $y = $this->yearId(); $today = $this->today(); $hm = Carbon::now(self::TZ)->format('H:i:s');
+        try { app(TeacherAttendanceController::class)->autoLock($date, $date); } catch (\Throwable $e) { return $this->fail('Chưa cài bảng sm_att_submissions. Hãy chạy file T01-diem-danh-giao-vien.sql trong HeidiSQL.', 500); }
+        $wd = (int) date('N', strtotime($date)) + 1;
+        $rows = $d->select("SELECT t.period, p.start_time, p.end_time, cs.id class_subject_id, cs.teacher_id, c.id class_id, c.name class_name, c.grade, s.name subject, tc.full_name teacher,
+              (SELECT COUNT(*) FROM sm_enrollments e WHERE e.class_id = c.id AND e.school_year_id = c.school_year_id) total,
+              COALESCE(m.marked, 0) marked, COALESCE(m.present, 0) present, COALESCE(m.late, 0) late, COALESCE(m.excused, 0) excused, COALESCE(m.unexcused, 0) unexcused,
+              sb.status sub_status, sb.submitted_at, sb.submitted_by, sb.reopen_reason, sb.reopen_requested_at, sb.reopen_note
+            FROM sm_timetable t JOIN sm_class_subjects cs ON cs.id = t.class_subject_id JOIN sm_classes c ON c.id = cs.class_id AND c.school_year_id = ?
+            JOIN sm_subjects s ON s.id = cs.subject_id LEFT JOIN sm_teachers tc ON tc.id = cs.teacher_id LEFT JOIN sm_periods p ON p.id = t.period
+            LEFT JOIN (SELECT l.class_subject_id, l.period, COUNT(*) marked, COALESCE(SUM(l.status = 'present'),0) present, COALESCE(SUM(l.status = 'late'),0) late,
+                              COALESCE(SUM(l.status = 'excused'),0) excused, COALESCE(SUM(l.status = 'unexcused'),0) unexcused
+                       FROM sm_att_lessons l WHERE l.att_date = ? GROUP BY l.class_subject_id, l.period) m ON m.class_subject_id = cs.id AND m.period = t.period
+            LEFT JOIN sm_att_submissions sb ON sb.class_subject_id = cs.id AND sb.period = t.period AND sb.att_date = ?
+            WHERE t.weekday = ? ORDER BY t.period, c.grade, c.name", [$y, $date, $date, $wd]);
+        $sum = ['lessons' => 0, 'locked' => 0, 'ready' => 0, 'draft' => 0, 'todo' => 0, 'reopened' => 0, 'overdue' => 0, 'requests' => 0];
+        $teachers = []; $out = [];
+        foreach ($rows as $x) {
+            $total = (int) $x->total; $marked = (int) $x->marked;
+            $state = $x->sub_status === 'submitted' ? 'locked' : ($x->sub_status === 'reopened' ? 'reopened' : ($marked > 0 && $marked >= $total ? 'ready' : ($marked > 0 ? 'draft' : 'todo')));
+            $phase = $date < $today ? 'ended' : ($date > $today ? 'upcoming' : (!$x->start_time ? 'ongoing' : ($hm < $x->start_time ? 'upcoming' : ($hm <= $x->end_time ? 'ongoing' : 'ended'))));
+            $overdue = $phase === 'ended' && $state !== 'locked';
+            $sum['lessons']++; $sum[$state]++; if ($overdue) $sum['overdue']++; if ($x->reopen_requested_at) $sum['requests']++;
+            $tn = $x->teacher ?: 'Chưa phân công';
+            $teachers[$tn] = $teachers[$tn] ?? ['name' => $tn, 'lessons' => 0, 'locked' => 0, 'overdue' => 0];
+            $teachers[$tn]['lessons']++; if ($state === 'locked') $teachers[$tn]['locked']++; if ($overdue) $teachers[$tn]['overdue']++;
+            $out[] = ['class_subject_id' => (int) $x->class_subject_id, 'class_id' => (int) $x->class_id, 'class_name' => $x->class_name, 'grade' => (int) $x->grade, 'subject' => $x->subject, 'teacher' => $x->teacher,
+                'period' => (int) $x->period, 'start' => $x->start_time ? substr($x->start_time, 0, 5) : null, 'end' => $x->end_time ? substr($x->end_time, 0, 5) : null, 'total' => $total, 'marked' => $marked,
+                'state' => $state, 'phase' => $phase, 'overdue' => $overdue, 'counts' => ['present' => (int) $x->present, 'late' => (int) $x->late, 'excused' => (int) $x->excused, 'unexcused' => (int) $x->unexcused],
+                'submitted_at' => $x->submitted_at, 'auto' => $x->sub_status === 'submitted' && !$x->submitted_by,
+                'request' => $x->reopen_requested_at ? ['reason' => $x->reopen_reason, 'at' => $x->reopen_requested_at] : null, 'reopen_note' => $x->reopen_note];
+        }
+        $teachers = array_values($teachers); usort($teachers, fn ($a, $b) => [$b['overdue'], $a['name']] <=> [$a['overdue'], $b['name']]);
+        return response()->json(['date' => $date, 'data' => $out, 'summary' => $sum, 'teachers' => $teachers]);
+    }
+
+    public function lessonReopen(Request $r)
+    {
+        $d = $this->db(); $me = $this->me($r);
+        if (!$this->isApprover($me)) return $this->fail('Chỉ Hiệu trưởng hoặc Quản trị được mở khóa tiết học.', 403);
+        $csId = (int) $r->input('class_subject_id'); $period = (int) $r->input('period'); $date = $this->validDate((string) $r->input('date'));
+        $act = (string) $r->input('action'); $note = mb_substr(trim((string) $r->input('note')), 0, 255);
+        if (!$date || !in_array($act, ['approve', 'reject', 'unlock'], true)) return $this->fail('Thông tin không hợp lệ.');
+        $sb = $d->selectOne('SELECT sb.*, c.name cname, s.name sname FROM sm_att_submissions sb JOIN sm_classes c ON c.id = sb.class_id JOIN sm_class_subjects cs ON cs.id = sb.class_subject_id JOIN sm_subjects s ON s.id = cs.subject_id
+                             WHERE sb.class_subject_id = ? AND sb.att_date = ? AND sb.period = ?', [$csId, $date, $period]);
+        if (!$sb) return $this->fail('Không tìm thấy tiết học đã nộp.', 404);
+        if ($sb->status !== 'submitted') return $this->fail('Tiết học này đang mở, không cần mở khóa.');
+        $now = $this->nowUtc(); $by = $me['id'] > 0 ? $me['id'] : null;
+        $label = sprintf('lớp %s · %s · tiết %d ngày %s', $sb->cname, $sb->sname, $period, Carbon::parse($date)->format('d/m/Y'));
+        if ($act === 'reject') {
+            if (mb_strlen($note) < 3) return $this->fail('Vui lòng ghi lý do từ chối.', 422, ['note' => 'Nhập lý do (ít nhất 3 ký tự).']);
+            $d->update('UPDATE sm_att_submissions SET reopen_requested_at = NULL, reopen_note = ?, updated_at = ? WHERE id = ?', [$note, $now, $sb->id]);
+            $this->log('lesson', (int) $sb->class_id, null, $date, "Từ chối mở khóa $label", $me);
+            return response()->json(['message' => 'Đã từ chối yêu cầu mở khóa.']);
+        }
+        $d->update('UPDATE sm_att_submissions SET status = \'reopened\', reopened_by = ?, reopened_at = ?, reopen_note = ?, reopen_requested_at = NULL, updated_at = ? WHERE id = ?', [$by, $now, $note !== '' ? $note : null, $now, $sb->id]);
+        $this->log('lesson', (int) $sb->class_id, null, $date, "Mở khóa $label", $me);
+        return response()->json(['message' => 'Đã mở khóa. Giáo viên có thể chỉnh sửa và gửi lại.']);
+    }
+
     // ---------- Cảnh báo ----------
     private function computeAlerts(string $from, string $to): array
     {

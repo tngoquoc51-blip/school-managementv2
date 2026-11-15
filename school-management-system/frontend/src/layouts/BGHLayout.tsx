@@ -344,20 +344,6 @@ const MODULES: Mod[] = [
         ],
     },
     {
-        slug: 'plans', title: 'Kế hoạch', noun: 'kế hoạch', statusKey: 'status', sortKey: 'start_date',
-        subtitle: 'Kế hoạch năm học, học kỳ, tháng và tuần của nhà trường; theo dõi tiến độ thực hiện.',
-        statuses: [{ label: 'Nháp', tone: 'mut' }, { label: 'Đang thực hiện', tone: 'sky' }, { label: 'Hoàn thành', tone: 'ok' }],
-        fields: [
-            { key: 'title', label: 'Tên kế hoạch', type: 'text', required: true, full: true },
-            { key: 'period', label: 'Kỳ', type: 'select', options: ['Năm học', 'Học kỳ', 'Tháng', 'Tuần'] },
-            { key: 'owner', label: 'Phụ trách', type: 'text' },
-            { key: 'start_date', label: 'Bắt đầu', type: 'date' },
-            { key: 'end_date', label: 'Kết thúc', type: 'date' },
-            { key: 'status', label: 'Trạng thái', type: 'select', options: ['Nháp', 'Đang thực hiện', 'Hoàn thành'] },
-            { key: 'content', label: 'Nội dung chi tiết', type: 'textarea', table: false, full: true },
-        ],
-    },
-    {
         slug: 'delegations', title: 'Ủy quyền phê duyệt', noun: 'ủy quyền', statusKey: 'status', sortKey: 'from_date',
         subtitle: 'Ghi nhận việc ủy quyền phê duyệt cho Phó Hiệu trưởng khi vắng mặt: phạm vi, thời hạn, lý do.',
         statuses: [{ label: 'Đang hiệu lực', tone: 'ok' }, { label: 'Đã hết hạn', tone: 'mut' }, { label: 'Đã thu hồi', tone: 'err' }],
@@ -639,7 +625,7 @@ export default function BGHLayout({ children }: Props) {
     const title = isDash ? 'Ban Giám hiệu' : current!.label;
     const desc = isDash ? 'Điều hành chuyên môn & phê duyệt toàn trường' : `Ban Giám hiệu · ${current!.group}`;
     const initial = (user?.name || 'H').charAt(0).toUpperCase();
-    const builtin = MODULES.find((m) => pathname === `/bgh/${m.slug}` || (pathname?.startsWith(`/bgh/${m.slug}/`) ?? false));
+    const builtin = MODULES.find((m) => m.slug !== 'evaluations' && (pathname === `/bgh/${m.slug}` || (pathname?.startsWith(`/bgh/${m.slug}/`) ?? false)));
 
     return (
         <div className={`bgh ${collapsed ? 'bgh--collapsed' : ''}`}>

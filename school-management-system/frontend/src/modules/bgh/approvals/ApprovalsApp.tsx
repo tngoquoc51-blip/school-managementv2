@@ -52,16 +52,24 @@ function Workspace() {
     useEffect(() => { const t = setTimeout(() => { setQd(q.trim()); setPage(1); }, 300); return () => clearTimeout(t); }, [q]);
 
     const loadOv = useCallback(async () => {
-        try { const r = await approvals.overview(); setOv(r.data as Overview); }
-        catch (e) { toast.push('error', 'Không tải được tổng quan', errMsg(e)); }
+        try {
+            const r = await approvals.overview();
+            const data = (r.data ?? r) as Overview;
+            setOv(data);
+            if (data?.counts) setCounts(data.counts);
+        } catch (e) {
+            toast.push('error', 'Không tải được tổng quan', errMsg(e));
+        }
     }, [toast]);
-
     const loadList = useCallback(async () => {
         setLoading(true); setError(null);
         try {
             const r = await approvals.list({ tab, type_code: typeCode || undefined, priority: priority || undefined, overdue: overdue ? 1 : undefined, q: qd || undefined, page, per_page: 20 });
             const items = r.data as Row[];
-            setRows(items); setMeta(r.meta); setCounts(r.meta.counts as Counts); setChecked([]);
+            setRows(items);
+            setMeta(r.meta);
+            if (r.meta?.counts) setCounts(r.meta.counts as Counts);
+            setChecked([]);
             setSel((cur) => (cur !== null && items.some((x) => x.id === cur) ? cur : items[0]?.id ?? null));
         } catch (e) { setError(errMsg(e)); } finally { setLoading(false); }
     }, [tab, typeCode, priority, overdue, qd, page]);
@@ -153,7 +161,11 @@ function Workspace() {
                         <label className={s.railField}><span>Loại yêu cầu</span>
                             <select value={typeCode} onChange={(e) => { setTypeCode(e.target.value); setPage(1); }}>
                                 <option value="">Tất cả loại</option>
-                                {ov?.by_type.map((t) => <option key={t.code} value={t.code}>{t.name}{t.pending ? ` (${t.pending})` : ''}</option>)}
+                                {(ov?.by_type ?? []).map((t) => (
+                                    <option key={t.code} value={t.code}>
+                                        {t.name}{t.pending ? ` (${t.pending})` : ''}
+                                    </option>
+                                ))}
                             </select>
                         </label>
                         <div className={s.railField}><span>Mức độ</span>

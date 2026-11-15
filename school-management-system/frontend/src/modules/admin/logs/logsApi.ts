@@ -32,14 +32,16 @@ function getToken(): string | null {
 type Query = Record<string, string | number | boolean | null | undefined | string[]>;
 
 function buildUrl(path: string, query?: Query): string {
-    const url = new URL(ROOT + path);
+    // ROOT có thể là "/api/admin/logs" (relative) → không dùng new URL() không base
+    const params = new URLSearchParams();
     if (query) {
         for (const [k, v] of Object.entries(query)) {
             if (v === undefined || v === null || v === '' || v === false) continue;
-            url.searchParams.set(k, Array.isArray(v) ? v.join(',') : v === true ? '1' : String(v));
+            params.set(k, Array.isArray(v) ? v.join(',') : v === true ? '1' : String(v));
         }
     }
-    return url.toString();
+    const qs = params.toString();
+    return `${ROOT}${path}${qs ? `?${qs}` : ''}`;
 }
 
 async function request<T>(method: string, path: string, opts: { query?: Query; body?: unknown; signal?: AbortSignal } = {}): Promise<T> {

@@ -1,71 +1,94 @@
 'use client';
 
-import TeacherLayout from '@/layouts/TeacherLayout';
-import { useState } from 'react';
+import './attendance.css';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Avatar, Btn, Ico, Settings, Staff, TaContext, ta, getStaff, getToken, longDate, todayStr } from './_ta';
 
-const mockStudents = [
-    { id: 1, name: 'Nguyễn Văn A', code: 'HS001' },
-    { id: 2, name: 'Trần Thị B', code: 'HS002' },
-    { id: 3, name: 'Lê Văn C', code: 'HS003' },
-    { id: 4, name: 'Phạm Thị D', code: 'HS004' },
+const NAV = [
+    { href: '/teacher/attendance', label: 'Hôm nay', icon: 'home' },
+    { href: '/teacher/attendance/tiet', label: 'Điểm danh tiết', icon: 'checks' },
+    { href: '/teacher/attendance/lich', label: 'Lịch tuần', icon: 'cal' },
+    { href: '/teacher/attendance/lich-su', label: 'Lịch sử & khóa', icon: 'lock', badge: true },
+    { href: '/teacher/attendance/chu-nhiem', label: 'Lớp chủ nhiệm', icon: 'school' },
+    { href: '/teacher/attendance/thong-ke', label: 'Thống kê', icon: 'stats' },
 ];
+const DEFAULTS: Settings = { lock_days: 7, good_rate: 95, warn_rate: 85, alert_absent: 3 };
 
-export default function AttendancePage() {
-    const [attendance, setAttendance] = useState<Record<number, string>>({});
+export default function TeacherAttendanceLayout({ children }: { children: React.ReactNode }) {
+    const path = usePathname() || '';
+    const [ready, setReady] = useState(false);
+    const [staff, setStaff] = useState<Staff | null>(null);
+    const [expired, setExpired] = useState(false);
+    const [settings, setSettings] = useState<Settings>(DEFAULTS);
+    const [missing, setMissing] = useState(0);
+    const [version, setVersion] = useState(0);
+    const [toastMsg, setToastMsg] = useState<{ m: string; k: 'ok' | 'err' } | null>(null);
+    const tt = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const setStatus = (id: number, status: string) => {
-        setAttendance((prev) => ({ ...prev, [id]: status }));
-    };
+    useEffect(() => {
+        setStaff(getStaff()); setExpired(!getToken()); setReady(true);
+        const f = () => setExpired(true);
+        window.addEventListener('ta-auth', f);
+        return () => window.removeEventListener('ta-auth', f);
+    }, []);
+
+    const toast = useCallback((m: string, k: 'ok' | 'err' = 'ok') => {
+        setToastMsg({ m, k });
+        if (tt.current) clearTimeout(tt.current);
+        tt.current = setTimeout(() => setToastMsg(null), 4200);
+    }, []);
+    const refresh = useCallback(() => setVersion((v) => v + 1), []);
+
+    useEffect(() => {
+        if (!ready || expired) return;
+        ta<unknown>('missing').then((r) => setMissing(Number((r as { total?: number }).total ?? 0))).catch(() => { /* trang con sẽ báo lỗi */ });
+    }, [ready, expired, version]);
+    useEffect(() => {
+        if (!ready || expired) return;
+        ta<unknown>('overview').then((r) => { const s = (r as { settings?: Settings }).settings; if (s) setSettings(s); }).catch(() => { /* bỏ qua */ });
+    }, [ready, expired]);
+
+    if (!ready) return <div className="ta ta-boot"><div className="ta-spin" /></div>;
+    if (expired || !staff) {
+        return (
+            <div className="ta"><div className="ta-gate"><div className="ta-gate-c">
+                <div className="ta-gate-ic"><Ico n="lock" size={26} /></div>
+                <h2>Phiên đăng nhập đã hết hạn</h2>
+                <p>Vui lòng đăng nhập lại bằng tài khoản giáo viên để điểm danh.</p>
+                <Btn tone="primary" onClick={() => { window.location.href = '/login'; }}>Đăng nhập lại</Btn>
+            </div></div></div>
+        );
+    }
+    const isActive = (h: string) => path === h || (h !== '/teacher/attendance' && path.startsWith(h + '/'));
 
     return (
-        <TeacherLayout>
-            <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <h1 className="text-2xl font-bold">Điểm danh</h1>
-                        <p className="text-gray-500 text-sm mt-1">Lớp 10A1 - Tiết 1 - Môn Toán - 09/10/2025</p>
+        <TaContext.Provider value={{ staff, settings, toast, refresh, version }}>
+            <div className="ta">
+                <div className="ta-hero">
+                    <div className="ta-hero-in">
+                        <div className="ta-hero-ic"><Ico n="checks" size={26} /></div>
+                        <div className="ta-hero-tx">
+                            <h1>Điểm danh từng tiết</h1>
+                            <p>Điểm danh học sinh, hoàn tất để tự khóa và gửi về nhà trường · {longDate(todayStr())}</p>
+                        </div>
+                        <div className="ta-hero-r">
+                            <span className="ta-who"><Avatar name={staff.name} tone="teal" /><span><b>{staff.name}</b><small>Giáo viên</small></span></span>
+                            <Link href="/teacher/attendance/tiet" className="ta-btn primary hero"><Ico n="checks" size={16} />Điểm danh ngay</Link>
+                        </div>
                     </div>
-                    <button className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700">
-                        Lưu điểm danh
-                    </button>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-                    <table className="w-full text-sm">
-                        <thead className="bg-gray-50">
-                        <tr>
-                            <th className="text-left px-4 py-3">STT</th>
-                            <th className="text-left px-4 py-3">Mã HS</th>
-                            <th className="text-left px-4 py-3">Họ và tên</th>
-                            <th className="text-center px-4 py-3">Có mặt</th>
-                            <th className="text-center px-4 py-3">Vắng (P)</th>
-                            <th className="text-center px-4 py-3">Vắng (K)</th>
-                            <th className="text-center px-4 py-3">Đi muộn</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {mockStudents.map((s, index) => (
-                            <tr key={s.id} className="border-t">
-                                <td className="px-4 py-3">{index + 1}</td>
-                                <td className="px-4 py-3">{s.code}</td>
-                                <td className="px-4 py-3 font-medium">{s.name}</td>
-                                {['present', 'excused', 'absent', 'late'].map((status) => (
-                                    <td key={status} className="px-4 py-3 text-center">
-                                        <input
-                                            type="radio"
-                                            name={`att-${s.id}`}
-                                            checked={attendance[s.id] === status}
-                                            onChange={() => setStatus(s.id, status)}
-                                            className="w-4 h-4"
-                                        />
-                                    </td>
-                                ))}
-                            </tr>
+                    <nav className="ta-nav" aria-label="Điểm danh">
+                        {NAV.map((n) => (
+                            <Link key={n.href} href={n.href} className={isActive(n.href) ? 'on' : ''}>
+                                <Ico n={n.icon} size={16} />{n.label}{n.badge && missing > 0 && <em title="Tiết cần bổ sung">{missing}</em>}
+                            </Link>
                         ))}
-                        </tbody>
-                    </table>
+                    </nav>
                 </div>
+                <main className="ta-main">{children}</main>
+                {toastMsg && <div className={`ta-toast ${toastMsg.k}`} role="status"><Ico n={toastMsg.k === 'ok' ? 'check' : 'alert'} size={18} />{toastMsg.m}</div>}
             </div>
-        </TeacherLayout>
+        </TaContext.Provider>
     );
 }

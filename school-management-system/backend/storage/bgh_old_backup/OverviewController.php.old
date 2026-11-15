@@ -1,0 +1,22 @@
+<?php
+
+namespace Modules\Academic\Controllers;
+
+use Illuminate\Http\Request;
+use Modules\Academic\Services\CatalogService;
+use Modules\Academic\Services\OverviewService;
+
+class OverviewController extends BghController
+{
+    public function __construct(private OverviewService $overview, private CatalogService $catalog) {}
+
+    public function meta()
+    {
+        return $this->success($this->catalog->meta());
+    }
+
+    public function overview(Request $r)
+    {
+        return $this->success($this->overview->get($this->year($r), $this->sem($r)));
+    }
+}

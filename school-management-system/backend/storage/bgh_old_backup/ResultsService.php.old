@@ -1,0 +1,115 @@
+<?php
+
+namespace Modules\Academic\Services;
+
+use Illuminate\Support\Facades\DB;
+use Modules\Academic\Support\Bgh;
+
+/** Kết quả học tập & hạnh kiểm toàn trường. */
+class ResultsService
+{
+    /**
+     * Bảng dẫn xuất: mỗi học sinh 1 dòng (điểm TB các môn tính điểm + xếp loại tham khảo).
+     * Ràng buộc: (school_year_id, semester). Xếp loại: Tốt/Khá/Đạt/Chưa đạt theo ngưỡng điểm TB và điểm thấp nhất.
+     */
+    public static function agg(): string
+    {
+        return "(SELECT g.student_id, e.class_id, AVG(g.tbm) AS avg_score, MIN(g.tbm) AS min_score,
+            CASE WHEN AVG(g.tbm) >= 8 AND MIN(g.tbm) >= 6.5 THEN 'Tốt'
+                 WHEN AVG(g.tbm) >= 6.5 AND MIN(g.tbm) >= 5 THEN 'Khá'
+                 WHEN AVG(g.tbm) >= 5 AND MIN(g.tbm) >= 3.5 THEN 'Đạt'
+                 ELSE 'Chưa đạt' END AS lv
+          FROM sm_grades g
+          JOIN sm_enrollments e ON e.student_id = g.student_id AND e.school_year_id = g.school_year_id
+          WHERE g.school_year_id = ? AND g.semester = ? AND g.tbm IS NOT NULL
+          GROUP BY g.student_id, e.class_id)";
+    }
+
+    public function distribution(int $year, int $sem): array
+    {
+        $out = array_fill_keys(Bgh::LEVELS, 0);
+        foreach (DB::select('SELECT a.lv, COUNT(*) AS n FROM ' . self::agg() . ' a GROUP BY a.lv', [$year, $sem]) as $r) {
+            $out[$r->lv] = (int) $r->n;
+        }
+
+        return $out;
+    }
+
+    public function overview(int $year, int $sem): array
+    {
+        $agg = self::agg();
+        $b = [$year, $sem];
+        $conductCol = $sem === 1 ? 'hk1' : 'hk2';
+
+        $byGrade = DB::select(
+            "SELECT c.grade, COUNT(*) AS students, ROUND(AVG(a.avg_score), 2) AS avg_score,
+                    SUM(a.lv = 'Tốt') AS tot, SUM(a.lv = 'Khá') AS kha, SUM(a.lv = 'Đạt') AS dat, SUM(a.lv = 'Chưa đạt') AS chua
+             FROM $agg a JOIN sm_classes c ON c.id = a.class_id GROUP BY c.grade ORDER BY c.grade", $b);
+
+        $byClass = DB::select(
+            "SELECT c.id, c.name, c.grade, t.full_name AS homeroom, COUNT(*) AS students, ROUND(AVG(a.avg_score), 2) AS avg_score,
+                    SUM(a.lv = 'Tốt') AS tot, SUM(a.lv = 'Khá') AS kha, SUM(a.lv = 'Đạt') AS dat, SUM(a.lv = 'Chưa đạt') AS chua
+             FROM $agg a JOIN sm_classes c ON c.id = a.class_id LEFT JOIN sm_teachers t ON t.id = c.homeroom_teacher_id
+             GROUP BY c.id, c.name, c.grade, t.full_name ORDER BY c.grade, c.name", $b);
+
+        $subjects = DB::select(
+            'SELECT s.id, s.code, s.name, s.kind, ROUND(AVG(g.tbm), 2) AS avg_score, ROUND(100 * AVG(g.tbm >= 5), 1) AS pass_rate, COUNT(g.tbm) AS n
+             FROM sm_subjects s LEFT JOIN sm_grades g ON g.subject_id = s.id AND g.school_year_id = ? AND g.semester = ? AND g.tbm IS NOT NULL
+             GROUP BY s.id, s.code, s.name, s.kind, s.sort_order ORDER BY s.sort_order', $b);
+
+        $top = DB::select(
+            "SELECT st.id, st.code, st.full_name, c.name AS class_name, ROUND(a.avg_score, 2) AS avg_score, a.lv
+             FROM $agg a JOIN sm_students st ON st.id = a.student_id JOIN sm_classes c ON c.id = a.class_id
+             ORDER BY a.avg_score DESC LIMIT 10", $b);
+
+        $risk = DB::select(
+            "SELECT st.id, st.code, st.full_name, c.name AS class_name, ROUND(a.avg_score, 2) AS avg_score, ROUND(a.min_score, 1) AS min_score, a.lv
+             FROM $agg a JOIN sm_students st ON st.id = a.student_id JOIN sm_classes c ON c.id = a.class_id
+             WHERE a.lv IN ('Chưa đạt') OR a.min_score < 3.5 ORDER BY a.avg_score ASC LIMIT 15", $b);
+
+        $conduct = DB::select(
+            "SELECT c.grade, k.$conductCol AS lv, COUNT(*) AS n
+             FROM sm_conduct k JOIN sm_enrollments e ON e.student_id = k.student_id AND e.school_year_id = k.school_year_id
+             JOIN sm_classes c ON c.id = e.class_id WHERE k.school_year_id = ? GROUP BY c.grade, k.$conductCol ORDER BY c.grade", [$year]);
+
+        return [
+            'distribution' => $this->distribution($year, $sem),
+            'by_grade' => $byGrade,
+            'by_class' => $byClass,
+            'subjects' => $subjects,
+            'top_students' => $top,
+            'at_risk' => $risk,
+            'conduct' => $conduct,
+            'note' => 'Xếp loại học lực là kết quả tham khảo theo điểm TB các môn tính điểm; kết quả chính thức do Hội đồng sư phạm quyết định.',
+        ];
+    }
+
+    public function classDetail(int $classId, int $sem): array
+    {
+        $class = DB::selectOne(
+            'SELECT c.id, c.name, c.grade, c.school_year_id, t.full_name AS homeroom FROM sm_classes c LEFT JOIN sm_teachers t ON t.id = c.homeroom_teacher_id WHERE c.id = ?', [$classId]);
+        if (! $class) {
+            throw new \DomainException('Không tìm thấy lớp.');
+        }
+        $year = (int) $class->school_year_id;
+        $col = $sem === 1 ? 'hk1' : 'hk2';
+
+        $students = DB::select(
+            'SELECT st.id, st.code, st.full_name, st.gender, ROUND(a.avg_score, 2) AS avg_score, ROUND(a.min_score, 1) AS min_score, a.lv, k.' . $col . ' AS conduct
+             FROM sm_enrollments e JOIN sm_students st ON st.id = e.student_id
+             LEFT JOIN ' . self::agg() . ' a ON a.student_id = e.student_id
+             LEFT JOIN sm_conduct k ON k.student_id = e.student_id AND k.school_year_id = e.school_year_id
+             WHERE e.class_id = ? ORDER BY a.avg_score DESC, st.full_name', [$year, $sem, $classId]);
+        foreach ($students as $i => $s) {
+            $s->rank = $i + 1;
+        }
+
+        $subjects = DB::select(
+            'SELECT s.id, s.name, s.code, ROUND(AVG(g.tbm), 2) AS avg_score, ROUND(100 * AVG(g.tbm >= 5), 1) AS pass_rate, t.full_name AS teacher
+             FROM sm_class_subjects cs JOIN sm_subjects s ON s.id = cs.subject_id JOIN sm_teachers t ON t.id = cs.teacher_id
+             LEFT JOIN sm_grades g ON g.subject_id = s.id AND g.class_id = cs.class_id AND g.semester = ? AND g.tbm IS NOT NULL
+             WHERE cs.class_id = ? GROUP BY s.id, s.name, s.code, s.sort_order, t.full_name ORDER BY s.sort_order', [$sem, $classId]);
+
+        return ['class' => $class, 'students' => $students, 'subjects' => $subjects];
+    }
+}

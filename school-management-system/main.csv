@@ -8,3 +8,7 @@ git status
 git add .
 git commit -m "update: cap nhat code moi nhat"
 git push github main
+
+cd D:\school-management\school-management-system\backend
+php artisan route:clear
+php artisan route:list --path=catalog/users

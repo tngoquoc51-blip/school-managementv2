@@ -1,0 +1,142 @@
+'use client';
+
+import Link from 'next/link';
+import { Badge, Card, Donut, Empty, HBar, Icon, Kpi, Legend, Skeleton, ErrorBox } from '@/components/bgh-academic/ui';
+import { useAcademic } from '@/components/bgh-academic/Shell';
+import { LEVELS, LEVEL_COLOR, apiSend, fixed, num, timeAgo, useApi } from '@/lib/bgh-academic';
+
+const nf = new Intl.NumberFormat('vi-VN');
+const KIND_ICON: Record<string, string> = { lesson_plan: 'clipboard', observation: 'eye', request: 'shield' };
+const TYPE_LABEL: Record<string, string> = { assignment_change: 'Đổi phân công', timetable: 'Thời khóa biểu', exam_schedule: 'Lịch thi', grade_edit: 'Sửa điểm', other: 'Khác' };
+
+export default function AcademicOverviewPage() {
+  const { overview: o, yearLabel, semester, reloadOverview } = useAcademic();
+  const notifs = useApi<{ items: { id: number; title: string; body: string; priority: string; created_at: string; sender_name: string | null; is_read: boolean }[]; unread: number }>('/notifications', {});
+  if (!o) return <Skeleton h={120} n={4} />;
+  const k = o.kpi;
+  const dist = LEVELS.map((l) => ({ label: l, value: num(o.distribution[l]), color: LEVEL_COLOR[l] }));
+  const total = dist.reduce((s, d) => s + d.value, 0);
+  const maxSub = 10;
+
+  const tiles = [
+    { href: 'subjects', icon: 'book', tone: 'primary', title: 'Môn học & tổ chuyên môn', desc: `${k.subjects} môn · 6 tổ · điểm TB, tỷ lệ đạt, tổ trưởng` },
+    { href: 'teachers', icon: 'users', tone: 'info', title: 'Giáo viên & phân công', desc: `${k.teachers} giáo viên · tải giảng dạy · đổi người phụ trách` },
+    { href: 'timetable', icon: 'calendar', tone: 'ok', title: 'Thời khóa biểu', desc: `${k.classes} lớp · phát hiện trùng tiết · hoán đổi tiết` },
+    { href: 'exams', icon: 'exam', tone: 'warn', title: 'Kỳ thi & lịch thi', desc: 'Lập lịch theo khối, kiểm tra trùng giờ' },
+    { href: 'results', icon: 'chart', tone: 'primary', title: 'Kết quả học tập', desc: 'Học lực, hạnh kiểm, học sinh cần hỗ trợ' },
+    { href: 'lesson-plans', icon: 'clipboard', tone: 'bad', title: 'Duyệt giáo án', desc: `${k.pending_plans} giáo án đang chờ BGH duyệt` },
+    { href: 'observations', icon: 'eye', tone: 'info', title: 'Dự giờ & đánh giá', desc: `${k.observations_30d} lượt dự giờ trong 30 ngày` },
+    { href: 'approvals', icon: 'shield', tone: 'warn', title: 'Phê duyệt đề xuất', desc: `${k.pending_requests} đề xuất chờ quyết định` },
+  ];
+
+  return (
+    <div className="ac-grid" style={{ gap: 20 }}>
+      <div className="ac-hero">
+        <div style={{ flex: 1, minWidth: 260 }}>
+          <span className="ac-hero-chip"><Icon name="calendar" size={13} /> Năm học {yearLabel} · Học kỳ {semester}</span>
+          <h2 style={{ marginTop: 10 }}>Trung tâm điều hành chuyên môn</h2>
+          <p>Theo dõi chất lượng dạy – học, xử lý phê duyệt và điều phối nhân sự giảng dạy trên một màn hình. Dữ liệu lấy trực tiếp từ cơ sở dữ liệu của trường.</p>
+        </div>
+        <div className="ac-row ac-wrap">
+          <Link href="/bgh/academic/approvals" className="ac-btn"><Icon name="shield" size={16} /> Xử lý phê duyệt</Link>
+          <Link href="/bgh/academic/results" className="ac-btn"><Icon name="chart" size={16} /> Xem kết quả</Link>
+          <button className="ac-btn" onClick={reloadOverview}><Icon name="refresh" size={16} /> Làm mới</button>
+        </div>
+      </div>
+
+      <div className="ac-grid ac-g4">
+        <Kpi icon="grad" tone="primary" label="Học sinh toàn trường" value={nf.format(k.students)} sub={<span className="ac-muted">{k.classes} lớp học</span>} />
+        <Kpi icon="users" tone="info" label="Giáo viên" value={k.teachers} sub={<span className="ac-muted">{k.subjects} môn học</span>} />
+        <Kpi icon="star" tone="ok" label="Điểm trung bình toàn trường" value={fixed(k.avg_score, 2)} sub={<span className="ac-muted">Học kỳ {semester}</span>} />
+        <Kpi icon="award" tone="ok" label="Tỷ lệ đạt yêu cầu" value={k.pass_rate !== null ? `${fixed(k.pass_rate)}%` : '–'} sub={<span className="ac-muted">Không tính “Chưa đạt”</span>} />
+        <Kpi icon="clipboard" tone="bad" label="Giáo án chờ duyệt" value={k.pending_plans} onClick={() => (location.href = '/bgh/academic/lesson-plans')} sub={<span className="ac-muted">Bấm để xử lý</span>} />
+        <Kpi icon="shield" tone="warn" label="Đề xuất chờ phê duyệt" value={k.pending_requests} onClick={() => (location.href = '/bgh/academic/approvals')} sub={<span className="ac-muted">Bấm để xử lý</span>} />
+        <Kpi icon="eye" tone="info" label="Dự giờ 30 ngày qua" value={k.observations_30d} />
+        <Kpi icon="calendar" tone={k.timetable_conflicts ? 'bad' : 'ok'} label="Xung đột thời khóa biểu" value={k.timetable_conflicts} sub={<span className="ac-muted">{k.timetable_conflicts ? 'Cần điều chỉnh' : 'Không có xung đột'}</span>} />
+      </div>
+
+      <div className="ac-grid ac-g-7-5">
+        <Card title="Phân bố học lực toàn trường" extra={<Link href="/bgh/academic/results" className="ac-btn sm ghost">Chi tiết <Icon name="arrow" size={14} /></Link>}>
+          {total === 0 ? <Empty title="Chưa có dữ liệu điểm" hint="Học kỳ này chưa có điểm tổng kết." /> : (
+            <div className="ac-row ac-wrap" style={{ gap: 32 }}>
+              <Donut data={dist} center={nf.format(total)} sub="học sinh" />
+              <div style={{ flex: 1, minWidth: 220 }}>
+                {dist.map((d) => <HBar key={d.label} label={d.label} value={d.value} max={total} color={d.color} text={`${nf.format(d.value)} · ${((d.value / total) * 100).toFixed(1)}%`} />)}
+                <div style={{ marginTop: 10 }}><Legend items={dist.map((d) => ({ label: d.label, color: d.color }))} /></div>
+              </div>
+            </div>
+          )}
+        </Card>
+        <Card title="Điểm trung bình theo môn" extra={<Link href="/bgh/academic/subjects" className="ac-btn sm ghost">Môn học <Icon name="arrow" size={14} /></Link>}>
+          {o.subjects.length === 0 ? <Empty title="Chưa có dữ liệu" /> : o.subjects.map((s) => (
+            <HBar key={s.code} label={s.name} value={num(s.avg_score)} max={maxSub} color={num(s.avg_score) >= 7.5 ? 'var(--ok)' : num(s.avg_score) >= 6.5 ? 'var(--primary)' : 'var(--warn)'} text={fixed(s.avg_score, 2)} />
+          ))}
+        </Card>
+      </div>
+
+      <div className="ac-grid ac-g3">
+        <Card title="Việc cần phê duyệt" extra={<Link href="/bgh/academic/approvals" className="ac-btn sm ghost">Tất cả</Link>}>
+          {o.pending_requests.length === 0 ? <Empty icon="check" title="Không còn đề xuất chờ duyệt" /> : o.pending_requests.map((r) => (
+            <Link href="/bgh/academic/approvals" key={r.id} className="ac-row" style={{ padding: '10px 0', borderBottom: '1px solid var(--border)', alignItems: 'flex-start' }}>
+              <div className={`ac-avatar tone-${r.priority === 'high' ? 'bad' : 'warn'}`} style={{ width: 34, height: 34 }}><Icon name={r.priority === 'high' ? 'alert' : 'clock'} size={16} /></div>
+              <div style={{ flex: 1 }}><div className="ac-b">{r.title}</div><div className="ac-small ac-muted">{TYPE_LABEL[r.type] || r.type} · {r.requested_by} · {timeAgo(r.created_at)}</div></div>
+            </Link>
+          ))}
+        </Card>
+
+        <Card title="Cảnh báo & gợi ý">
+          <div className="ac-grid" style={{ gap: 10 }}>
+            {k.timetable_conflicts > 0
+              ? <Link href="/bgh/academic/timetable" className="ac-alert tone-bad"><Icon name="alert" /><div><b>{k.timetable_conflicts} xung đột thời khóa biểu</b><div>Giáo viên bị xếp trùng tiết ở nhiều lớp.</div></div></Link>
+              : <div className="ac-alert tone-ok"><Icon name="check" /><div><b>Thời khóa biểu ổn định</b><div>Không có giáo viên bị trùng tiết.</div></div></div>}
+            {o.workload.overloaded.length > 0
+              ? <Link href="/bgh/academic/teachers" className="ac-alert tone-warn"><Icon name="alert" /><div><b>{o.workload.overloaded.length} giáo viên vượt định mức {o.workload.quota} tiết/tuần</b><div>{o.workload.overloaded.slice(0, 3).map((t) => t.full_name).join(', ')}{o.workload.overloaded.length > 3 ? '…' : ''}</div></div></Link>
+              : <div className="ac-alert tone-ok"><Icon name="check" /><div><b>Tải giảng dạy trong định mức</b><div>Tối đa {num(o.workload.max)} tiết/tuần.</div></div></div>}
+            {k.pending_plans > 0 && <Link href="/bgh/academic/lesson-plans" className="ac-alert tone-info"><Icon name="info" /><div><b>{k.pending_plans} giáo án đang chờ</b><div>Duyệt sớm để giáo viên kịp triển khai.</div></div></Link>}
+          </div>
+        </Card>
+
+        <Card title="Hoạt động gần đây">
+          {o.recent.length === 0 ? <Empty title="Chưa có hoạt động" /> : (
+            <div className="ac-timeline">
+              {o.recent.map((r, i) => (
+                <div className="ac-tl" key={i}>
+                  <div className="ac-row"><Icon name={KIND_ICON[r.kind] || 'info'} size={15} /><span className="ac-b ac-small">{r.text}</span></div>
+                  <div className="ac-small ac-muted">{timeAgo(r.at_time)}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+      </div>
+
+      <Card title="Thông báo chuyên môn"
+        extra={(notifs.data?.unread || 0) > 0
+          ? <button className="ac-btn sm" onClick={async () => { try { await apiSend('post', '/notifications/read'); } catch { /* bỏ qua */ } notifs.reload(); }}><Icon name="check" size={14} /> Đánh dấu đã đọc ({notifs.data?.unread})</button>
+          : undefined}>
+        {!notifs.data || notifs.data.items.length === 0 ? <Empty icon="bell" title="Chưa có thông báo" hint="Các thao tác duyệt, đổi phân công, dự giờ sẽ hiện ở đây." /> : (
+          <div className="ac-grid ac-g2" style={{ gap: 10 }}>
+            {notifs.data.items.slice(0, 6).map((n) => (
+              <div key={n.id} className="ac-row" style={{ alignItems: 'flex-start', padding: 12, borderRadius: 12, border: '1px solid var(--border)', background: n.is_read ? 'transparent' : 'var(--primary-soft)' }}>
+                <div className={`ac-avatar tone-${n.priority === 'high' ? 'bad' : 'primary'}`} style={{ width: 34, height: 34 }}><Icon name={n.priority === 'high' ? 'alert' : 'bell'} size={16} /></div>
+                <div style={{ flex: 1 }}><div className="ac-b">{n.title}</div><div className="ac-small ac-muted">{n.body}</div><div className="ac-small ac-muted">{timeAgo(n.created_at)}{n.sender_name ? ` · ${n.sender_name}` : ''}</div></div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+
+      <div>
+        <h3 style={{ margin: '4px 0 12px' }}>Phân hệ chuyên môn</h3>
+        <div className="ac-grid ac-g4">
+          {tiles.map((t) => (
+            <Link key={t.href} href={`/bgh/academic/${t.href}`} className="ac-card ac-tile">
+              <div className={`ac-avatar tone-${t.tone}`} style={{ width: 42, height: 42 }}><Icon name={t.icon} size={20} /></div>
+              <h4>{t.title}</h4><p>{t.desc}</p>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -131,9 +131,13 @@ export default function TeacherLoginPage() {
         setLoading(true);
         setError('');
 
+        let step: 'login' | 'profile' = 'login';
         try {
             // Nhận mã giáo viên, tên đăng nhập, hoặc email nhà trường cấp (đuôi @thpt.edu.vn)
             const username = identifier.trim().toLowerCase().replace(/@thpt\.edu\.vn$/, '');
+
+            // Xóa phiên cũ TRƯỚC khi gọi đăng nhập, để không gửi kèm token cũ/hết hạn
+            clearSession();
 
             const res: any = await api.post('/gv/login', { username, password }, { timeout: 15000 });
             const body = res && typeof res === 'object' && 'status' in res && 'data' in res ? res.data : res;
@@ -141,26 +145,38 @@ export default function TeacherLoginPage() {
             const token: string | undefined = payload?.token;
             if (!token) throw new Error('no-token');
 
-            // "Ghi nhớ đăng nhập" bật: lưu lâu dài; tắt: chỉ lưu đến khi đóng trình duyệt
+            // Đăng nhập đã thành công. Lưu token vào CẢ HAI nơi để các lời gọi API sau đó
+            // (lấy hồ sơ giáo viên...) luôn đọc được token, bất kể "Ghi nhớ đăng nhập" bật hay tắt.
+            step = 'profile';
             const store = remember ? localStorage : sessionStorage;
-            clearSession();
-            store.setItem('token', token);
+            localStorage.setItem('token', token);
+            sessionStorage.setItem('token', token);
 
-            // Lấy hồ sơ giáo viên (tên, lớp chủ nhiệm) từ hệ thống để phân quyền menu
-            const me: any = await teacherPortal.profile();
-            const t = me?.teacher;
-            const roles = ['teacher', ...(me?.homeroom ? ['homeroom_teacher'] : [])];
+            // Lấy hồ sơ giáo viên (tên, mã GV). Nếu bước này lỗi thì KHÔNG coi là sai mật khẩu.
+            let t: any = null;
+            try {
+                const me: any = await teacherPortal.profile();
+                t = me?.teacher ?? null;
+            } catch {
+                t = null;
+            }
+            // Cong duoc chon theo VAI TRO tai khoan (moi bo phan mot tai khoan rieng), khong doan theo lop chu nhiem
+            const staffRole: string = payload?.staff?.role ?? 'teacher';
+            const isHomeroomAccount = staffRole === 'homeroom_teacher';
+            const roles = [isHomeroomAccount ? 'homeroom_teacher' : 'teacher'];
 
+            // Giữ token ở cả hai nơi để mọi trang giáo viên đọc được (chưa biết bộ lọc api.ts đọc nơi nào)
             store.setItem('user', JSON.stringify({ name: t?.full_name ?? payload?.staff?.name ?? 'Giáo viên', email: username, code: t?.code }));
             store.setItem('roles', JSON.stringify(roles));
             store.setItem('current_role', 'teacher');
-            router.push('/teacher/dashboard');
+            router.push(isHomeroomAccount ? '/homeroom/dashboard' : '/teacher/dashboard');
         } catch (err: any) {
             clearSession();
             const status: number | undefined = err?.response?.status;
             const msg: string | undefined = err?.response?.data?.message;
             if (status === 429) setError('Bạn thử quá nhiều lần. Vui lòng chờ một phút rồi thử lại');
-            else if (status === 401 || status === 422) setError('Mã giáo viên hoặc mật khẩu không đúng');
+            else if ((status === 401 || status === 422) && step === 'login') setError(msg || 'Mã giáo viên hoặc mật khẩu không đúng');
+            else if (status === 401) setError('Đăng nhập được nhưng máy chủ từ chối phiên làm việc. Vui lòng thử lại');
             else if (status === 403 || status === 423) setError(msg || 'Tài khoản này chưa được phép đăng nhập');
             else if (!err?.response) setError('Không kết nối được máy chủ. Vui lòng thử lại sau ít phút');
             else setError(msg || 'Có lỗi xảy ra, vui lòng thử lại');

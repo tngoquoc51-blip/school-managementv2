@@ -19,7 +19,7 @@ export default function Overview() {
 
     if (loading && !data) return <Loading />;
     if (err && !data) return <ErrorBox msg={err} retry={reload} />;
-    if (!data) return null;
+    if (!data || !data.kpi) return <ErrorBox msg="Không tải được tổng quan thông báo. Hãy đăng nhập lại hoặc tải lại trang." retry={reload} />;
     const k = data.kpi;
     const hour = new Date().getHours();
     const hello = hour < 11 ? 'Chào buổi sáng' : hour < 14 ? 'Chào buổi trưa' : hour < 18 ? 'Chào buổi chiều' : 'Chào buổi tối';

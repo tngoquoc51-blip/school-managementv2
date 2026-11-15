@@ -1,0 +1,240 @@
+'use client';
+
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { apiGet, apiSend, Meta, Overview, timeAgo, useApi } from '@/lib/bgh-academic';
+import { ErrorBox, Icon, Skeleton, ToastProvider, useToast } from './ui';
+
+interface AcCtx {
+  yearId: number; yearLabel: string; semester: 1 | 2; meta: Meta;
+  overview: Overview | null; reloadOverview: () => void;
+}
+const Ctx = createContext<AcCtx | null>(null);
+export function useAcademic(): AcCtx {
+  const c = useContext(Ctx);
+  if (!c) throw new Error('useAcademic phải nằm trong AcademicShell');
+  return c;
+}
+
+const BASE = '/bgh/academic';
+const NAV: { group: string; items: { href: string; label: string; icon: string; badge?: 'plans' | 'requests' }[] }[] = [
+  { group: 'Tổng quan', items: [{ href: BASE, label: 'Tổng quan chuyên môn', icon: 'dashboard' }] },
+  { group: 'Chương trình & nhân sự', items: [
+    { href: `${BASE}/subjects`, label: 'Môn học & tổ chuyên môn', icon: 'book' },
+    { href: `${BASE}/teachers`, label: 'Giáo viên & phân công', icon: 'users' },
+  ] },
+  { group: 'Vận hành', items: [
+    { href: `${BASE}/timetable`, label: 'Thời khóa biểu', icon: 'calendar' },
+    { href: `${BASE}/exams`, label: 'Kỳ thi & lịch thi', icon: 'exam' },
+  ] },
+  { group: 'Chất lượng', items: [
+    { href: `${BASE}/results`, label: 'Kết quả học tập', icon: 'chart' },
+    { href: `${BASE}/lesson-plans`, label: 'Duyệt giáo án', icon: 'clipboard', badge: 'plans' },
+    { href: `${BASE}/observations`, label: 'Dự giờ & đánh giá', icon: 'eye' },
+  ] },
+  { group: 'Quy trình', items: [{ href: `${BASE}/approvals`, label: 'Phê duyệt đề xuất', icon: 'shield', badge: 'requests' }] },
+];
+const FLAT = NAV.flatMap((g) => g.items);
+
+interface Notif { id: number; title: string; body: string; priority: string; created_at: string; is_read: boolean; sender_name: string | null }
+
+export default function AcademicShell({ children }: { children: ReactNode }) {
+  return <ToastProvider><ShellInner>{children}</ShellInner></ToastProvider>;
+}
+
+function ShellInner({ children }: { children: ReactNode }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const toast = useToast();
+
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [yearId, setYearId] = useState<number | null>(null);
+  const [semester, setSemester] = useState<1 | 2>(1);
+  const [meta, setMeta] = useState<Meta | null>(null);
+  const [metaErr, setMetaErr] = useState<any>(null);
+  const [user, setUser] = useState<{ name?: string } | null>(null);
+  const [palette, setPalette] = useState(false);
+  const [bell, setBell] = useState(false);
+  const [notifs, setNotifs] = useState<{ items: Notif[]; unread: number }>({ items: [], unread: 0 });
+
+  // Khởi tạo: kiểm tra đăng nhập, đọc giao diện đã lưu, tải danh mục
+  useEffect(() => {
+    if (!localStorage.getItem('token')) { router.replace('/login'); return; }
+    try { setUser(JSON.parse(localStorage.getItem('user') || 'null')); } catch { /* bỏ qua */ }
+    const t = localStorage.getItem('ac_theme');
+    if (t === 'dark' || t === 'light') setTheme(t);
+    setCollapsed(localStorage.getItem('ac_collapsed') === '1');
+    const sem = Number(localStorage.getItem('ac_semester'));
+    if (sem === 1 || sem === 2) setSemester(sem);
+    apiGet<Meta>('/meta').then((m) => { setMeta(m); setYearId(m.current_year_id); }).catch((e) => {
+      setMetaErr(e);
+      if (e?.response?.status === 401) { localStorage.removeItem('token'); setTimeout(() => router.replace('/login'), 1200); }
+    });
+  }, [router]);
+
+  const overviewState = useApi<Overview>(meta && yearId ? '/overview' : null, { year_id: yearId, semester });
+
+  const loadNotifs = useCallback(() => {
+    apiGet<{ items: Notif[]; unread: number }>('/notifications').then(setNotifs).catch(() => undefined);
+  }, []);
+  useEffect(() => {
+    if (!meta) return;
+    loadNotifs();
+    const id = setInterval(loadNotifs, 60000);
+    return () => clearInterval(id);
+  }, [meta, loadNotifs]);
+
+  // Phím tắt Ctrl/⌘ + K
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setPalette(true); } };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  }, []);
+  useEffect(() => { setMobileOpen(false); setBell(false); }, [pathname]);
+
+  const reloadOverview = useCallback(() => { overviewState.reload(); loadNotifs(); }, [overviewState, loadNotifs]);
+
+  const ctx = useMemo<AcCtx | null>(() => {
+    if (!meta || !yearId) return null;
+    const y = meta.years.find((x) => x.id === yearId);
+    return { yearId, yearLabel: y?.label || '', semester, meta, overview: overviewState.data, reloadOverview };
+  }, [meta, yearId, semester, overviewState.data, reloadOverview]);
+
+  const toggleTheme = () => { const n = theme === 'light' ? 'dark' : 'light'; setTheme(n); localStorage.setItem('ac_theme', n); };
+  const toggleCollapse = () => { const n = !collapsed; setCollapsed(n); localStorage.setItem('ac_collapsed', n ? '1' : '0'); };
+  const logout = () => { localStorage.clear(); router.push('/login'); };
+  const openBell = async () => {
+    setBell((b) => !b);
+    if (!bell && notifs.unread > 0) { try { await apiSend('post', '/notifications/read'); setTimeout(loadNotifs, 2500); } catch { /* bỏ qua */ } }
+  };
+
+  const current = [...FLAT].sort((a, b) => b.href.length - a.href.length).find((i) => pathname === i.href || pathname.startsWith(i.href + '/'));
+  const badge = (b?: 'plans' | 'requests') => {
+    const k = overviewState.data?.kpi;
+    return b === 'plans' ? k?.pending_plans : b === 'requests' ? k?.pending_requests : 0;
+  };
+
+  return (
+    <div className="ac-root" data-theme={theme}>
+      <div className={`ac-app ${collapsed ? 'collapsed' : ''}`}>
+        <aside className={`ac-side ${mobileOpen ? 'open' : ''}`}>
+          <div className="ac-brand">
+            <div className="ac-logo"><Icon name="grad" size={22} /></div>
+            <div><b>Chuyên môn</b><small>Ban Giám hiệu · THPT</small></div>
+          </div>
+          <nav className="ac-nav">
+            {NAV.map((g) => (
+              <div key={g.group}>
+                <div className="ac-nav-title">{g.group}</div>
+                {g.items.map((i) => {
+                  const active = current?.href === i.href;
+                  const n = badge(i.badge);
+                  return (
+                    <Link key={i.href} href={i.href} className={`ac-link ${active ? 'active' : ''}`} title={i.label}>
+                      <Icon name={i.icon} /><span>{i.label}</span>{n ? <em className="ac-count" style={{ fontStyle: 'normal' }}>{n}</em> : null}
+                    </Link>
+                  );
+                })}
+              </div>
+            ))}
+          </nav>
+          <div className="ac-side-foot">
+            <Link href="/bgh/dashboard" className="ac-link"><Icon name="back" /><span>Về Bảng điều khiển BGH</span></Link>
+            <button className="ac-link" onClick={logout}><Icon name="logout" /><span>Đăng xuất</span></button>
+          </div>
+        </aside>
+
+        <div className="ac-main">
+          <header className="ac-top">
+            <button className="ac-iconbtn" onClick={() => (window.innerWidth <= 900 ? setMobileOpen((o) => !o) : toggleCollapse())} aria-label="Thu gọn menu"><Icon name={mobileOpen ? 'x' : 'menu'} /></button>
+            <div>
+              <div className="ac-crumb">Ban Giám hiệu / Chuyên môn</div>
+              <h1>{current?.label || 'Chuyên môn'}</h1>
+            </div>
+            <div className="ac-spacer" />
+            <button className="ac-search" onClick={() => setPalette(true)} aria-label="Tìm kiếm nhanh"><Icon name="search" size={16} /><span>Tìm giáo viên, môn, lớp…</span><kbd>Ctrl K</kbd></button>
+            {meta && yearId && (
+              <>
+                <select className="ac-select inline" value={yearId} onChange={(e) => setYearId(Number(e.target.value))} aria-label="Năm học">
+                  {meta.years.map((y) => <option key={y.id} value={y.id}>Năm học {y.label}</option>)}
+                </select>
+                <select className="ac-select inline" value={semester} onChange={(e) => { const s = Number(e.target.value) as 1 | 2; setSemester(s); localStorage.setItem('ac_semester', String(s)); }} aria-label="Học kỳ">
+                  <option value={1}>Học kỳ 1</option><option value={2}>Học kỳ 2</option>
+                </select>
+              </>
+            )}
+            <button className="ac-iconbtn" onClick={toggleTheme} aria-label="Đổi giao diện sáng/tối"><Icon name={theme === 'light' ? 'moon' : 'sun'} /></button>
+            <div style={{ position: 'relative' }}>
+              <button className="ac-iconbtn" onClick={openBell} aria-label="Thông báo"><Icon name="bell" />{notifs.unread > 0 && <span className="ac-dot">{notifs.unread}</span>}</button>
+              {bell && (
+                <div className="ac-pop">
+                  <div className="ac-pop-i" style={{ fontWeight: 700 }}>Thông báo hệ thống</div>
+                  <div style={{ maxHeight: 380, overflow: 'auto' }}>
+                    {notifs.items.length === 0 && <div className="ac-pop-i ac-muted">Chưa có thông báo.</div>}
+                    {notifs.items.map((n) => (
+                      <div key={n.id} className={`ac-pop-i ${n.is_read ? '' : 'unread'}`}>
+                        <div className={`ac-avatar tone-${n.priority === 'high' ? 'bad' : 'primary'}`} style={{ width: 34, height: 34 }}><Icon name={n.priority === 'high' ? 'alert' : 'bell'} size={16} /></div>
+                        <div><div className="ac-b">{n.title}</div><div className="ac-small ac-muted">{n.body}</div><div className="ac-small ac-muted">{timeAgo(n.created_at)}{n.sender_name ? ` · ${n.sender_name}` : ''}</div></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="ac-row" title={user?.name}>
+              <div className="ac-avatar" style={{ width: 38, height: 38, color: '#fff', background: 'linear-gradient(135deg,var(--primary),var(--primary-2))' }}>{(user?.name || 'B').trim().split(/\s+/).slice(-1)[0][0]?.toUpperCase()}</div>
+            </div>
+          </header>
+
+          <main className="ac-content">
+            {metaErr ? <ErrorBox error={metaErr} /> : !ctx ? <Skeleton h={110} n={4} /> : <Ctx.Provider value={ctx}>{children}</Ctx.Provider>}
+          </main>
+        </div>
+      </div>
+      {palette && meta && <Palette meta={meta} yearId={yearId || 0} onClose={() => setPalette(false)} onGo={(href) => { setPalette(false); router.push(href); }} />}
+      {mobileOpen && <div className="ac-overlay" style={{ zIndex: 35 }} onClick={() => setMobileOpen(false)} />}
+    </div>
+  );
+}
+
+/* ---------------- Tìm kiếm nhanh (Ctrl + K) ---------------- */
+function Palette({ meta, yearId, onClose, onGo }: { meta: Meta; yearId: number; onClose: () => void; onGo: (href: string) => void }) {
+  const [q, setQ] = useState('');
+  const [sel, setSel] = useState(0);
+  const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd');
+  const all = useMemo(() => [
+    ...FLAT.map((i) => ({ key: 'p' + i.href, icon: i.icon, label: i.label, hint: 'Trang', href: i.href })),
+    ...meta.teachers.map((t) => ({ key: 't' + t.id, icon: 'users', label: t.full_name, hint: `Giáo viên · ${t.code}`, href: `${BASE}/teachers?open=${t.id}` })),
+    ...meta.subjects.map((s) => ({ key: 's' + s.id, icon: 'book', label: s.name, hint: 'Môn học', href: `${BASE}/subjects?open=${s.id}` })),
+    ...meta.classes.filter((c) => c.school_year_id === yearId).map((c) => ({ key: 'c' + c.id, icon: 'calendar', label: `Lớp ${c.name}`, hint: 'Thời khóa biểu', href: `${BASE}/timetable?class=${c.id}` })),
+  ], [meta, yearId]);
+  const list = useMemo(() => {
+    const n = norm(q.trim());
+    return (n ? all.filter((x) => norm(x.label).includes(n) || norm(x.hint).includes(n)) : all.slice(0, 9)).slice(0, 9);
+  }, [q, all]);
+  useEffect(() => setSel(0), [q]);
+  return (
+    <div className="ac-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="ac-palette" role="dialog" aria-label="Tìm kiếm nhanh">
+        <input autoFocus placeholder="Gõ tên giáo viên, môn học, lớp hoặc trang…" value={q} onChange={(e) => setQ(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') onClose();
+            if (e.key === 'ArrowDown') { e.preventDefault(); setSel((s) => Math.min(s + 1, list.length - 1)); }
+            if (e.key === 'ArrowUp') { e.preventDefault(); setSel((s) => Math.max(s - 1, 0)); }
+            if (e.key === 'Enter' && list[sel]) onGo(list[sel].href);
+          }} />
+        <div style={{ maxHeight: 400, overflow: 'auto' }}>
+          {list.length === 0 && <div className="ac-pal-i ac-muted">Không tìm thấy kết quả.</div>}
+          {list.map((x, i) => (
+            <div key={x.key} className={`ac-pal-i ${i === sel ? 'on' : ''}`} onMouseEnter={() => setSel(i)} onClick={() => onGo(x.href)}>
+              <Icon name={x.icon} /><span className="ac-b">{x.label}</span><span className="ac-small ac-muted ac-right">{x.hint}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

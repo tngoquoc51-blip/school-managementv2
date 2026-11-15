@@ -1,0 +1,59 @@
+/* ===== Dashboard GVCN — dùng chung biến màu --navy-deep, --muted, --line từ homeroom-layout.css ===== */
+.hd-muted { color: var(--muted, #64748b); }
+
+.hd-table-wrap { overflow-x: auto; }
+.hd-table { width: 100%; border-collapse: collapse; }
+.hd-table th {
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--muted, #64748b);
+    text-align: left;
+    background: #f8fbfd;
+    border-bottom: 1px solid var(--line, #dbe7f1);
+    white-space: nowrap;
+}
+.hd-table td { padding: 11px 14px; border-bottom: 1px solid #edf2f8; vertical-align: middle; }
+.hd-table tr:hover td { background: #f6fbff; }
+.hd-table tr:last-child td { border-bottom: 0; }
+
+.hd-badge { display: inline-flex; align-items: center; padding: 3px 10px; font-size: 11.5px; font-weight: 700; border-radius: 999px; }
+.hd-ok { color: #059669; background: #ecfdf5; }
+.hd-warn { color: #d97706; background: #fffbeb; }
+.hd-bad { color: #e11d48; background: #ffe4ea; }
+.hd-mut { color: var(--muted, #64748b); background: #f1f5f9; }
+
+.hd-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #0c4a6e;
+    text-decoration: none;
+    background: #fff;
+    border: 1px solid var(--line, #dbe7f1);
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all .15s;
+}
+.hd-btn:hover { border-color: #38bdf8; color: #0284c7; transform: translateY(-1px); }
+.hd-btn-sm { padding: 5px 10px; font-size: 12px; }
+.hd-btn-pri { color: #fff; background: linear-gradient(135deg, #0ea5e9, #0284c7); border-color: transparent; }
+.hd-btn-pri:hover { color: #fff; filter: brightness(1.08); }
+
+.hd-empty { text-align: center; padding: 40px 20px; }
+.hd-empty h3 { margin: 0 0 14px; color: var(--navy-deep, #082f49); }
+.hd-empty-inline { padding: 24px; text-align: center; color: var(--muted, #64748b); font-size: 13.5px; }
+
+.hd-skel-wrap { padding: 2px; }
+.hd-skel {
+    background: linear-gradient(90deg, #e6eef5 25%, #f4f9fd 50%, #e6eef5 75%);
+    background-size: 200% 100%;
+    animation: hd-sk 1.2s infinite;
+    border-radius: 16px;
+}
+@keyframes hd-sk { to { background-position: -200% 0; } }
