@@ -85,21 +85,7 @@ export type Lesson = {
 };
 export type TaCtx = { staff: Staff; settings: Settings; toast: (m: string, kind?: 'ok' | 'err') => void; refresh: () => void; version: number };
 export const TaContext = createContext<TaCtx | null>(null);
-export const useTa = (): TaCtx => {
-    const c = useContext(TaContext);
-    if (!c) {
-        return {
-            staff: getStaff(),
-            settings: { lock_days: 7, good_rate: 90, warn_rate: 80, alert_absent: 5 },
-            toast: (m: string) => {
-                if (typeof window !== 'undefined') console.warn('[toast]', m);
-            },
-            refresh: () => {},
-            version: 0,
-        };
-    }
-    return c;
-};
+export const useTa = () => { const c = useContext(TaContext); if (!c) throw new Error('TaContext'); return c; };
 
 /* ---------------- trạng thái tiết học ---------------- */
 export const LS: Record<Lesson['state'], { label: string; tone: string; hint: string }> = {
@@ -160,8 +146,7 @@ export function useLoad<T>(fn: () => Promise<T>, deps: React.DependencyList = []
     const [loading, setLoading] = useState(true);
     const seq = useRef(0);
     const fnRef = useRef(fn); fnRef.current = fn;
-    const ta = useContext(TaContext);
-    const version = ta?.version ?? 0;
+    const { version } = useTa();
     const reload = useCallback(() => {
         const my = ++seq.current;
         setLoading(true);

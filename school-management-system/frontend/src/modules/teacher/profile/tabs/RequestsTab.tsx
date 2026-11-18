@@ -7,11 +7,17 @@ import { Field, Icon, Spin, GENDER } from '../ui';
 import type { Overview, TabKey } from '../types';
 import s from '../profile.module.css';
 
-interface Props { ov: Overview; reload: () => Promise<void> | void; go: (t: TabKey, prefill?: string) => void }
+interface Props {
+    ov: Overview;
+    prefill?: string;
+    onChanged?: () => Promise<void> | void;
+    reload?: () => Promise<void> | void;
+    go?: (t: TabKey, prefill?: string) => void;
+}
 const KEYS = ['phone', 'email', 'gender', 'birth_date', 'ethnicity', 'religion', 'id_number', 'hometown', 'address', 'degree_level', 'major', 'job_title', 'department', 'career_start_year', 'joined_at', 'bio', 'emergency_contact_name', 'emergency_contact_phone', 'emergency_contact_relation'] as const;
 const DEGREES = ['Cao đẳng', 'Đại học', 'Thạc sĩ', 'Tiến sĩ'];
 
-export default function PersonalTab({ ov, reload, go }: Props) {
+export default function RequestsTab({ ov, reload = () => {}, go = () => {} }: Props) {
     const toast = useToast();
     const initial = useMemo(() => {
         const p: any = ov.profile || {};

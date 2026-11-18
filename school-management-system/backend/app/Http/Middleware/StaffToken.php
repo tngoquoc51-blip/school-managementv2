@@ -30,10 +30,13 @@ class StaffToken
     private const PROFILE = '#^gv/teacher/profile(/|$)#';
 
     /** Cong Giang day (tai khoan teacher). */
-    private const TEACHER = '#^gv/(teacher/(assignments|homework)|attendance)(/|$)#';
+    private const TEACHER = '#^gv/(teacher|attendance)(/|$)#';
 
     /** Cong Chu nhiem (tai khoan homeroom_teacher). */
     private const HOMEROOM = '#^gv/(teacher/homeroom|homeroom)(/|$)#';
+
+    /** So dau bai – ca Giao vien bo mon (ghi so) va Giao vien chu nhiem (theo doi lop, xac nhan tuan) deu dung. */
+    private const LESSON_LOG = '#^gv/(teacher/lesson-log|teacher/homeroom/lesson-log|homeroom/lesson-log|lesson-log)(/|$)#';
 
     public function handle(Request $request, Closure $next)
     {
@@ -69,6 +72,9 @@ class StaffToken
             return true;
         }
         if (preg_match(self::PROFILE, $p)) {
+            return true;
+        }
+        if (preg_match(self::LESSON_LOG, $p)) {
             return true;
         }
         if (preg_match('#^gv/security/sessions/\d+/revoke$#', $p)) {

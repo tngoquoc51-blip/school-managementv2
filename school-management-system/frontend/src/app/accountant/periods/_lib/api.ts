@@ -11,13 +11,53 @@ export class KtError extends Error {
 }
 
 const safe = {
-    get: (k: string) => { try { return localStorage.getItem(k); } catch { return null; } },
-    set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* bỏ qua */ } },
-    del: (k: string) => { try { localStorage.removeItem(k); } catch { /* bỏ qua */ } },
+    get: (k: string) => {
+        try {
+            return localStorage.getItem(k) ?? sessionStorage.getItem(k);
+        } catch {
+            return null;
+        }
+    },
+    set: (k: string, v: string) => {
+        try {
+            localStorage.setItem(k, v);
+        } catch { /* bỏ qua */ }
+    },
+    del: (k: string) => {
+        try {
+            localStorage.removeItem(k);
+            sessionStorage.removeItem(k);
+        } catch { /* bỏ qua */ }
+    },
 };
 
-export const getToken = () => safe.get('kt_token');
-export const getStaff = (): Staff | null => { try { return JSON.parse(safe.get('kt_user') || 'null'); } catch { return null; } };
+export const getToken = () => safe.get('kt_token') || safe.get('token');
+
+export const getStaff = (): Staff | null => {
+    try {
+        const kt = safe.get('kt_user');
+        if (kt) return JSON.parse(kt);
+
+        // Tự động nhận diện từ tài khoản hệ thống đã đăng nhập
+        const u = safe.get('user');
+        if (u) {
+            const parsed = JSON.parse(u);
+            const roles: string[] = JSON.parse(safe.get('roles') || '[]');
+            const isSuper = roles.includes('super_admin') || roles.includes('admin') || roles.includes('principal') || roles.includes('vice_principal');
+            return {
+                id: parsed.id ? Number(parsed.id) : 1,
+                username: parsed.username ?? parsed.email ?? 'ketoan',
+                name: parsed.name ?? parsed.full_name ?? 'Phạm Văn Kế',
+                role: isSuper ? 'super_admin' : 'accountant',
+                role_label: isSuper ? 'Quản trị hệ thống' : 'Phòng Kế toán',
+                can_cancel: true,
+            };
+        }
+        return null;
+    } catch {
+        return null;
+    }
+};
 export const saveSession = (token: string, staff: Staff) => { safe.set('kt_token', token); safe.set('kt_user', JSON.stringify(staff)); };
 export const clearSession = () => { safe.del('kt_token'); safe.del('kt_user'); };
 
@@ -36,8 +76,11 @@ export async function api<T = any>(path: string, opts: { method?: string; body?:
     }
     const json: any = await res.json().catch(() => ({}));
     if (res.status === 401 && opts.auth !== false) {
-        clearSession();
-        if (typeof window !== 'undefined') window.dispatchEvent(new Event('kt-unauth'));
+        // Chỉ xóa session và báo unauth nếu thực sự không còn token hệ thống
+        if (!safe.get('token') && !safe.get('user')) {
+            clearSession();
+            if (typeof window !== 'undefined') window.dispatchEvent(new Event('kt-unauth'));
+        }
     }
     if (!res.ok) throw new KtError(json?.message || 'Có lỗi xảy ra, vui lòng thử lại.', res.status, json?.errors || {});
     return (json?.data ?? json) as T;

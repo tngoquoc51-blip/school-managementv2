@@ -163,14 +163,10 @@ export default function ParentLoginPage() {
 
                 <div className="login-left-content">
                     <div className="login-brand">
-                        <img
-                            src="/images/logo-thpt-ngo-sy-lien.png"
-                            alt="Logo THPT Ngô Sĩ Liên"
-                            style={{ width: '46px', height: '46px', objectFit: 'contain' }}
-                        />
+                        <div className="login-logo">TH</div>
                         <div className="login-brand-name">
-                            THPT Ngô Sĩ Liên
-                            <small>Năm học 2026 – 2027 · Chuẩn QG</small>
+                            Trường THPT
+                            <small>Năm học 2026 – 2027</small>
                         </div>
                     </div>
 

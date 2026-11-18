@@ -14,17 +14,27 @@ export default function PeriodsLayout({ children }: { children: ReactNode }) {
 
     const logout = useCallback(async () => {
         try { await api('logout', { method: 'POST' }); } catch { /* bỏ qua */ }
-        clearSession(); setStaff(null);
+        clearSession();
+        ['token', 'user', 'roles', 'kt_token', 'kt_user'].forEach((k) => {
+            try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch {}
+        });
+        setStaff(null);
+        window.location.href = '/login';
     }, []);
 
     useEffect(() => {
         const s = getStaff();
-        if (getToken() && s) {
+        const t = getToken();
+        if (s) {
             setStaff(s);
-            api<Staff>('me').then((m) => setStaff(m)).catch(() => {});
+            if (t) {
+                api<Staff>('me').then((m) => { if (m && m.name) setStaff(m); }).catch(() => {});
+            }
         }
         setReady(true);
-        const off = () => setStaff(null);
+        const off = () => {
+            if (!getStaff()) setStaff(null);
+        };
         window.addEventListener('kt-unauth', off);
         return () => window.removeEventListener('kt-unauth', off);
     }, []);

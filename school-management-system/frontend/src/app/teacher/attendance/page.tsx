@@ -1,94 +1,81 @@
 'use client';
 
-import './attendance.css';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Avatar, Btn, Ico, Settings, Staff, TaContext, ta, getStaff, getToken, longDate, todayStr } from './_ta';
+import { useEffect, useState } from 'react';
+import { Btn, Ico, ta, longDate, todayStr } from './_ta';
 
-const NAV = [
-    { href: '/teacher/attendance', label: 'Hôm nay', icon: 'home' },
-    { href: '/teacher/attendance/tiet', label: 'Điểm danh tiết', icon: 'checks' },
-    { href: '/teacher/attendance/lich', label: 'Lịch tuần', icon: 'cal' },
-    { href: '/teacher/attendance/lich-su', label: 'Lịch sử & khóa', icon: 'lock', badge: true },
-    { href: '/teacher/attendance/chu-nhiem', label: 'Lớp chủ nhiệm', icon: 'school' },
-    { href: '/teacher/attendance/thong-ke', label: 'Thống kê', icon: 'stats' },
-];
-const DEFAULTS: Settings = { lock_days: 7, good_rate: 95, warn_rate: 85, alert_absent: 3 };
-
-export default function TeacherAttendanceLayout({ children }: { children: React.ReactNode }) {
-    const path = usePathname() || '';
-    const [ready, setReady] = useState(false);
-    const [staff, setStaff] = useState<Staff | null>(null);
-    const [expired, setExpired] = useState(false);
-    const [settings, setSettings] = useState<Settings>(DEFAULTS);
-    const [missing, setMissing] = useState(0);
-    const [version, setVersion] = useState(0);
-    const [toastMsg, setToastMsg] = useState<{ m: string; k: 'ok' | 'err' } | null>(null);
-    const tt = useRef<ReturnType<typeof setTimeout> | null>(null);
+export default function TodayAttendancePage() {
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [data, setData] = useState<any>(null);
 
     useEffect(() => {
-        setStaff(getStaff()); setExpired(!getToken()); setReady(true);
-        const f = () => setExpired(true);
-        window.addEventListener('ta-auth', f);
-        return () => window.removeEventListener('ta-auth', f);
+        setLoading(true);
+        setError(null);
+
+        ta('today')
+            .then((res) => {
+                setData(res);
+            })
+            .catch((err: any) => {
+                setError(err?.message || 'Không tải được dữ liệu');
+            })
+            .finally(() => setLoading(false));
     }, []);
 
-    const toast = useCallback((m: string, k: 'ok' | 'err' = 'ok') => {
-        setToastMsg({ m, k });
-        if (tt.current) clearTimeout(tt.current);
-        tt.current = setTimeout(() => setToastMsg(null), 4200);
-    }, []);
-    const refresh = useCallback(() => setVersion((v) => v + 1), []);
-
-    useEffect(() => {
-        if (!ready || expired) return;
-        ta<unknown>('missing').then((r) => setMissing(Number((r as { total?: number }).total ?? 0))).catch(() => { /* trang con sẽ báo lỗi */ });
-    }, [ready, expired, version]);
-    useEffect(() => {
-        if (!ready || expired) return;
-        ta<unknown>('overview').then((r) => { const s = (r as { settings?: Settings }).settings; if (s) setSettings(s); }).catch(() => { /* bỏ qua */ });
-    }, [ready, expired]);
-
-    if (!ready) return <div className="ta ta-boot"><div className="ta-spin" /></div>;
-    if (expired || !staff) {
+    if (loading) {
         return (
-            <div className="ta"><div className="ta-gate"><div className="ta-gate-c">
-                <div className="ta-gate-ic"><Ico n="lock" size={26} /></div>
-                <h2>Phiên đăng nhập đã hết hạn</h2>
-                <p>Vui lòng đăng nhập lại bằng tài khoản giáo viên để điểm danh.</p>
-                <Btn tone="primary" onClick={() => { window.location.href = '/login'; }}>Đăng nhập lại</Btn>
-            </div></div></div>
+            <div className="ta-loading">
+                <div className="ta-spin" />
+                <span>Đang tải lịch hôm nay...</span>
+            </div>
         );
     }
-    const isActive = (h: string) => path === h || (h !== '/teacher/attendance' && path.startsWith(h + '/'));
 
-    return (
-        <TaContext.Provider value={{ staff, settings, toast, refresh, version }}>
-            <div className="ta">
-                <div className="ta-hero">
-                    <div className="ta-hero-in">
-                        <div className="ta-hero-ic"><Ico n="checks" size={26} /></div>
-                        <div className="ta-hero-tx">
-                            <h1>Điểm danh từng tiết</h1>
-                            <p>Điểm danh học sinh, hoàn tất để tự khóa và gửi về nhà trường · {longDate(todayStr())}</p>
-                        </div>
-                        <div className="ta-hero-r">
-                            <span className="ta-who"><Avatar name={staff.name} tone="teal" /><span><b>{staff.name}</b><small>Giáo viên</small></span></span>
-                            <Link href="/teacher/attendance/tiet" className="ta-btn primary hero"><Ico n="checks" size={16} />Điểm danh ngay</Link>
-                        </div>
-                    </div>
-                    <nav className="ta-nav" aria-label="Điểm danh">
-                        {NAV.map((n) => (
-                            <Link key={n.href} href={n.href} className={isActive(n.href) ? 'on' : ''}>
-                                <Ico n={n.icon} size={16} />{n.label}{n.badge && missing > 0 && <em title="Tiết cần bổ sung">{missing}</em>}
-                            </Link>
-                        ))}
-                    </nav>
+    if (error) {
+        return (
+            <div className="ta-err">
+                <Ico n="alert" size={20} />
+                <div>
+                    <b>Không tải được dữ liệu</b>
+                    <p>{error}</p>
                 </div>
-                <main className="ta-main">{children}</main>
-                {toastMsg && <div className={`ta-toast ${toastMsg.k}`} role="status"><Ico n={toastMsg.k === 'ok' ? 'check' : 'alert'} size={18} />{toastMsg.m}</div>}
+                <Btn tone="primary" onClick={() => window.location.reload()}>
+                    Thử lại
+                </Btn>
             </div>
-        </TaContext.Provider>
+        );
+    }
+
+    // Nếu API chưa có dữ liệu, hiện trạng thái trống đẹp
+    return (
+        <div className="ta-page">
+            <div className="ta-greet">
+                <div>
+                    <h2>Hôm nay · {longDate(todayStr())}</h2>
+                    <p>Danh sách tiết bạn cần điểm danh trong ngày</p>
+                </div>
+                <Link href="/teacher/attendance/tiet" className="ta-btn primary">
+                    <Ico n="checks" size={16} />
+                    Điểm danh ngay
+                </Link>
+            </div>
+
+            <div className="ta-card">
+                <div className="ta-empty">
+                    <div className="ic">
+                        <Ico n="cal" size={24} />
+                    </div>
+                    <b>Chưa có tiết nào cần điểm danh hôm nay</b>
+                    <p>
+                        Tài khoản này có thể chưa được phân công dạy tiết, hoặc chưa có dữ liệu thời khóa biểu.
+                        Hãy kiểm tra lại phân công giảng dạy.
+                    </p>
+                    <Link href="/teacher/attendance/tiet" className="ta-btn primary">
+                        Xem điểm danh tiết
+                    </Link>
+                </div>
+            </div>
+        </div>
     );
 }

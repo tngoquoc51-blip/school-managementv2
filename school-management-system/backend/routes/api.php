@@ -71,6 +71,11 @@ use Modules\Subject\Controllers\InsightController;
 use Modules\Subject\Controllers\SubjectController;
 use App\Http\Controllers\Api\HomeroomAwardController;
 use App\Http\Controllers\Api\HomeroomReportController;
+use App\Http\Controllers\Api\Admin\AdminFinanceController as C;
+use App\Http\Middleware\AdminAccess;
+use App\Http\Controllers\Api\AdminFinanceController;
+use App\Http\Controllers\Api\Teacher\LessonLogController;
+use App\Http\Controllers\Api\BghApprovalCenterController;
 Route::get('/health', fn () => response()->json(['status' => 'ok']));
 
 // Đăng nhập hệ thống (Sanctum / admin…)
@@ -128,6 +133,9 @@ Route::prefix('v1/accountant')->group(function () {
     Route::get('/receipts', [AccountantController::class, 'receipts']);
     Route::get('/reports', [AccountantController::class, 'reports']);
     Route::get('/students/search', [AccountantController::class, 'searchStudent']);
+
+    // Cài đặt kế toán (module Accountant: /api/v1/accountant/settings/...)
+    require base_path('Modules/Accountant/Routes/api.php');
 });
 
 //    Controller tự kiểm tra token và vai trò quản trị. URL: /api/v1/admin/subjects...
@@ -371,21 +379,25 @@ Route::prefix('v1/logs')->middleware(BghAccess::class)->group(function () {
     Route::get('activities', [LogController::class, 'index']);
     Route::get('activities/{id}', [LogController::class, 'show'])->whereNumber('id');
 });
-// ===== Phê duyệt Ban giám hiệu =====
-Route::prefix('gv/approvals')
-    ->middleware(StaffToken::class)
-    ->controller(BghApprovalHubController::class)
-    ->group(function () {
-        Route::get('/', 'index');
-        Route::get('stats', 'stats');
-        Route::get('history', 'history');
-        Route::get('report', 'report');
-        Route::get('delegations', 'delegations');
-        Route::post('delegations', 'storeDelegation')->middleware('throttle:20,1');
-        Route::post('delegations/{id}/revoke', 'revokeDelegation')->whereNumber('id');
-        Route::post('bulk', 'bulk')->middleware('throttle:20,1');
-        Route::post('{type}/{id}/decide', 'decide')->whereNumber('id')->middleware('throttle:60,1');
-    });
+        // ========== PHÊ DUYỆT (Ban giám hiệu) – hộp phê duyệt thống nhất ==========
+        Route::prefix('approvals')->withoutMiddleware([StaffToken::class])->controller(BghApprovalCenterController::class)->group(function () {
+            Route::get('overview', 'overview');
+            Route::get('templates', 'templates');
+            Route::get('types', 'types');
+            Route::put('types/{code}', 'updateType')->where('code', '[a-z_]+');
+            Route::get('delegations', 'delegations');
+            Route::post('delegations', 'createDelegation');
+            Route::delete('delegations/{id}', 'revokeDelegation')->whereNumber('id');
+            Route::get('staff', 'staff');
+            Route::post('sync', 'sync')->middleware('throttle:60,1');
+            Route::get('report', 'report');
+            Route::get('export', 'export');
+            Route::post('bulk', 'bulk')->middleware('throttle:30,1');
+            Route::get('/', 'list');
+            Route::get('{id}', 'show')->whereNumber('id');
+            Route::post('{id}/decide', 'decide')->whereNumber('id')->middleware('throttle:60,1');
+            Route::post('{id}/comment', 'comment')->whereNumber('id')->middleware('throttle:60,1');
+        });
 // ===== Khu Giáo vụ / Ban giám hiệu =====
 Route::prefix('gv')->group(function () {
     Route::post('login', [AcademicApiController::class, 'login'])->middleware('throttle:20,1');
@@ -474,20 +486,64 @@ Route::prefix('gv')->group(function () {
             Route::get('homeroom/leaves', [TeacherPortalController::class, 'leaves']);
             Route::post('homeroom/leaves/{id}/review', [TeacherPortalController::class, 'reviewLeave'])->whereNumber('id')->middleware('throttle:60,1');
 
- // Điểm danh từng tiết: nộp & khóa gửi về nhà trường
-            Route::prefix('att')->group(function () {
-                Route::get('overview', [TeacherAttendanceController::class, 'overview']);
-                Route::get('missing', [TeacherAttendanceController::class, 'missing']);
-                Route::get('week', [TeacherAttendanceController::class, 'week']);
-                Route::get('roster', [TeacherAttendanceController::class, 'roster']);
-                Route::post('save', [TeacherAttendanceController::class, 'save'])->middleware('throttle:60,1');
-                Route::post('submit', [TeacherAttendanceController::class, 'submit'])->middleware('throttle:60,1');
-                Route::post('reopen-request', [TeacherAttendanceController::class, 'reopenRequest'])->middleware('throttle:20,1');
-                Route::get('history', [TeacherAttendanceController::class, 'history']);
-                Route::get('stats', [TeacherAttendanceController::class, 'stats']);
-                Route::get('student/{id}', [TeacherAttendanceController::class, 'student'])->whereNumber('id');
-                Route::get('homeroom', [TeacherAttendanceController::class, 'homeroom']);
+            // Sổ đầu bài – URL: /api/gv/teacher/lesson-log/...
+            Route::prefix('lesson-log')->controller(LessonLogController::class)->group(function () {
+                Route::get('meta', 'meta');
+                Route::get('students', 'students');
+                Route::get('week', 'week');
+                Route::get('stats', 'stats');
+                Route::get('export', 'export');
+                Route::post('week/confirm', 'confirmWeek')->middleware('throttle:30,1');
+                Route::post('week/reopen', 'reopenWeek')->middleware('throttle:30,1');
+
+                Route::get('/', 'index');
+                Route::post('/', 'store')->middleware('throttle:120,1');
+                Route::get('{id}', 'show')->whereNumber('id');
+                Route::put('{id}', 'update')->whereNumber('id');
+                Route::delete('{id}', 'destroy')->whereNumber('id');
+                Route::post('{id}/sign', 'sign')->whereNumber('id');
+                Route::post('{id}/unsign', 'unsign')->whereNumber('id');
+                Route::post('{id}/reopen', 'reopen')->whereNumber('id');
+                Route::post('{id}/comment', 'comment')->whereNumber('id')->middleware('throttle:60,1');
+                Route::put('{id}/homeroom-note', 'homeroomNote')->whereNumber('id');
             });
+
+            // Alias Sổ đầu bài cho GVCN: /api/gv/teacher/homeroom/lesson-log/...
+            Route::prefix('homeroom/lesson-log')->controller(LessonLogController::class)->group(function () {
+                Route::get('meta', 'meta');
+                Route::get('students', 'students');
+                Route::get('week', 'week');
+                Route::get('stats', 'stats');
+                Route::get('export', 'export');
+                Route::post('week/confirm', 'confirmWeek')->middleware('throttle:30,1');
+                Route::post('week/reopen', 'reopenWeek')->middleware('throttle:30,1');
+                Route::get('/', 'index');
+                Route::post('/', 'store')->middleware('throttle:120,1');
+                Route::get('{id}', 'show')->whereNumber('id');
+                Route::put('{id}', 'update')->whereNumber('id');
+                Route::delete('{id}', 'destroy')->whereNumber('id');
+                Route::post('{id}/sign', 'sign')->whereNumber('id');
+                Route::post('{id}/unsign', 'unsign')->whereNumber('id');
+                Route::post('{id}/reopen', 'reopen')->whereNumber('id');
+                Route::post('{id}/comment', 'comment')->whereNumber('id')->middleware('throttle:60,1');
+                Route::put('{id}/homeroom-note', 'homeroomNote')->whereNumber('id');
+            });
+
+// Điểm danh từng tiết: nộp & khóa gửi về nhà trường
+Route::prefix('att')->group(function () {
+    Route::get('today', [TeacherAttendanceController::class, 'overview']); // frontend gọi /att/today
+    Route::get('overview', [TeacherAttendanceController::class, 'overview']);
+    Route::get('missing', [TeacherAttendanceController::class, 'missing']);
+    Route::get('week', [TeacherAttendanceController::class, 'week']);
+    Route::get('roster', [TeacherAttendanceController::class, 'roster']);
+    Route::post('save', [TeacherAttendanceController::class, 'save'])->middleware('throttle:60,1');
+    Route::post('submit', [TeacherAttendanceController::class, 'submit'])->middleware('throttle:60,1');
+    Route::post('reopen-request', [TeacherAttendanceController::class, 'reopenRequest'])->middleware('throttle:20,1');
+    Route::get('history', [TeacherAttendanceController::class, 'history']);
+    Route::get('stats', [TeacherAttendanceController::class, 'stats']);
+    Route::get('student/{id}', [TeacherAttendanceController::class, 'student'])->whereNumber('id');
+    Route::get('homeroom', [TeacherAttendanceController::class, 'homeroom']);
+});
 
  Route::prefix('tt')->group(function () {
                 Route::get('overview', [TeacherTimetableController::class, 'overview']);
@@ -670,6 +726,8 @@ Route::prefix('gv/plans')->middleware(NoticeAccess::class)->group(function () {
 // ===== Khu Kế toán: Đợt thu / Kỳ thu =====
 // ===== Thi đua của Ban Giám hiệu (/bgh/rewards): /api/gv/rewards/... =====
 Route::prefix('gv/rewards')->group(base_path('Modules/Rewards/Routes/api.php'));
+// ===== Sổ đầu bài (GVCN): /api/gv/lesson-log/... =====
+Route::prefix('gv/lesson-log')->group(base_path('Modules/LessonLog/Routes/api.php'));
 Route::prefix('kt')->group(function () {
     Route::post('login', [FeePeriodController::class, 'login'])->middleware('throttle:20,1');
 
@@ -754,6 +812,37 @@ Route::prefix('kt')->group(function () {
     });
 });
 
+/* ===== (ĐÃ TẮT) Khối finance cũ – trùng đường dẫn với khối mới bên dưới =====
+// /api/admin/finance/...  – Học phí & Tài chính (cổng Admin). Nạp từ routes/api.php.
+Route::prefix('admin/finance')->middleware(['auth:sanctum', AdminAccess::class])->group(function () {
+    Route::get('meta', [C::class, 'meta']);
+    Route::get('overview', [C::class, 'overview']);
+
+    Route::get('invoices', [C::class, 'invoices']);
+    Route::get('invoices/{id}', [C::class, 'invoice'])->whereNumber('id');
+
+    Route::get('payments', [C::class, 'payments']);
+    Route::post('payments/{id}/confirm', [C::class, 'confirmPayment'])->whereNumber('id');
+    Route::post('payments/{id}/reject', [C::class, 'rejectPayment'])->whereNumber('id');
+
+    Route::get('debts', [C::class, 'debts']);
+    Route::get('debts/export', [C::class, 'exportDebts']);
+    Route::get('debts/{studentId}/notes', [C::class, 'notes'])->whereNumber('studentId');
+    Route::post('debts/{studentId}/notes', [C::class, 'addNote'])->whereNumber('studentId');
+    Route::post('debts/notes/{id}/resolve', [C::class, 'resolveNote'])->whereNumber('id');
+
+    Route::get('periods', [C::class, 'periods']);
+    Route::post('periods/{id}/status', [C::class, 'setPeriodStatus'])->whereNumber('id');
+    Route::get('fee-items', [C::class, 'feeItems']);
+
+    Route::get('waivers', [C::class, 'waivers']);
+    Route::get('disputes', [C::class, 'disputes']);
+    Route::post('disputes/{id}/reply', [C::class, 'replyDispute'])->whereNumber('id');
+
+    Route::get('audit', [C::class, 'audit']);
+});
+===== hết khối cũ ===== */
+
 // ===== Admin: Thông tin cá nhân + Hộp thư (THÊM MỚI) =====
 // Đăng ký cả /api/admin/profile lẫn /api/v1/admin/profile
 foreach (['admin/profile', 'v1/admin/profile'] as $profilePrefix) {
@@ -836,6 +925,46 @@ foreach (['admin/checks', 'v1/admin/checks'] as $checksPrefix) {
     });
 }
 
+// ===== Admin: Tài chính & Học phí (/api/admin/finance và /api/v1/admin/finance) =====
+foreach (['admin/finance', 'v1/admin/finance'] as $financePrefix) {
+    Route::middleware(['auth:sanctum', \App\Http\Middleware\AdminAccess::class])->prefix($financePrefix)->controller(AdminFinanceController::class)->group(function () {
+        Route::get('meta', 'meta');
+        Route::get('overview', 'overview');
+
+        Route::get('invoices', 'invoices');
+        Route::get('invoices/{id}', 'invoice')->whereNumber('id');
+        Route::post('invoices/{id}/cancel', 'invoiceCancel')->whereNumber('id')->middleware('throttle:30,1');
+
+        Route::get('payments', 'payments');
+        Route::get('reconcile', 'reconcile');
+        Route::get('debts', 'debts');
+
+        Route::get('items', 'items');
+        Route::post('items', 'itemSave')->middleware('throttle:60,1');
+        Route::put('items/{id}', 'itemSave')->whereNumber('id');
+        Route::delete('items/{id}', 'itemDelete')->whereNumber('id');
+
+        Route::get('students/search', 'studentSearch');
+        Route::get('waivers', 'waivers');
+        Route::post('waivers', 'waiverSave')->middleware('throttle:60,1');
+        Route::put('waivers/{id}', 'waiverSave')->whereNumber('id');
+        Route::delete('waivers/{id}', 'waiverDelete')->whereNumber('id');
+
+        Route::get('disputes', 'disputes');
+        Route::post('disputes/{id}/reply', 'disputeReply')->whereNumber('id')->middleware('throttle:60,1');
+
+        Route::get('expenses', 'expenses');
+        Route::post('expenses', 'expenseSave')->middleware('throttle:60,1');
+        Route::put('expenses/{id}', 'expenseSave')->whereNumber('id');
+        Route::delete('expenses/{id}', 'expenseDelete')->whereNumber('id');
+
+        Route::get('report', 'report');
+        Route::get('settings', 'settings');
+        Route::put('settings', 'settingsSave');
+        Route::get('audit', 'audits');
+    });
+}
+
 // ===== Admin: Nhật ký hệ thống (/admin/logs) =====
 require __DIR__ . '/system_logs.php';
 
@@ -848,6 +977,46 @@ Route::prefix('teacher')->middleware(StaffToken::class)->group(function () {
     Route::post('homeroom/leaves/{id}/review', [TeacherPortalController::class, 'reviewLeave'])
         ->whereNumber('id')
         ->middleware('throttle:60,1');
+
+    // Sổ đầu bài – URL: /api/teacher/lesson-log và /api/teacher/homeroom/lesson-log
+    Route::prefix('lesson-log')->controller(LessonLogController::class)->group(function () {
+        Route::get('meta', 'meta');
+        Route::get('students', 'students');
+        Route::get('week', 'week');
+        Route::get('stats', 'stats');
+        Route::get('export', 'export');
+        Route::post('week/confirm', 'confirmWeek')->middleware('throttle:30,1');
+        Route::post('week/reopen', 'reopenWeek')->middleware('throttle:30,1');
+        Route::get('/', 'index');
+        Route::post('/', 'store')->middleware('throttle:120,1');
+        Route::get('{id}', 'show')->whereNumber('id');
+        Route::put('{id}', 'update')->whereNumber('id');
+        Route::delete('{id}', 'destroy')->whereNumber('id');
+        Route::post('{id}/sign', 'sign')->whereNumber('id');
+        Route::post('{id}/unsign', 'unsign')->whereNumber('id');
+        Route::post('{id}/reopen', 'reopen')->whereNumber('id');
+        Route::post('{id}/comment', 'comment')->whereNumber('id')->middleware('throttle:60,1');
+        Route::put('{id}/homeroom-note', 'homeroomNote')->whereNumber('id');
+    });
+    Route::prefix('homeroom/lesson-log')->controller(LessonLogController::class)->group(function () {
+        Route::get('meta', 'meta');
+        Route::get('students', 'students');
+        Route::get('week', 'week');
+        Route::get('stats', 'stats');
+        Route::get('export', 'export');
+        Route::post('week/confirm', 'confirmWeek')->middleware('throttle:30,1');
+        Route::post('week/reopen', 'reopenWeek')->middleware('throttle:30,1');
+        Route::get('/', 'index');
+        Route::post('/', 'store')->middleware('throttle:120,1');
+        Route::get('{id}', 'show')->whereNumber('id');
+        Route::put('{id}', 'update')->whereNumber('id');
+        Route::delete('{id}', 'destroy')->whereNumber('id');
+        Route::post('{id}/sign', 'sign')->whereNumber('id');
+        Route::post('{id}/unsign', 'unsign')->whereNumber('id');
+        Route::post('{id}/reopen', 'reopen')->whereNumber('id');
+        Route::post('{id}/comment', 'comment')->whereNumber('id')->middleware('throttle:60,1');
+        Route::put('{id}/homeroom-note', 'homeroomNote')->whereNumber('id');
+    });
 });
 
 // Alias thêm /api/v1/teacher/...
@@ -859,6 +1028,46 @@ Route::prefix('v1/teacher')->middleware(StaffToken::class)->group(function () {
     Route::post('homeroom/leaves/{id}/review', [TeacherPortalController::class, 'reviewLeave'])
         ->whereNumber('id')
         ->middleware('throttle:60,1');
+
+    // Sổ đầu bài – URL: /api/teacher/lesson-log và /api/teacher/homeroom/lesson-log
+    Route::prefix('lesson-log')->controller(LessonLogController::class)->group(function () {
+        Route::get('meta', 'meta');
+        Route::get('students', 'students');
+        Route::get('week', 'week');
+        Route::get('stats', 'stats');
+        Route::get('export', 'export');
+        Route::post('week/confirm', 'confirmWeek')->middleware('throttle:30,1');
+        Route::post('week/reopen', 'reopenWeek')->middleware('throttle:30,1');
+        Route::get('/', 'index');
+        Route::post('/', 'store')->middleware('throttle:120,1');
+        Route::get('{id}', 'show')->whereNumber('id');
+        Route::put('{id}', 'update')->whereNumber('id');
+        Route::delete('{id}', 'destroy')->whereNumber('id');
+        Route::post('{id}/sign', 'sign')->whereNumber('id');
+        Route::post('{id}/unsign', 'unsign')->whereNumber('id');
+        Route::post('{id}/reopen', 'reopen')->whereNumber('id');
+        Route::post('{id}/comment', 'comment')->whereNumber('id')->middleware('throttle:60,1');
+        Route::put('{id}/homeroom-note', 'homeroomNote')->whereNumber('id');
+    });
+    Route::prefix('homeroom/lesson-log')->controller(LessonLogController::class)->group(function () {
+        Route::get('meta', 'meta');
+        Route::get('students', 'students');
+        Route::get('week', 'week');
+        Route::get('stats', 'stats');
+        Route::get('export', 'export');
+        Route::post('week/confirm', 'confirmWeek')->middleware('throttle:30,1');
+        Route::post('week/reopen', 'reopenWeek')->middleware('throttle:30,1');
+        Route::get('/', 'index');
+        Route::post('/', 'store')->middleware('throttle:120,1');
+        Route::get('{id}', 'show')->whereNumber('id');
+        Route::put('{id}', 'update')->whereNumber('id');
+        Route::delete('{id}', 'destroy')->whereNumber('id');
+        Route::post('{id}/sign', 'sign')->whereNumber('id');
+        Route::post('{id}/unsign', 'unsign')->whereNumber('id');
+        Route::post('{id}/reopen', 'reopen')->whereNumber('id');
+        Route::post('{id}/comment', 'comment')->whereNumber('id')->middleware('throttle:60,1');
+        Route::put('{id}/homeroom-note', 'homeroomNote')->whereNumber('id');
+    });
 });
 
 // ===== THÊM MỚI: Xét thi đua – Khen thưởng (GVCN) =====
@@ -918,3 +1127,22 @@ Route::any('{aliasPath}', function (Request $r) {
     $sub->headers->set('X-Api-Alias', '1');
     return app()->handle($sub);
 })->where('aliasPath', '.*');
+// ===== Điểm danh GV bộ môn – frontend /teacher/attendance =====
+// Khớp URL frontend: /api/v1/gv/teacher/att/...
+Route::prefix('v1/gv/teacher/att')->middleware(StaffToken::class)->group(function () {
+    Route::get('today', [TeacherAttendanceController::class, 'overview']);
+    // "today" = overview ngày hiện tại (frontend đang gọi endpoint này)
+    Route::get('today',        [TeacherAttendanceController::class, 'overview']);
+    Route::get('overview',     [TeacherAttendanceController::class, 'overview']);
+    Route::get('missing',      [TeacherAttendanceController::class, 'missing']);
+    Route::get('week',         [TeacherAttendanceController::class, 'week']);
+    Route::get('roster',       [TeacherAttendanceController::class, 'roster']);
+    Route::post('save',        [TeacherAttendanceController::class, 'save'])->middleware('throttle:60,1');
+    Route::post('submit',      [TeacherAttendanceController::class, 'submit'])->middleware('throttle:30,1');
+    Route::post('reopen',      [TeacherAttendanceController::class, 'reopenRequest'])->middleware('throttle:20,1');
+    Route::get('history',      [TeacherAttendanceController::class, 'history']);
+    Route::get('stats',        [TeacherAttendanceController::class, 'stats']);
+    Route::get('student/{id}', [TeacherAttendanceController::class, 'student'])->whereNumber('id');
+    Route::get('homeroom',     [TeacherAttendanceController::class, 'homeroom']);
+});
+

@@ -1,0 +1,65 @@
+/* ===== Tài chính & Học phí – Admin (/admin/finance) — tiền tố fi-, dùng chung nền với attendance.css ===== */
+/* Tông xanh ngọc – vàng để phân biệt khu tài chính */
+.fi { --indigo:#047857; --sky:#0d9488; --bg:#eefaf5; --line:#d3eadf; --soft:#f1faf6; background: linear-gradient(180deg,#e2f6ec 0,var(--bg) 280px); }
+.fi .ta-hero { background: linear-gradient(120deg,#022c22 0,#064e3b 52%,#047857 100%); }
+.fi .ta-hero::after { background: radial-gradient(circle, rgba(250,204,21,.22), transparent 70%); }
+.fi .ta-nav a.on { background: var(--bg); color: #047857; }
+.fi .ta-btn.primary { background: linear-gradient(135deg,#047857,#0d9488); box-shadow: 0 6px 16px -8px #047857; }
+.fi .ta-btn.hero { color: #065f46; background: #fff; box-shadow: none; }
+.fi .ta-tabs button.on, .fi .ta-seg button.on { color: #fff; }
+.fi .ta-tabs button.on { background: linear-gradient(135deg,#047857,#0d9488); } .fi .ta-seg button.on { background: #fff; color: #047857; }
+.fi .ta-switch.on .trk { background: linear-gradient(135deg,#047857,#0d9488); }
+.fi .ta-field input:focus, .fi .ta-field select:focus, .fi .ta-field textarea:focus, .fi .ta-filters select:focus { border-color: #34d399; box-shadow: 0 0 0 4px rgba(16,185,129,.16); }
+.fi .ta-spin { border-top-color: #047857; } .fi .ta-link { color: #047857; }
+.fi .ta-gate { background: radial-gradient(circle at 20% 10%, #a7f3d0, transparent 50%), radial-gradient(circle at 90% 90%, #fde68a, transparent 50%), #f1faf6; }
+.fi .ta-gate-ic { background: linear-gradient(135deg,#047857,#0d9488); }
+.t-gold { --c:#b45309; --cs:#fef3c7; }
+
+.fi-year { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.32); color: #fff; border-radius: 12px; padding: 0 10px; }
+.fi-year select { background: transparent; border: 0; color: #fff; font-weight: 700; padding: 9px 4px; outline: none; cursor: pointer; } .fi-year option { color: #0f172a; }
+
+/* thẻ số liệu lớn */
+.fi-kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; } .fi-kpis.four { grid-template-columns: repeat(4, 1fr); }
+.fi-kpi { position: relative; overflow: hidden; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; text-decoration: none; color: var(--ink); transition: transform .15s, box-shadow .15s; display: block; }
+a.fi-kpi:hover { transform: translateY(-2px); box-shadow: 0 14px 28px -18px var(--c); }
+.fi-kpi::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--c); }
+.fi-kpi .top { display: flex; justify-content: space-between; align-items: center; } .fi-kpi small { font-size: 12px; font-weight: 700; color: var(--mute); }
+.fi-kpi .ic { width: 34px; height: 34px; border-radius: 11px; background: var(--cs); color: var(--c); display: grid; place-items: center; }
+.fi-kpi b { display: block; font-size: 24px; font-weight: 800; line-height: 1.2; margin: 6px 0 2px; letter-spacing: -.3px; } .fi-kpi em { font-style: normal; font-size: 12px; color: var(--mute); }
+.fi-kpi.hero { background: linear-gradient(135deg,#047857,#0d9488); color: #fff; border: 0; } .fi-kpi.hero small, .fi-kpi.hero em { color: rgba(255,255,255,.85); } .fi-kpi.hero .ic { background: rgba(255,255,255,.2); color: #fff; } .fi-kpi.hero::before { display: none; }
+
+/* biểu đồ */
+.fi-area { width: 100%; height: 210px; display: block; } .fi-area .gl { stroke: #dbeee4; stroke-width: 1; } .fi-area .gt { font-size: 10.5px; fill: #6b8a7c; }
+.fi-legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink2); margin-bottom: 8px; } .fi-legend span { display: inline-flex; align-items: center; gap: 6px; } .fi-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.fi-gb { display: flex; align-items: flex-end; gap: 14px; padding-top: 6px; overflow-x: auto; } .fi-gb > div { flex: 1; min-width: 46px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 5px; }
+.fi-gb .bars { flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 4px; } .fi-gb .bars i { width: 38%; max-width: 26px; min-height: 3px; border-radius: 6px 6px 2px 2px; display: block; } .fi-gb small { font-size: 11.5px; color: var(--mute); font-weight: 600; white-space: nowrap; }
+.fi-segs { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: #e2efe8; margin-bottom: 10px; } .fi-segs i { display: block; }
+.fi-hb { display: flex; flex-direction: column; gap: 10px; } .fi-hb > div { display: grid; grid-template-columns: minmax(90px, 160px) 1fr 74px; gap: 10px; align-items: center; font-size: 13px; }
+.fi-hb span { font-weight: 600; } .fi-hb span small { display: block; color: var(--mute); font-weight: 500; font-size: 11.5px; } .fi-hb .trk { height: 9px; border-radius: 999px; background: #dff0e7; overflow: hidden; } .fi-hb .trk i { display: block; height: 100%; border-radius: 999px; background: var(--c); } .fi-hb b { text-align: right; }
+
+/* tiện ích */
+.fi-grid { display: grid; gap: 18px; align-items: start; } .fi-grid.g2 { grid-template-columns: 1fr 1fr; } .fi-grid.g21 { grid-template-columns: 2fr 1fr; } .fi-grid.g3 { grid-template-columns: repeat(3, 1fr); }
+.fi-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.fi-money { font-variant-numeric: tabular-nums; white-space: nowrap; } .fi-money.r { color: #be123c; font-weight: 800; } .fi-money.g { color: #047857; font-weight: 800; }
+.fi-sum { display: flex; gap: 26px; flex-wrap: wrap; background: linear-gradient(135deg,#e2f6ec,#f1faf6); border: 1px solid var(--line); border-radius: 16px; padding: 12px 20px; } .fi-sum div small { display: block; font-size: 12px; color: var(--mute); font-weight: 600; } .fi-sum div b { font-size: 18px; }
+.fi-h4 { font-size: 13.5px; font-weight: 800; margin: 20px 0 8px; }
+.fi-note { padding: 9px 12px; border-radius: 12px; background: var(--soft); font-size: 13px; margin-bottom: 8px; } .fi-note p { color: var(--ink2); margin-top: 4px; }
+.fi-dr-top { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+.fi-mini3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; } .fi-mini3 div { background: var(--soft); border-radius: 14px; padding: 10px 12px; } .fi-mini3 small { display: block; font-size: 11.5px; color: var(--mute); font-weight: 600; } .fi-mini3 b { font-size: 15px; } .fi-mini3 .g b { color: #047857; } .fi-mini3 .r b { color: #be123c; }
+.fi-pays { display: flex; flex-direction: column; gap: 8px; } .fi-pays li { display: flex; justify-content: space-between; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; } .fi-pays small { display: block; color: var(--mute); font-size: 12px; margin-top: 2px; }
+.fi-alerts { display: flex; flex-direction: column; gap: 10px; } .fi-alerts a { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 14px; background: var(--cs); color: var(--c); text-decoration: none; font-weight: 700; font-size: 13px; border-left: 4px solid var(--c); } .fi-alerts a span { color: var(--ink2); font-weight: 500; display: block; font-size: 12.5px; }
+.fi-ok { display: flex; align-items: center; gap: 10px; padding: 14px; border-radius: 14px; background: #ecfdf5; color: #047857; font-weight: 700; }
+.fi-bucket { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; } .fi-bucket button { text-align: left; background: #fff; border: 2px solid var(--line); border-radius: 16px; padding: 12px 14px; transition: border-color .12s, transform .12s; } .fi-bucket button:hover { transform: translateY(-2px); }
+.fi-bucket button.on { border-color: var(--c); background: var(--cs); } .fi-bucket small { display: block; font-size: 11.5px; font-weight: 700; color: var(--c); } .fi-bucket b { display: block; font-size: 17px; margin-top: 3px; } .fi-bucket em { font-style: normal; font-size: 12px; color: var(--mute); }
+.fi-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.fi-card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 8px; border-top: 4px solid var(--c); }
+.fi-card h4 { font-size: 14.5px; font-weight: 800; } .fi-card p { font-size: 13px; color: var(--ink2); white-space: pre-wrap; } .fi-card footer { display: flex; gap: 8px; margin-top: auto; flex-wrap: wrap; }
+.fi-bank { border-radius: 20px; padding: 20px 22px; color: #fff; background: linear-gradient(135deg,#064e3b,#047857 55%,#0d9488); position: relative; overflow: hidden; max-width: 420px; box-shadow: 0 20px 40px -24px #047857; }
+.fi-bank::after { content: ""; position: absolute; right: -40px; top: -60px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(250,204,21,.3), transparent 70%); }
+.fi-bank small { opacity: .8; font-size: 11.5px; letter-spacing: .5px; text-transform: uppercase; } .fi-bank b { display: block; font-size: 22px; letter-spacing: 2px; margin: 4px 0 12px; } .fi-bank div { position: relative; z-index: 1; }
+.fi-recon td.n { text-align: right; } .fi-recon th.n { text-align: right; }
+.fi-twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 1180px) { .fi-kpis { grid-template-columns: repeat(3, 1fr); } .fi-bucket { grid-template-columns: repeat(3, 1fr); } .fi-grid.g3 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 900px) { .fi-grid.g2, .fi-grid.g21, .fi-twocol { grid-template-columns: 1fr; } .fi-kpis.four { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px) { .fi-kpis, .fi-bucket, .fi-grid.g3 { grid-template-columns: 1fr 1fr; } .fi-hb > div { grid-template-columns: 90px 1fr 60px; } }
+@media print { .fi .ta-hero, .fi .ta-toast, .fi-noprint { display: none !important; } .fi { background: #fff; } .ta-main { padding: 0; } }
