@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 /** API Sơ đồ & Sĩ số lớp: /api/v1/homeroom/seating (NEXT_PUBLIC_API_URL mặc định /api). */
 const API = (process.env.NEXT_PUBLIC_API_URL || '/api').replace(/\/$/, '');
 const BASE = `${API}/v1/homeroom/seating`;
-const TOKEN_KEYS = ['gv_token', 'staff_token', 'token', 'access_token'];
+const TOKEN_KEYS = ['gv_token', 'staff_token', 'sm_staff_token', 'token', 'access_token', 'accessToken', 'bgh_token', 'jwt'];
 
 export class ApiError extends Error {
     status: number;
@@ -18,7 +18,7 @@ export class ApiError extends Error {
 export function getToken(): string | null {
     if (typeof window === 'undefined') return null;
     for (const k of TOKEN_KEYS) {
-        const v = localStorage.getItem(k);
+        const v = localStorage.getItem(k) ?? sessionStorage.getItem(k);
         if (v && v !== 'demo-token') return v;
     }
     return null;

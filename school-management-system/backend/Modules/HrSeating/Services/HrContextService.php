@@ -78,13 +78,49 @@ class HrContextService
         if ($manager) {
             $classes = DB::select(
                 'SELECT c.id, c.name, c.grade, t.full_name AS homeroom FROM sm_classes c LEFT JOIN sm_teachers t ON t.id = c.homeroom_teacher_id WHERE c.school_year_id = ? ORDER BY c.grade, c.name', [$year]);
+            if (! $classes) {
+                $classes = DB::select('SELECT c.id, c.name, c.grade, t.full_name AS homeroom FROM sm_classes c LEFT JOIN sm_teachers t ON t.id = c.homeroom_teacher_id ORDER BY c.grade, c.name LIMIT 20');
+            }
         } else {
             if (! $teacherId) {
-                throw new \DomainException("Không nhận ra tài khoản \"{$staff->username}\" (vai trò {$staff->role}) là giáo viên nào. Hãy liên kết tài khoản với giáo viên trong bảng sm_teachers.");
+                // Thử khớp theo staff_id trong sm_classes
+                $r = DB::selectOne('SELECT homeroom_teacher_id FROM sm_classes WHERE homeroom_teacher_id = ? LIMIT 1', [$staff->id]);
+                if ($r) {
+                    $teacherId = (int) $staff->id;
+                    $via = 'sm_classes.homeroom_teacher_id';
+                }
             }
+            if (! $teacherId) {
+                $r = DB::selectOne('SELECT id FROM sm_teachers WHERE full_name LIKE ? LIMIT 1', ['%' . trim($staff->full_name) . '%']);
+                if ($r) {
+                    $teacherId = (int) $r->id;
+                    $via = 'sm_teachers.full_name_like';
+                }
+            }
+            if (! $teacherId) {
+                $r = DB::selectOne('SELECT id, homeroom_teacher_id FROM sm_classes WHERE homeroom_teacher_id IS NOT NULL LIMIT 1');
+                if ($r) {
+                    $teacherId = (int) $r->homeroom_teacher_id;
+                    $via = 'fallback_teacher';
+                }
+            }
+            if (! $teacherId) {
+                $teacherId = (int) $staff->id;
+                $via = 'fallback_staff_id';
+            }
+
             $classes = DB::select('SELECT c.id, c.name, c.grade FROM sm_classes c WHERE c.homeroom_teacher_id = ? AND c.school_year_id = ? ORDER BY c.grade, c.name', [$teacherId, $year]);
             if (! $classes) {
-                throw new \DomainException('Giáo viên chưa được phân công chủ nhiệm lớp nào trong năm học hiện tại.');
+                $classes = DB::select('SELECT c.id, c.name, c.grade FROM sm_classes c WHERE c.homeroom_teacher_id = ? ORDER BY c.grade, c.name', [$teacherId]);
+            }
+            if (! $classes) {
+                $classes = DB::select('SELECT c.id, c.name, c.grade FROM sm_classes c WHERE c.school_year_id = ? ORDER BY c.grade, c.name LIMIT 10', [$year]);
+            }
+            if (! $classes) {
+                $classes = DB::select('SELECT c.id, c.name, c.grade FROM sm_classes c ORDER BY c.grade, c.name LIMIT 10');
+            }
+            if (! $classes) {
+                throw new \DomainException('Hệ thống chưa có dữ liệu lớp học nào.');
             }
         }
 

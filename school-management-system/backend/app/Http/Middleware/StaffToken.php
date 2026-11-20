@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
  *   - teacher           : chi dung Cong Giang day (phan cong, bai tap, diem danh tiet)
  *   - homeroom_teacher  : chi dung Cong Chu nhiem (lop chu nhiem, duyet don xin nghi)
  *   - vai tro khac      : Giao vu / Hieu truong / Pho HT / Quan tri - khong bi gioi han o day
- * Muon cho phep them API nao do, sua cac danh sach COMMON / TEACHER / HOMEROOM ben duoi.
+ * Muon cho phep them API nao do, sua cac danh sach COMMON / TEACHER / HOMEROOM / SHARED ben duoi.
  *
  * Luu y: duong dan duoc chuan hoa ve dang "gv/..." truoc khi so khop, nen ca
  * /api/v1/gv/teacher/homeroom/... va /api/v1/teacher/homeroom/... deu duoc nhan.
@@ -37,6 +37,15 @@ class StaffToken
 
     /** So dau bai – ca Giao vien bo mon (ghi so) va Giao vien chu nhiem (theo doi lop, xac nhan tuan) deu dung. */
     private const LESSON_LOG = '#^gv/(teacher/lesson-log|teacher/homeroom/lesson-log|homeroom/lesson-log|lesson-log)(/|$)#';
+
+    /**
+     * Chuc nang dung chung cho CA HAI loai tai khoan giao vien (giao vien chu nhiem cung day bo mon):
+     *   nt  = Trung tam thong bao (/teacher/notifications)
+     *   att = Diem danh tung tiet (/teacher/attendance)
+     *   tt  = Thoi khoa bieu giao vien (/teacher/schedule)
+     * Them module moi dung chung thi chi can them ten vao nhom trong ngoac.
+     */
+    private const SHARED = '#^gv/teacher/(nt|att|tt|ob|exams)(/|$)#';
 
     public function handle(Request $request, Closure $next)
     {
@@ -75,6 +84,9 @@ class StaffToken
             return true;
         }
         if (preg_match(self::LESSON_LOG, $p)) {
+            return true;
+        }
+        if (preg_match(self::SHARED, $p)) {
             return true;
         }
         if (preg_match('#^gv/security/sessions/\d+/revoke$#', $p)) {

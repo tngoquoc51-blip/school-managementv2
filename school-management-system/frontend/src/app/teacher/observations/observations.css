@@ -1,0 +1,80 @@
+/* ===== Dự giờ & đánh giá tiết dạy (/teacher/observations) — tiền tố ob-, dùng chung nền với attendance.css ===== */
+.ob .ta-hero { background: linear-gradient(120deg,#062c43 0,#0b4f6c 55%,#0e7490 100%); }
+.ob .ta-nav em.rose { background: #e11d48; color: #fff; }
+.ob-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } .ob-grid3 { display: grid; grid-template-columns: 1.4fr 1fr 90px; gap: 10px; }
+.ob-g21 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; align-items: start; } .ob-g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; } .ob-g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: start; }
+.ob-row2 { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.ob-link { background: none; border: 0; color: #0369a1; font-weight: 700; cursor: pointer; padding: 6px 0; font-size: 13px; } .ob-ok { color: #059669; font-weight: 700; font-size: 13px; display: flex; gap: 6px; align-items: center; }
+
+/* thẻ số liệu */
+.ob-kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.ob-kpi { position: relative; overflow: hidden; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 15px 17px; text-decoration: none; color: var(--ink); display: block; transition: transform .15s, box-shadow .15s; }
+a.ob-kpi:hover { transform: translateY(-2px); box-shadow: 0 14px 28px -18px var(--c); } .ob-kpi::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--c); }
+.ob-kpi .top { display: flex; justify-content: space-between; align-items: center; } .ob-kpi small { font-size: 12px; font-weight: 700; color: var(--mute); }
+.ob-kpi .ic { width: 34px; height: 34px; border-radius: 11px; background: var(--cs); color: var(--c); display: grid; place-items: center; }
+.ob-kpi b { display: block; font-size: 28px; font-weight: 800; line-height: 1.15; margin: 6px 0 2px; } .ob-kpi em { font-style: normal; font-size: 12px; color: var(--mute); }
+
+/* chỉ tiêu */
+.ob-quota { display: grid; gap: 16px; } .ob-q { display: flex; gap: 16px; align-items: center; } .ob-q h4 { font-size: 14px; font-weight: 800; } .ob-q p { color: var(--mute); font-size: 12.5px; margin: 2px 0 8px; }
+
+/* việc cần xử lý */
+.ob-att { display: flex; flex-direction: column; } .ob-att a { display: flex; gap: 12px; align-items: center; padding: 11px 4px; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink); } .ob-att a:last-child { border: 0; }
+.ob-att a:hover { background: var(--soft); } .ob-att i { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; flex: none; background: var(--cs); color: var(--c); } .ob-att b { display: block; font-size: 13.5px; } .ob-att small { color: var(--mute); }
+
+/* hàng buổi dự giờ */
+.ob-date { width: 56px; flex: none; border-radius: 14px; background: #e0f2fe; color: #0369a1; display: grid; place-items: center; padding: 7px 0; text-align: center; line-height: 1.1; } .ob-date b { font-size: 21px; font-weight: 800; } .ob-date small { font-size: 11px; font-weight: 700; }
+.ob-date.rose { background: #ffe4e9; color: #e11d48; } .ob-date.green { background: #d1fae5; color: #059669; } .ob-date.amber { background: #fef3c7; color: #d97706; } .ob-date.slate { background: #e2e8f0; color: #64748b; }
+.ob-srow { display: flex; gap: 14px; align-items: center; padding: 13px 16px; border-bottom: 1px solid var(--line); cursor: pointer; } .ob-srow:hover { background: var(--soft); } .ob-srow:last-child { border: 0; }
+.ob-sb { flex: 1; min-width: 0; } .ob-st b { font-size: 14.5px; } .ob-sb p { color: var(--mute); font-size: 12.5px; margin: 2px 0 6px; display: flex; gap: 5px; align-items: center; flex-wrap: wrap; } .ob-sm { display: flex; gap: 6px; flex-wrap: wrap; }
+.ob-sr { text-align: right; flex: none; } .ob-sr small { display: block; color: var(--mute); font-size: 11.5px; margin-top: 4px; } .ob-avs { display: flex; justify-content: flex-end; } .ob-avs .ta-av { margin-left: -8px; border: 2px solid #fff; } .ob-avs .ta-av:first-child { margin-left: 0; }
+
+/* chọn người */
+.ob-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; } .ob-chips:empty { display: none; }
+.ob-chip { display: inline-flex; align-items: center; gap: 7px; padding: 4px 8px 4px 5px; border-radius: 999px; border: 1px solid var(--line); background: #fff; font-size: 13px; font-weight: 700; cursor: default; } .ob-chip.on { background: #e0f2fe; border-color: #7dd3fc; color: #0c4a6e; }
+.ob-chip .ta-av { width: 22px; height: 22px; font-size: 9px; } .ob-chip button { border: 0; background: none; cursor: pointer; color: #0369a1; display: grid; place-items: center; padding: 2px; }
+.ob-pick { position: relative; } .ob-pick-in { position: relative; display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; background: #fff; } .ob-pick-in input { border: 0; outline: 0; flex: 1; padding: 10px 0; background: none; }
+.ob-pick-dd { position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 6px); background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 18px 40px -16px rgba(8,47,73,.45); max-height: 260px; overflow: auto; padding: 6px; }
+.ob-pick-dd p { padding: 12px; color: var(--mute); } .ob-pick-dd button { display: flex; gap: 10px; align-items: center; width: 100%; border: 0; background: none; text-align: left; padding: 8px 10px; border-radius: 10px; cursor: pointer; } .ob-pick-dd button:hover { background: var(--soft); } .ob-pick-dd small { display: block; color: var(--mute); }
+.ob-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; } .ob-slots button { text-align: left; border: 1.5px solid var(--line); background: #fff; border-radius: 14px; padding: 10px 12px; cursor: pointer; display: grid; gap: 2px; }
+.ob-slots button:hover:not(:disabled) { border-color: #38bdf8; } .ob-slots button.on { border-color: #0284c7; background: #e0f2fe; } .ob-slots button:disabled { opacity: .5; cursor: not-allowed; } .ob-slots span { font-size: 13px; } .ob-slots small { color: var(--mute); }
+
+/* ngăn chi tiết */
+.ob-dr { display: flex; flex-direction: column; gap: 16px; } .ob-dr-h { display: flex; gap: 6px; flex-wrap: wrap; }
+.ob-note { display: flex; gap: 10px; align-items: center; border-radius: 12px; padding: 10px 13px; font-size: 13px; font-weight: 600; } .ob-note.rose { background: #ffe4e9; color: #be123c; } .ob-note.amber { background: #fef3c7; color: #92400e; } .ob-note.sky { background: #e0f2fe; color: #075985; }
+.ob-kv { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; margin: 0; } .ob-kv dt { font-size: 11.5px; font-weight: 700; color: var(--mute); text-transform: uppercase; letter-spacing: .03em; } .ob-kv dd { margin: 2px 0 0; font-weight: 700; }
+.ob-sec h4 { font-size: 13px; font-weight: 800; margin-bottom: 8px; color: var(--ink2); } .ob-pre { white-space: pre-wrap; line-height: 1.55; }
+.ob-person { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--line); } .ob-person b { display: block; font-size: 13.5px; } .ob-person small { color: var(--mute); } .ob-person .r { margin-left: auto; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.ob-links, .ob-acts { display: flex; gap: 8px; flex-wrap: wrap; } .ob-acts { padding-top: 6px; border-top: 1px solid var(--line); }
+.ob-cm { display: flex; flex-direction: column; gap: 8px; max-height: 230px; overflow: auto; margin-bottom: 8px; } .ob-cm > div { background: var(--soft); border-radius: 12px; padding: 8px 12px; } .ob-cm > div.me { background: #e0f2fe; } .ob-cm b { font-size: 12.5px; } .ob-cm span { font-size: 11.5px; color: var(--mute); margin-left: 8px; } .ob-cm p { margin-top: 2px; white-space: pre-wrap; }
+.ob-cmf { display: flex; gap: 8px; } .ob-cmf input { flex: 1; }
+
+/* lịch tuần */
+.ob-week { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; } .ob-day { background: #fff; border: 1px solid var(--line); border-radius: 16px; min-height: 170px; padding: 10px; } .ob-day.today { border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56,189,248,.18); }
+.ob-day h5 { font-size: 12px; font-weight: 800; color: var(--mute); margin-bottom: 8px; display: flex; justify-content: space-between; } .ob-day.today h5 { color: #0369a1; }
+.ob-ev { width: 100%; text-align: left; border: 0; border-left: 4px solid var(--c, #0284c7); background: var(--cs, #e0f2fe); border-radius: 8px; padding: 6px 8px; margin-bottom: 6px; cursor: pointer; display: block; } .ob-ev b { display: block; font-size: 12.5px; line-height: 1.25; } .ob-ev small { color: #475569; font-size: 11px; }
+.ob-ev.t-amber { --c: #d97706; --cs: #fef3c7; } .ob-ev.t-green { --c: #059669; --cs: #d1fae5; } .ob-ev.t-slate { --c: #64748b; --cs: #e2e8f0; opacity: .7; } .ob-ev.t-rose { --c: #e11d48; --cs: #ffe4e9; }
+.ob-bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; } .ob-bar .grow { flex: 1; min-width: 200px; }
+.ob-find { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; min-width: 220px; } .ob-find input { border: 0; outline: 0; padding: 9px 0; background: none; flex: 1; }
+.ob-fchips { display: flex; gap: 6px; flex-wrap: wrap; } .ob-fchips button { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 5px 12px; font-weight: 700; font-size: 12.5px; cursor: pointer; color: var(--ink2); } .ob-fchips button.on { background: #0369a1; border-color: #0369a1; color: #fff; }
+
+/* phiếu đánh giá */
+.ob-ed { display: grid; grid-template-columns: 1fr 300px; gap: 16px; align-items: start; } .ob-ed-side { position: sticky; top: 12px; display: flex; flex-direction: column; gap: 14px; }
+.ob-grp { background: #fff; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; margin-bottom: 14px; } .ob-grp > h4 { padding: 11px 16px; background: #eaf4fc; font-size: 13.5px; font-weight: 800; color: #0c4a6e; display: flex; justify-content: space-between; }
+.ob-cr { padding: 13px 16px; border-top: 1px solid var(--line); } .ob-cr:first-of-type { border-top: 0; } .ob-cr-h { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; } .ob-cr-h b { font-size: 14px; display: block; } .ob-cr-h small { color: var(--mute); }
+.ob-sc { display: flex; gap: 6px; flex: none; } .ob-sc button { border: 1.5px solid var(--line); background: #fff; border-radius: 11px; padding: 6px 11px; cursor: pointer; font-weight: 800; font-size: 12.5px; color: var(--ink2); min-width: 64px; } .ob-sc button small { display: block; font-size: 10px; font-weight: 600; color: var(--mute); }
+.ob-sc button:hover:not(:disabled) { border-color: var(--c); } .ob-sc button.on { background: var(--c); border-color: var(--c); color: #fff; } .ob-sc button.on small { color: rgba(255,255,255,.85); } .ob-sc button.na.on { background: #64748b; border-color: #64748b; } .ob-sc button:disabled { opacity: .6; cursor: not-allowed; }
+.ob-cr textarea { margin-top: 8px; width: 100%; } .ob-live { text-align: center; } .ob-live .big { font-size: 34px; font-weight: 800; } .ob-save { font-size: 12px; color: var(--mute); text-align: center; }
+
+/* kết quả */
+.ob-hbar { display: grid; grid-template-columns: 190px 1fr 48px; gap: 10px; align-items: center; margin-bottom: 10px; font-size: 13px; } .ob-hbar .trk { height: 10px; border-radius: 999px; background: #e3eef7; overflow: hidden; } .ob-hbar .trk i { display: block; height: 100%; border-radius: 999px; }
+.ob-trend { width: 100%; height: 170px; display: block; } .ob-donut { display: flex; align-items: center; gap: 16px; } .ob-donut ul { list-style: none; display: grid; gap: 6px; padding: 0; margin: 0; } .ob-donut li { display: flex; align-items: center; gap: 8px; font-size: 13px; } .ob-donut li i { width: 10px; height: 10px; border-radius: 3px; } .ob-donut li b { margin-left: auto; padding-left: 12px; }
+.ob-top { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--line); font-size: 13px; } .ob-top:last-child { border: 0; } .ob-top .pc { margin-left: auto; font-weight: 800; }
+.ob-act { display: flex; gap: 12px; align-items: flex-start; padding: 12px 4px; border-bottom: 1px solid var(--line); } .ob-act.done b { text-decoration: line-through; color: var(--mute); } .ob-act .ck { width: 22px; height: 22px; border-radius: 7px; border: 2px solid #94a3b8; background: #fff; cursor: pointer; display: grid; place-items: center; flex: none; color: #fff; margin-top: 1px; } .ob-act.done .ck { background: #059669; border-color: #059669; }
+.ob-act .x { flex: 1; } .ob-act p { color: var(--mute); font-size: 12.5px; margin-top: 3px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+/* tiêu chí */
+.ob-tpls { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; } .ob-tpl { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 16px; cursor: pointer; display: flex; flex-direction: column; gap: 8px; } .ob-tpl:hover { border-color: #38bdf8; box-shadow: 0 12px 26px -18px #0284c7; } .ob-tpl h4 { font-size: 15px; font-weight: 800; } .ob-tpl p { color: var(--mute); font-size: 12.5px; flex: 1; }
+.ob-crow { display: grid; grid-template-columns: 170px 1fr 1fr 80px auto; gap: 8px; align-items: start; padding: 8px 0; border-bottom: 1px dashed var(--line); } .ob-crow input, .ob-crow textarea { width: 100%; } .ob-crow .mv { display: flex; gap: 4px; }
+.ob-tbl-wrap { overflow: auto; } .ob-tbl { width: 100%; border-collapse: collapse; font-size: 13px; } .ob-tbl th { text-align: left; font-size: 11.5px; text-transform: uppercase; letter-spacing: .03em; color: var(--mute); padding: 9px 12px; background: var(--soft); white-space: nowrap; cursor: pointer; } .ob-tbl td { padding: 10px 12px; border-top: 1px solid var(--line); vertical-align: middle; } .ob-tbl tr:hover td { background: #f7fbff; }
+@media (max-width: 1100px) { .ob-kpis { grid-template-columns: repeat(2, 1fr); } .ob-g21, .ob-g2, .ob-g3, .ob-ed { grid-template-columns: 1fr; } .ob-ed-side { position: static; } .ob-week { grid-template-columns: repeat(2, 1fr); } .ob-crow { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px) { .ob-grid2, .ob-grid3, .ob-kv { grid-template-columns: 1fr; } .ob-hbar { grid-template-columns: 110px 1fr 44px; } .ob-sc { flex-wrap: wrap; } }

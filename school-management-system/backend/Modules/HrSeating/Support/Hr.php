@@ -132,4 +132,122 @@ final class Hr
             // bảng nhật ký chung khác cấu trúc: bỏ qua, đã có sm_seat_events
         }
     }
+
+    private static bool $tablesChecked = false;
+
+    public static function ensureTables(): void
+    {
+        if (self::$tablesChecked) {
+            return;
+        }
+        self::$tablesChecked = true;
+
+        try {
+            DB::statement("CREATE TABLE IF NOT EXISTS `sm_seat_layouts` (
+              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+              `class_id` bigint(20) unsigned NOT NULL,
+              `school_year_id` bigint(20) unsigned NOT NULL,
+              `semester` tinyint(3) unsigned NOT NULL DEFAULT 1,
+              `name` varchar(100) NOT NULL,
+              `room_label` varchar(60) DEFAULT NULL,
+              `rows_n` tinyint(3) unsigned NOT NULL DEFAULT 5,
+              `cols_n` tinyint(3) unsigned NOT NULL DEFAULT 4,
+              `seats_per_desk` tinyint(3) unsigned NOT NULL DEFAULT 2,
+              `blocked` longtext DEFAULT NULL,
+              `status` varchar(20) NOT NULL DEFAULT 'draft',
+              `is_active` tinyint(1) NOT NULL DEFAULT 0,
+              `version` int(10) unsigned NOT NULL DEFAULT 1,
+              `published_at` datetime DEFAULT NULL,
+              `note` text DEFAULT NULL,
+              `created_by` bigint(20) unsigned DEFAULT NULL,
+              `created_by_name` varchar(120) DEFAULT NULL,
+              `created_at` timestamp NULL DEFAULT NULL,
+              `updated_at` timestamp NULL DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              KEY `sm_seat_layouts_class_id_is_active_index` (`class_id`,`is_active`),
+              KEY `sm_seat_layouts_class_id_school_year_id_index` (`class_id`,`school_year_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+
+            DB::statement("CREATE TABLE IF NOT EXISTS `sm_seat_assignments` (
+              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+              `layout_id` bigint(20) unsigned NOT NULL,
+              `seat_row` tinyint(3) unsigned NOT NULL,
+              `seat_col` tinyint(3) unsigned NOT NULL,
+              `seat_pos` tinyint(3) unsigned NOT NULL DEFAULT 0,
+              `student_id` bigint(20) unsigned NOT NULL,
+              `locked` tinyint(1) NOT NULL DEFAULT 0,
+              `note` varchar(255) DEFAULT NULL,
+              `created_at` timestamp NULL DEFAULT NULL,
+              `updated_at` timestamp NULL DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              UNIQUE KEY `uq_seat_slot` (`layout_id`,`seat_row`,`seat_col`,`seat_pos`),
+              KEY `sm_seat_assignments_layout_id_student_id_index` (`layout_id`,`student_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+
+            DB::statement("CREATE TABLE IF NOT EXISTS `sm_seat_events` (
+              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+              `class_id` bigint(20) unsigned NOT NULL,
+              `layout_id` bigint(20) unsigned DEFAULT NULL,
+              `action` varchar(60) NOT NULL,
+              `detail` text DEFAULT NULL,
+              `actor_name` varchar(120) DEFAULT NULL,
+              `created_at` timestamp NULL DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              KEY `sm_seat_events_class_id_id_index` (`class_id`,`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+
+            DB::statement("CREATE TABLE IF NOT EXISTS `sm_student_seat_flags` (
+              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+              `student_id` bigint(20) unsigned NOT NULL,
+              `school_year_id` bigint(20) unsigned NOT NULL,
+              `vision` tinyint(1) NOT NULL DEFAULT 0,
+              `hearing` tinyint(1) NOT NULL DEFAULT 0,
+              `tall` tinyint(1) NOT NULL DEFAULT 0,
+              `front_required` tinyint(1) NOT NULL DEFAULT 0,
+              `avoid_ids` longtext DEFAULT NULL,
+              `note` varchar(255) DEFAULT NULL,
+              `updated_at` timestamp NULL DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              UNIQUE KEY `uq_student_flag_year` (`student_id`,`school_year_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+
+            DB::statement("CREATE TABLE IF NOT EXISTS `sm_class_groups` (
+              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+              `class_id` bigint(20) unsigned NOT NULL,
+              `school_year_id` bigint(20) unsigned NOT NULL,
+              `number` tinyint(3) unsigned NOT NULL,
+              `name` varchar(60) NOT NULL,
+              `color` varchar(20) NOT NULL DEFAULT '#1d6fe0',
+              `leader_student_id` bigint(20) unsigned DEFAULT NULL,
+              `created_at` timestamp NULL DEFAULT NULL,
+              `updated_at` timestamp NULL DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              UNIQUE KEY `uq_class_group_num` (`class_id`,`school_year_id`,`number`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+
+            DB::statement("CREATE TABLE IF NOT EXISTS `sm_class_group_members` (
+              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+              `group_id` bigint(20) unsigned NOT NULL,
+              `student_id` bigint(20) unsigned NOT NULL,
+              `created_at` timestamp NULL DEFAULT NULL,
+              `updated_at` timestamp NULL DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              UNIQUE KEY `uq_group_member` (`group_id`,`student_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+
+            DB::statement("CREATE TABLE IF NOT EXISTS `sm_class_officers` (
+              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+              `class_id` bigint(20) unsigned NOT NULL,
+              `school_year_id` bigint(20) unsigned NOT NULL,
+              `role` varchar(40) NOT NULL,
+              `student_id` bigint(20) unsigned NOT NULL,
+              `created_at` timestamp NULL DEFAULT NULL,
+              `updated_at` timestamp NULL DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              UNIQUE KEY `uq_class_officer_role` (`class_id`,`school_year_id`,`role`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+        } catch (\Throwable $e) {
+            // bỏ qua nếu csdl chưa sẵn sàng
+        }
+    }
 }

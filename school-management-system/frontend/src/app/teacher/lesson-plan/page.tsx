@@ -1,8 +1,9 @@
-'use client';
+import type { Metadata } from 'next';
+import LessonPlanApp from './LessonPlanApp';
 
-import LessonLogApp from './LessonLogApp';
+export const metadata: Metadata = { title: 'Kế hoạch bài dạy – Cổng Giáo viên' };
 
-/** /teacher/lesson-plan  → Sổ đầu bài (Giáo viên chủ nhiệm) */
-export default function LessonPlanPage() {
-    return <LessonLogApp />;
+// Không bọc TeacherLayout ở đây: src/app/teacher/layout.tsx (nếu có) đã bọc sẵn.
+export default function Page() {
+    return <LessonPlanApp />;
 }

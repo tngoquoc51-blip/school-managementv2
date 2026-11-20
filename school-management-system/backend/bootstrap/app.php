@@ -21,10 +21,14 @@ return Application::configure(basePath: dirname(__DIR__))
             // Giám sát hệ thống: số liệu request + nhật ký thao tác cho /admin/health
             $middleware->appendToGroup('api', \App\Http\Middleware\RequestMonitor::class);
 
+            // [CÀI ĐẶT HỆ THỐNG] Chế độ bảo trì: chặn API với mọi người trừ super_admin
+            $middleware->appendToGroup('api', \Modules\Setting\Middleware\MaintenanceGuard::class);
+
             // CHỈ bật dòng dưới nếu bạn thật sự truy cập API qua ngrok/proxy và muốn nhật ký ghi đúng IP người dùng
             // (không bật khi chạy thật mà không có proxy, vì sẽ cho phép giả mạo IP):
             // $middleware->trustProxies(at: '*');
         })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // [CÀI ĐẶT HỆ THỐNG] API luôn trả JSON khi lỗi (401/422/404...) thay vì redirect
+        $exceptions->shouldRenderJsonWhen(fn ($request, $e) => $request->is('api/*') || $request->expectsJson());
     })->create();

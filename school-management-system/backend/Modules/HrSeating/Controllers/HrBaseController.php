@@ -5,6 +5,7 @@ namespace Modules\HrSeating\Controllers;
 use App\Core\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\HrSeating\Support\Hr;
 
 /** Lớp cha của các controller Sơ đồ & Sĩ số lớp. Ngữ cảnh (lớp, năm học, người dùng) do middleware HrSeatingAuth dựng. */
 abstract class HrBaseController extends Controller
@@ -13,6 +14,7 @@ abstract class HrBaseController extends Controller
 
     protected function ctx(Request $r): array
     {
+        Hr::ensureTables();
         return $r->attributes->get('hr');
     }
 

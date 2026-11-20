@@ -53,6 +53,8 @@ export const ENTITY_LABELS: Record<string, string> = {
     department: 'Tổ chuyên môn',
     room: 'Phòng học',
     user: 'Người dùng',
+    student: 'Học sinh',
+    class: 'Lớp học',
     role: 'Chức năng',
 };
 
@@ -68,6 +70,12 @@ export const ACTION_LABELS: Record<string, { label: string; tone: 'success' | 'i
     reset_password: { label: 'Đặt lại mật khẩu', tone: 'violet' },
     roles: { label: 'Đổi chức năng', tone: 'info' },
     permissions: { label: 'Đổi quyền', tone: 'info' },
+    enroll: { label: 'Xếp lớp', tone: 'success' },
+    transfer: { label: 'Chuyển lớp', tone: 'violet' },
+    unenroll: { label: 'Gỡ khỏi lớp', tone: 'warning' },
+    auto_assign: { label: 'Xếp lớp tự động', tone: 'info' },
+    view_pii: { label: 'Xem dữ liệu nhạy cảm', tone: 'warning' },
+    remove: { label: 'Xóa vĩnh viễn', tone: 'danger' },
 };
 
 export const ROLE_LABELS: Record<string, string> = {

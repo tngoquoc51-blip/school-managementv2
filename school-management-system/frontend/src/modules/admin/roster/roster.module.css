@@ -1,0 +1,52 @@
+
+/* Bổ sung cho categories.module.css (cùng biến màu --primary…). Chỉ khai báo phần riêng của Học sinh / Lớp học. */
+.yearBar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 6px 0 16px; }
+.yearBar label { font-weight: 800; color: var(--text-2); }
+.gradeChips { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.classGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; margin-top: 14px; }
+.classCard { text-align: left; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow-sm); transition: transform .15s, box-shadow .15s, border-color .15s; display: flex; flex-direction: column; gap: 10px; color: var(--text); }
+.classCard:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--primary); }
+.classTop { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.className { font-size: 26px; font-weight: 900; color: var(--primary); letter-spacing: -0.02em; }
+.classTeacher { font-weight: 700; color: var(--text-2); display: flex; gap: 8px; align-items: center; }
+.meter { height: 9px; border-radius: 99px; background: var(--primary-50); overflow: hidden; }
+.meter > i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--primary), var(--cyan)); }
+.meterOver > i { background: linear-gradient(90deg, #f97316, #dc2626); }
+.meterUnder > i { background: linear-gradient(90deg, #eab308, #f59e0b); }
+.classMeta { display: flex; justify-content: space-between; font-weight: 700; color: var(--muted); }
+.gradeTitle { margin: 22px 0 0; font-size: 20px; font-weight: 800; display: flex; gap: 10px; align-items: center; }
+
+.avatar { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-weight: 900; color: #fff; flex: none; background: linear-gradient(135deg, var(--primary), var(--cyan)); }
+.avatarF { background: linear-gradient(135deg, #d946a8, #f97316); }
+.avatarLg { width: 64px; height: 64px; border-radius: 18px; font-size: 22px; }
+
+.profileHead { display: flex; gap: 16px; align-items: center; padding-bottom: 14px; border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+.profileHead h3 { margin: 0 0 4px; font-size: 22px; font-weight: 900; }
+.subTabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 16px; border-bottom: 1px solid var(--border); }
+.subTab { border: 0; background: transparent; padding: 10px 14px; font-weight: 800; color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -1px; }
+.subTabOn { color: var(--primary); border-bottom-color: var(--primary); }
+.kv { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 18px; margin: 0; }
+.kv div { min-width: 0; }
+.kv dt { color: var(--muted); font-weight: 700; margin-bottom: 2px; }
+.kv dd { margin: 0; font-weight: 800; color: var(--text); word-break: break-word; }
+.kvWide { grid-column: 1 / -1; }
+.section { margin: 18px 0 8px; font-weight: 900; font-size: 17px; color: var(--text-2); display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+.revealBox { display: flex; gap: 12px; align-items: center; justify-content: space-between; background: var(--warning-50); border: 1px solid #f3d9a4; border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; font-weight: 700; }
+.timelineY { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.timelineY li { display: flex; gap: 12px; align-items: center; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; font-weight: 800; }
+.gradeNum { font-weight: 900; font-variant-numeric: tabular-nums; }
+.gradeLow { color: var(--danger); }
+.gradeHigh { color: var(--success); }
+.miniTable { width: 100%; border-collapse: collapse; }
+.miniTable th, .miniTable td { padding: 9px 10px; text-align: left; border-bottom: 1px solid var(--border); font-weight: 700; }
+.miniTable th { color: var(--muted); font-weight: 800; }
+.pickList { max-height: 340px; overflow: auto; border: 1px solid var(--border); border-radius: 12px; }
+.pickRow { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-bottom: 1px solid var(--border); font-weight: 700; cursor: pointer; }
+.pickRow:last-child { border-bottom: 0; }
+.pickRow:hover { background: var(--primary-50); }
+.secretBox { font-size: 22px; font-weight: 900; letter-spacing: 0.04em; background: var(--primary-50); border: 1px dashed var(--primary); border-radius: 12px; padding: 12px 14px; text-align: center; margin: 12px 0; user-select: all; }
+.resultList { margin: 10px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.resultList li { display: flex; justify-content: space-between; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; font-weight: 800; }
+.formSection { grid-column: 1 / -1; font-weight: 900; margin-top: 8px; color: var(--primary-600); }
+@media (max-width: 800px) { .kv { grid-template-columns: 1fr; } }
